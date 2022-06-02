@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": [
+      "addword",
+      "dirents",
+      "dirpath",
+      "disme",
+      "esbuild",
+      "localstorage",
+      "metatags",
+      "pageid",
+      "pagemap",
+      "removeword",
+      "voicetext",
+      "wikijs",
+      "ytzothzig"
+    ]
+  }
+}
