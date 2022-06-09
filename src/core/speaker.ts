@@ -22,6 +22,7 @@ import { VoiceText } from "@src/core/voicetext";
 import { SpeakData, sleep } from "@src/util";
 import { VTOption, VTDefaultOption } from "@src/types/VT";
 import { Readable } from "node:stream";
+import { isArray } from "node:util";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export class Speaker {
@@ -72,7 +73,7 @@ export class Speaker {
     this.addQueue("読み上げが開始しました。");
     const filter: CollectorFilter<[Message<boolean>]> = async (m) => {
       const isGuild = !!m.guild;
-      const isReadingChannel = this.isReadingChannel(m.channelId);
+      const isReadingChannel = await this.isReadingChannel(m.channelId);
       const isNotMyMessage = m.author.id !== this.client.user?.id;
       const hasContent =
         (!m.content.match(/^[!\\]/) && m.content && !!m.content.match(/\S/g)) ||
@@ -164,13 +165,12 @@ export class Speaker {
     // DiscordSRV & LunaChat 矯正
     text = text.replace(/»(.)+\(/g, "");
     // 辞書読み込み
-    if (
-      await (await storage(StorageType.SETTINGS, this.guildId)).get("dicChange")
-    ) {
+    if (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`)) {
       await this.createDicPattern();
-      await (
-        await storage(StorageType.SETTINGS, this.guildId)
-      ).set("dicChange", false);
+      await storage(StorageType.SETTINGS).put(
+        false,
+        `${this.guildId}:dicChange`
+      );
     }
     if (!this._dicPattern) await this.createDicPattern();
     // 辞書による置き換え
@@ -199,12 +199,13 @@ export class Speaker {
 
   async getDic() {
     const dic: { [key: string]: string } = {};
-    for await (const [key, value] of await storage(
-      StorageType.WORDS,
-      this.guildId
-    )) {
-      dic[key] = value;
-    }
+    const words = await storage(StorageType.WORDS,this.guildId).fetchAll();
+    // for await (const [key, value] of words) {
+    //   dic[key] = value;
+    // }
+    words.items.forEach(({key,value})=>{
+      dic[String(key)] = String(value);
+    })
     console.log(dic);
 
     return dic;
@@ -212,9 +213,7 @@ export class Speaker {
 
   async addSpeak(data: SpeakData) {
     const vicData: VTOption =
-      (await (
-        await storage(StorageType.SETTINGS, this.guildId)
-      ).get(data.userId)) || VTDefaultOption;
+      (await (storage(StorageType.SETTINGS)).get(`${this.guildId}:${data.userId}`))?.value as VTOption || VTDefaultOption;
     const buf = new Uint8Array(await voice.option(vicData).speak(data.text));
     const stream = new Readable({
       read() {
@@ -255,28 +254,29 @@ export class Speaker {
   }
 
   async isReadingChannel(textChannelId: Snowflake) {
-    const readChannels: Snowflake[] = await (
-      await storage(StorageType.SETTINGS, this.guildId)
-    ).get("readChannels");
-    return readChannels && readChannels.includes(textChannelId);
+    const readChannels = (
+      await storage(StorageType.SETTINGS, this.guildId).get(
+        `${this.guildId}:readChannels`
+      )
+    )?.value;
+    return Array.isArray(readChannels) && readChannels.includes(textChannelId);
   }
 
   async addChannel(textChannelId: Snowflake) {
-    const readChannels: Snowflake[] = await (
-      await storage(StorageType.SETTINGS, this.guildId)
-    ).get("readChannels");
-    if (readChannels) {
+    const readChannels =
+      (await storage(StorageType.SETTINGS).get(`${this.guildId}:readChannels`))
+        ?.value || [];
+    if (Array.isArray(readChannels)) {
       readChannels.push(textChannelId);
-      await (
-        await storage(StorageType.SETTINGS, this.guildId)
-      ).set(
-        "readChannels",
-        readChannels.filter((x, i, a) => a.indexOf(x) === i)
+      await storage(StorageType.SETTINGS).put(
+        readChannels.filter((x, i, a) => a.indexOf(x) === i),
+        `${this.guildId}:readChannels`
       );
     } else {
-      await (
-        await storage(StorageType.SETTINGS, this.guildId)
-      ).set("readChannels", [textChannelId]);
+      await storage(StorageType.SETTINGS).put(
+        [textChannelId],
+        `${this.guildId}:readChannels`
+      );
     }
   }
 }

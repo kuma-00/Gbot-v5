@@ -101,4 +101,8 @@ process.on("unhandledRejection", (reason) => {
   console.log("node:", reason);
 });
 
+client.on("error",console.log);//error
+client.on("warn",console.log);//warn
+client.on("debug",console.log);//debug
+
 //sudo systemctl restart code-server@$USER
