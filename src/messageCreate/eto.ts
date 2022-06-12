@@ -12,7 +12,8 @@ export const messageResponse: MessageResponse = {
       Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
     );
     const year =
-      +(message.cleanContent.match(/\d{4}/)?.[0] ?? 0) ?? date.getFullYear();
+      parseInt(message.cleanContent.match(/\d{4}/)?.[0] ?? "", 10) ||
+      date.getFullYear();
     const data1 = "庚辛壬癸甲乙丙丁戊己";
     const data2 = "申酉戌亥子丑寅卯辰巳午未";
     message.reply({
