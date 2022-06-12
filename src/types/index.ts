@@ -1,11 +1,12 @@
 import { Speaker } from "@src/core/speaker";
-import { Client, Collection } from "discord.js";
+import { Client, Collection, Message } from "discord.js";
 import internal from "node:stream";
 import { Command } from "@src/types/command";
 
 export type ExtensionClient = Client & {
   commands: Collection<string, Command>;
   speakers: Collection<string, Speaker>;
+  messageResponses : MessageResponse[];
 };
 
 export interface Event {
@@ -22,12 +23,12 @@ export type StorageType = typeof StorageType[keyof typeof StorageType];
 
 export type SpeakResource = URL | internal.Readable;
 
-export type customSearchJson = {
+export type CustomSearchJson = {
   kind: string;
   url: { type: string; template: string };
   queries: {
-    request: customSearchPage[];
-    nextPage: customSearchPage[];
+    request: CustomSearchPage[];
+    nextPage: CustomSearchPage[];
   };
   context: { title: string };
   searchInformation: {
@@ -36,10 +37,10 @@ export type customSearchJson = {
     totalResults: string;
     formattedTotalResults: string;
   };
-  items:customSearchItem[]
+  items:CustomSearchItem[]
 };
 
-export type customSearchPage = {
+export type CustomSearchPage = {
   title: string;
   totalResults: string;
   searchTerms: string;
@@ -51,7 +52,7 @@ export type customSearchPage = {
   cx: string;
 };
 
-export type customSearchItem = {
+export type CustomSearchItem = {
   kind:string
   title:string
   htmlTitle:string
@@ -62,16 +63,16 @@ export type customSearchItem = {
   cacheId:string
   formattedUrl:string
   htmlFormattedUrl:string
-  pagemap:customSearchPagemap[]
+  pagemap:CustomSearchPagemap[]
 }
 
-export type customSearchPagemap = {
+export type CustomSearchPagemap = {
   cse_thumbnail?:{[key:string]:string}
   metatags?:{[key:string]:string}
   cse_image?:{[key:string]:string}
 }
 
-export type translateResponseJson = {
+export type TranslateResponseJson = {
   params?:{
     text:string
     source:string
@@ -79,4 +80,10 @@ export type translateResponseJson = {
   }
   code?:number
   text:string
+}
+
+export type MessageResponse = {
+  name:string;
+  filter(message:Message):Boolean;
+  execute(client:ExtensionClient,message:Message) : any;
 }

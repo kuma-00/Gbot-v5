@@ -6,7 +6,6 @@ import {
   AudioPlayerStatus,
   createAudioResource,
   createAudioPlayer,
-  StreamType,
 } from "@discordjs/voice";
 import {
   CollectorFilter,
@@ -22,7 +21,6 @@ import { VoiceText } from "@src/core/voicetext";
 import { SpeakData, sleep } from "@src/util";
 import { VTOption, VTDefaultOption } from "@src/types/VT";
 import { Readable } from "node:stream";
-import { isArray } from "node:util";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export class Speaker {
@@ -75,10 +73,7 @@ export class Speaker {
       const isGuild = !!m.guild;
       const isReadingChannel = await this.isReadingChannel(m.channelId);
       const isNotMyMessage = m.author.id !== this.client.user?.id;
-      const hasContent =
-        (!m.content.match(/^[!\\]/) && m.content && !!m.content.match(/\S/g)) ||
-        !!m.embeds.length;
-      return isGuild && isReadingChannel && isNotMyMessage && hasContent;
+      return isGuild && isReadingChannel && isNotMyMessage;
     };
     this._collector = textChannel.createMessageCollector({ filter });
     this._collector.on("collect", (m) => {
@@ -137,6 +132,7 @@ export class Speaker {
     if (data.text.match(/{\s*s?:\/\/[\w!?/+\-_~=;.,*&@#$%()'[\]]+\s*}/)) {
       const texts = data.text.split(/({|})/);
       for (const text of texts) {
+        console.log({ text });
         if (text === "{" || text === "}" || text === "") continue;
         if (text.match(/s?:\/\//)) {
           if (data.text.match(/s?:\/\/drive.google.com\/file\/d\/(.+)\/view/)) {
@@ -165,7 +161,10 @@ export class Speaker {
     // DiscordSRV & LunaChat 矯正
     text = text.replace(/»(.)+\(/g, "");
     // 辞書読み込み
-    if (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`)) {
+    if (
+      (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`))
+        ?.value
+    ) {
       await this.createDicPattern();
       await storage(StorageType.SETTINGS).put(
         false,
@@ -199,21 +198,24 @@ export class Speaker {
 
   async getDic() {
     const dic: { [key: string]: string } = {};
-    const words = await storage(StorageType.WORDS,this.guildId).fetchAll();
+    const words = await storage(StorageType.WORDS, this.guildId).fetchAll();
     // for await (const [key, value] of words) {
     //   dic[key] = value;
     // }
-    words.items.forEach(({key,value})=>{
+    words.items.forEach(({ key, value }) => {
       dic[String(key)] = String(value);
-    })
-    console.log(dic);
+    });
 
     return dic;
   }
 
   async addSpeak(data: SpeakData) {
     const vicData: VTOption =
-      (await (storage(StorageType.SETTINGS)).get(`${this.guildId}:${data.userId}`))?.value as VTOption || VTDefaultOption;
+      ((
+        await storage(StorageType.SETTINGS).get(
+          `${this.guildId}:${data.userId}`
+        )
+      )?.value as VTOption) || VTDefaultOption;
     const buf = new Uint8Array(await voice.option(vicData).speak(data.text));
     const stream = new Readable({
       read() {
@@ -230,17 +232,19 @@ export class Speaker {
       this.isPlaying = true;
       const resource =
         this.queue[0] instanceof URL ? this.queue[0].toString() : this.queue[0];
+      console.log(resource instanceof Readable || resource);
       const audioResource = createAudioResource(resource, {
-        inputType: StreamType.Arbitrary,
+        inlineVolume: true,
       });
       this._player = createAudioPlayer();
-      this._player.play(audioResource);
       const connection = getVoiceConnection(this.guildId);
-      if (connection !== undefined) connection.subscribe(this._player);
+      connection?.subscribe(this._player);
+      this._player.play(audioResource);
       this._player.on("error", (error) => {
         console.error(error);
       });
       this._player.on(AudioPlayerStatus.Idle, () => {
+        console.log("test");
         if (this._loop) {
           this.queue.push(this.queue[0]);
           this.queue.shift();

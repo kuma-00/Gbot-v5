@@ -1,3 +1,4 @@
+import { MessageResponse } from './types/index';
 "use strict";
 import { Client, Collection } from "discord.js";
 import fs from "node:fs/promises";
@@ -31,6 +32,7 @@ const client = new Client({
 
 client.commands = new Collection();
 client.speakers = new Collection();
+client.messageResponses = [];
 
 const getJsFiles = async (dirpath: string) => {
   const files: string[] = [];
@@ -90,6 +92,16 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       if (com.data.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
         console.log(`ContextMenuCommand ${com.data.name} loaded !`);
+      }
+    });
+  });
+  //messageCreate
+  (await getJsFiles(path.join(__dirname, "messageCreate"))).forEach((path) => {
+    loadFile(path, (messageResponse) => {
+      const mr : MessageResponse = messageResponse.messageResponse;
+      if (mr.name) {
+        client.messageResponses.push(mr);
+        console.log(`MessageResponse ${mr.name} loaded !`);
       }
     });
   });

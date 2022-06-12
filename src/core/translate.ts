@@ -1,4 +1,4 @@
-import { translateResponseJson } from "@src/types";
+import { TranslateResponseJson } from "@src/types";
 import fetch from "node-fetch";
 
 export const translate = async (
@@ -19,7 +19,7 @@ export const translate = async (
         target,
       }),
     });
-    return (await res.json()) as translateResponseJson;
+    return (await res.json()) as TranslateResponseJson;
   } catch (e) {
     console.log(e);
     return {text:"エラー"};

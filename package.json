@@ -7,7 +7,7 @@
   "scripts": {
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node --experimental-specifier-resolution=node build/main.js",
-    "compile": "tsc -p . && tsc-alias -p tsconfig.json",
+    "compile": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "keywords": [],
@@ -48,6 +48,7 @@
     "ffmpeg-static": "^5.0.0",
     "node-fetch": "^3.2.0",
     "sodium": "^3.0.2",
+    "sodium-native": "^3.3.0",
     "vm2": "^3.9.8",
     "wikipedia": "^1.1.6"
   },

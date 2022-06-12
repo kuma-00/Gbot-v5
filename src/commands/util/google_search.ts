@@ -1,4 +1,4 @@
-import { customSearchJson } from "@src/types";
+import { CustomSearchJson } from "@src/types";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandCategory,Command } from "@src/types/command";
 import fetch from "node-fetch";
@@ -20,7 +20,7 @@ export const command: Command = {
     const response = await fetch(
       `https://www.googleapis.com/customsearch/v1?key=${process.env.googleapis_key}&cx=${process.env.googleapis_cx}&q=${text}`
     );
-    const resJson = (await response.json()) as customSearchJson;
+    const resJson = (await response.json()) as CustomSearchJson;
     const embed = new MessageEmbed();
     embed
       .setTitle("検索結果")
