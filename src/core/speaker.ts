@@ -283,4 +283,18 @@ export class Speaker {
       );
     }
   }
+
+  async removeChannel(textChannelId: Snowflake) {
+    const readChannels =
+      (await storage(StorageType.SETTINGS).get(`${this.guildId}:readChannels`))
+        ?.value || [];
+    if (Array.isArray(readChannels)) {
+      await storage(StorageType.SETTINGS).put(
+        readChannels.filter(id=>id != textChannelId),
+        `${this.guildId}:readChannels`
+      );
+    } else {
+      await storage(StorageType.SETTINGS).put([],`${this.guildId}:readChannels`);
+    }
+  }
 }

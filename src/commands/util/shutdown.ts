@@ -14,7 +14,10 @@ export const command: Command = {
     .setDescription("終了します(Only Gbot Administrator)"),
   async execute(client, interaction) {
     if (process.env.MY_USER_ID == interaction.user.id) {
-      client.speakers.forEach((speaker) => speaker.end());
+      client.speakers.forEach((speaker) => {
+        speaker.textChannel.send("強制終了されました。");
+        speaker.end();
+      });
       interaction.followUp(`終了します。`);
       await wait(5000);
       process.exit(0);
