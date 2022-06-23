@@ -8,6 +8,7 @@ import { ExtensionClient } from "@src/types";
 export const CommandCategory = {
   Util: "util",
   Speaker: "speaker",
+  Other: "other",
 } as const;
 // eslint-disable-next-line no-redeclare
 export type CommandCategory =
@@ -22,5 +23,8 @@ export interface Command {
     | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
     | ContextMenuCommandBuilder;
   description?: string;
-  execute(client: ExtensionClient, interaction: CommandInteraction | ContextMenuInteraction): any;
+  execute(
+    client: ExtensionClient,
+    interaction: CommandInteraction | ContextMenuInteraction
+  ): any;
 }

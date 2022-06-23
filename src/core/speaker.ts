@@ -8,10 +8,12 @@ import {
   createAudioPlayer,
 } from "@discordjs/voice";
 import {
+  CategoryChannel,
   CollectorFilter,
   Message,
   MessageCollector,
   Snowflake,
+  StageChannel,
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
@@ -32,6 +34,7 @@ export class Speaker {
   private _dicPattern: RegExp = / /;
   private _dic: { [key: string]: string } = {};
   private _collector!: MessageCollector;
+  private _collectors!: MessageCollector[];
 
   get guildId() {
     return this.voiceChannel.guild.id;
@@ -47,6 +50,39 @@ export class Speaker {
     this.textChannel = textChannel;
     this.createDicPattern();
   }
+
+  messageCollect = (m: Message<boolean>) => {
+    const content = (() => {
+      if (m.attachments.size > 0) {
+        const images = m.attachments.filter(
+          (a) => !!a.contentType?.includes("image")
+        );
+        const files = m.attachments.filter(
+          (a) => !a.contentType?.includes("image")
+        );
+        const text =
+          (images.size > 0 ? `。画像が${images.size}枚送信されました` : "") +
+          (files.size > 0 ? `。ファイルが${files.size}個送信されました` : "");
+        return m.cleanContent + text;
+      }
+      return m.cleanContent;
+    })();
+    const userName = m.member?.nickname || m.member?.user.username;
+    this.addQueue(
+      new SpeakData(content, {
+        channelId: m.channelId,
+        userName,
+        userId: m.author.id,
+      })
+    );
+  };
+
+  filter = async (m: Message<boolean>) => {
+    const isGuild = !!m.guild;
+    const isReadingChannel = await this.isReadingChannel(m.channelId);
+    const isNotMyMessage = m.author.id !== this.client.user?.id;
+    return isGuild && isReadingChannel && isNotMyMessage;
+  };
 
   async start(voiceChannel: VoiceBasedChannel, textChannel: TextBasedChannel) {
     this.isPlaying = false;
@@ -69,42 +105,31 @@ export class Speaker {
       }
     });
     this.addQueue("読み上げが開始しました。");
-    const filter: CollectorFilter<[Message<boolean>]> = async (m) => {
-      const isGuild = !!m.guild;
-      const isReadingChannel = await this.isReadingChannel(m.channelId);
-      const isNotMyMessage = m.author.id !== this.client.user?.id;
-      return isGuild && isReadingChannel && isNotMyMessage;
-    };
-    this._collector = textChannel.createMessageCollector({ filter });
-    this._collector.on("collect", (m) => {
-      const content = (() => {
-        if (m.attachments.size > 0) {
-          const images = m.attachments.filter(
-            (a) => !!a.contentType?.includes("image")
-          );
-          const files = m.attachments.filter(
-            (a) => !a.contentType?.includes("image")
-          );
-          const text =
-            (images.size > 0 ? `。画像が${images.size}枚送信されました` : "") +
-            (files.size > 0 ? `。ファイルが${files.size}個送信されました` : "");
-          return m.cleanContent + text;
+    const readChannels = await this.getReadChannels();
+    // const filter: CollectorFilter<[Message<boolean>]> = async (m) => {
+    //   const isGuild = !!m.guild;
+    //   const isReadingChannel = await this.isReadingChannel(m.channelId);
+    //   const isNotMyMessage = m.author.id !== this.client.user?.id;
+    //   return isGuild && isReadingChannel && isNotMyMessage;
+    // };
+    this._collectors = readChannels
+      .map((id) => {
+        let collector: MessageCollector | undefined;
+        const channel = this.voiceChannel.guild.channels.cache.get(id);
+        if (channel && "createMessageCollector" in channel) {
+          collector = channel
+            .createMessageCollector({ filter: this.filter.bind(this) })
+            .on("collect", this.messageCollect.bind(this));
         }
-        return m.cleanContent;
-      })();
-      const userName = m.member?.nickname || m.member?.user.username;
-      this.addQueue(
-        new SpeakData(content, {
-          channelId: m.channelId,
-          userName,
-          userId: m.author.id,
-        })
+        return collector;
+      })
+      .filter(
+        (item): item is Exclude<typeof item, undefined> => item !== undefined
       );
-    });
   }
 
   async end() {
-    this._collector.stop();
+    this._collectors.forEach((c) => c.stop());
     this.addQueue("読み上げが終了しました。");
     await this.addQueue("ご利用ありがとう御座います。");
     await sleep(4000);
@@ -258,18 +283,13 @@ export class Speaker {
   }
 
   async isReadingChannel(textChannelId: Snowflake) {
-    const readChannels = (
-      await storage(StorageType.SETTINGS, this.guildId).get(
-        `${this.guildId}:readChannels`
-      )
-    )?.value;
+    const readChannels = await this.getReadChannels();
     return Array.isArray(readChannels) && readChannels.includes(textChannelId);
   }
 
   async addChannel(textChannelId: Snowflake) {
-    const readChannels =
-      (await storage(StorageType.SETTINGS).get(`${this.guildId}:readChannels`))
-        ?.value || [];
+    const readChannels = await this.getReadChannels();
+    this.addCollectors(textChannelId);
     if (Array.isArray(readChannels)) {
       readChannels.push(textChannelId);
       await storage(StorageType.SETTINGS).put(
@@ -284,17 +304,33 @@ export class Speaker {
     }
   }
 
-  async removeChannel(textChannelId: Snowflake) {
-    const readChannels =
-      (await storage(StorageType.SETTINGS).get(`${this.guildId}:readChannels`))
-        ?.value || [];
-    if (Array.isArray(readChannels)) {
-      await storage(StorageType.SETTINGS).put(
-        readChannels.filter(id=>id != textChannelId),
-        `${this.guildId}:readChannels`
+  removeCollectors(textChannelId: Snowflake) {
+    const collector = this._collectors.find(
+      (c) => c.channel.id == textChannelId
+    );
+    if (collector) {
+      this._collectors = this._collectors.filter(
+        (c) => c.channel.id != textChannelId
       );
-    } else {
-      await storage(StorageType.SETTINGS).put([],`${this.guildId}:readChannels`);
+      collector.stop();
     }
+  }
+
+  addCollectors(textChannelId: Snowflake) {
+    const channel = this.voiceChannel.guild.channels.cache.get(textChannelId);
+    if (channel && "createMessageCollector" in channel) {
+      this._collectors.push(
+        channel
+          .createMessageCollector({ filter: this.filter.bind(this) })
+          .on("collect", this.messageCollect.bind(this))
+      );
+    }
+  }
+
+  async getReadChannels() {
+    return (
+      ((await storage(StorageType.SETTINGS).get(`${this.guildId}:readChannels`))
+        ?.value as string[]) || []
+    );
   }
 }

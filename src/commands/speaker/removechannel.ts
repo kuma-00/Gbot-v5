@@ -1,4 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { storage } from "@src/core/storage";
+import { StorageType } from "@src/types";
 import { Command, CommandCategory } from "@src/types/command";
 import { CommandInteraction } from "discord.js";
 
@@ -8,10 +10,29 @@ export const command: Command = {
   enabled: true,
   data: new SlashCommandBuilder()
     .setName("removechannel")
-    .setDescription("読み上げからチャンネルを削除する。読み上げが開始されていなくても実行できます。"),
-  execute(client, interaction: CommandInteraction) {
+    .setDescription(
+      "読み上げからチャンネルを削除する。読み上げが開始されていなくても実行できます。"
+    ),
+  async execute(client, interaction: CommandInteraction) {
     if (interaction.guildId && interaction.guild) {
-      client.speakers.get(interaction.guildId)?.removeChannel(interaction.channelId);
+      client.speakers.get(interaction.guildId)?.removeCollectors(interaction.channelId);
+      const readChannels =
+        (
+          await storage(StorageType.SETTINGS).get(
+            `${interaction.guildId}:readChannels`
+          )
+        )?.value || [];
+      if (Array.isArray(readChannels)) {
+        await storage(StorageType.SETTINGS).put(
+          readChannels.filter((id) => id != interaction.channelId),
+          `${interaction.guildId}:readChannels`
+        );
+      } else {
+        await storage(StorageType.SETTINGS).put(
+          [],
+          `${interaction.guildId}:readChannels`
+        );
+      }
       interaction.followUp("チャンネルを削除しました");
     }
   },

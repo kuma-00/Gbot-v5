@@ -4,7 +4,7 @@ import { Command, CommandCategory } from "@src/types/command";
 import { CommandInteraction } from "discord.js";
 
 export const command: Command = {
-  category: CommandCategory.Util,
+  category: CommandCategory.Other,
   guildOnly: false,
   enabled: true,
   data: new SlashCommandBuilder()

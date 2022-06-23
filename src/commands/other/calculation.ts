@@ -5,7 +5,7 @@ import { CommandInteraction } from "discord.js";
 import { VM } from "vm2";
 
 export const command: Command = {
-  category: CommandCategory.Util,
+  category: CommandCategory.Other,
   guildOnly: false,
   enabled: true,
   data: new SlashCommandBuilder()

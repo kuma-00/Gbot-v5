@@ -19,7 +19,7 @@ export const command: Command = {
         speaker.end();
       });
       interaction.followUp(`終了します。`);
-      await wait(5000);
+      await wait(10000);
       process.exit(0);
     }
     return interaction.followUp(`権限が足りません。(Only Gbot Administrator)`);

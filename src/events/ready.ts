@@ -5,9 +5,9 @@ export const event:Event = {
   name: "ready",
   async execute(client): Promise<void> {
     const commands = Array.from(client.commands.values());
-    // client.guilds.cache
-    //   .get(process.env.MY_GUILD_ID || "")
-    //   ?.commands.set([]);
+    client.guilds.cache
+      .get(process.env.MY_GUILD_ID || "")
+      ?.commands.set([]);
     // client.guilds.cache
     //   .get(process.env.TEST_GUILD_ID || "")
     //   ?.commands.set([]);
