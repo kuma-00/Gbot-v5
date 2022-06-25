@@ -34,7 +34,7 @@ export class Speaker {
   private _dicPattern: RegExp = / /;
   private _dic: { [key: string]: string } = {};
   private _collector!: MessageCollector;
-  private _collectors!: MessageCollector[];
+  private _collectors: MessageCollector[] = [];
 
   get guildId() {
     return this.voiceChannel.guild.id;
