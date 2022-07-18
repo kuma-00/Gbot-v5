@@ -11,7 +11,7 @@ export type ExtensionClient = Client & {
 
 export interface Event {
   name: string;
-  execute(client: ExtensionClient, arg?: any): any;
+  execute(client: ExtensionClient, ...arg: any): any;
 }
 
 export const StorageType = {

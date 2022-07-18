@@ -8,22 +8,31 @@ import {
   createAudioPlayer,
 } from "@discordjs/voice";
 import {
-  CategoryChannel,
-  CollectorFilter,
   Message,
   MessageCollector,
   Snowflake,
-  StageChannel,
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
-import { ExtensionClient, SpeakResource, StorageType } from "@src/types";
+import { ExtensionClient, SpeakResource, StorageType} from "@src/types";
 import { storage } from "@src/core/storage";
 import { VoiceText } from "@src/core/voicetext";
 import { SpeakData, sleep } from "@src/util";
 import { VTOption, VTDefaultOption } from "@src/types/VT";
 import { Readable } from "node:stream";
 const voice = new VoiceText(process.env.VTKey || "");
+
+export class SpeakerStatus {
+  static readonly END = "END";
+  static readonly SPEAKING = "SPEAKING";
+  static readonly ERROR = "ERROR";
+  static async set(guildId:Snowflake,status:"END"|"SPEAKING"|"ERROR"){
+    await storage(StorageType.SETTINGS).put(status,`${guildId}:SpeakerStatus`);
+  }
+  static async get(guildId:Snowflake){
+    return (await storage(StorageType.SETTINGS).get(`${guildId}:SpeakerStatus`))?.value;
+  }
+}
 
 export class Speaker {
   isPlaying = false;
@@ -33,7 +42,6 @@ export class Speaker {
   private _lastUserName = "";
   private _dicPattern: RegExp = / /;
   private _dic: { [key: string]: string } = {};
-  private _collector!: MessageCollector;
   private _collectors: MessageCollector[] = [];
 
   get guildId() {
@@ -88,6 +96,7 @@ export class Speaker {
     this.isPlaying = false;
     this.voiceChannel = voiceChannel;
     this.textChannel = textChannel;
+    await storage(StorageType.SETTINGS).put(textChannel.id,`${this.guildId}:cacheChannelId`);
     this.addChannel(textChannel.id);
     const connection = joinVoiceChannel({
       channelId: this.voiceChannel.id,
@@ -102,6 +111,7 @@ export class Speaker {
         ]);
       } catch (error) {
         console.log("強制切断されました");
+        SpeakerStatus.set(this.guildId,SpeakerStatus.END);
       }
     });
     this.addQueue("読み上げが開始しました。");
@@ -126,6 +136,7 @@ export class Speaker {
       .filter(
         (item): item is Exclude<typeof item, undefined> => item !== undefined
       );
+    SpeakerStatus.set(this.guildId,SpeakerStatus.SPEAKING);
   }
 
   async end() {
@@ -136,8 +147,10 @@ export class Speaker {
     const connection = getVoiceConnection(this.voiceChannel.guild.id);
     if (connection) {
       connection.destroy();
+      SpeakerStatus.set(this.guildId,SpeakerStatus.END);
       return true;
     }
+    SpeakerStatus.set(this.guildId,SpeakerStatus.ERROR);
     return false;
   }
 
@@ -224,9 +237,6 @@ export class Speaker {
   async getDic() {
     const dic: { [key: string]: string } = {};
     const words = await storage(StorageType.WORDS, this.guildId).fetchAll();
-    // for await (const [key, value] of words) {
-    //   dic[key] = value;
-    // }
     words.items.forEach(({ key, value }) => {
       dic[String(key)] = String(value);
     });

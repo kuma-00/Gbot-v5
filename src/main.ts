@@ -1,5 +1,5 @@
-import { MessageResponse } from './types/index';
 "use strict";
+import { MessageResponse } from './types/index';
 import { Client, Collection } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";

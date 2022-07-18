@@ -19,6 +19,7 @@ export const command: Command = {
         );
       })();
       if (voiceChannel == null || interaction.channel === null) {
+        interaction.followUp("VoiceChannelが見つかりませんでした")
         return;
       }
       if (client.speakers.has(interaction.guildId)) {
