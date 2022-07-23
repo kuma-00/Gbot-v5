@@ -1,4 +1,4 @@
-run = "npm ts-start"
+run = "npm run ts-start"
 language = "nodejs"
 
 [nix]
