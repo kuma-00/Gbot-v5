@@ -1,5 +1,0 @@
-run = "npm run ts-start"
-language = "nodejs"
-
-[nix]
-channel = "stable-22_05"
