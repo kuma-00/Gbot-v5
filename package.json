@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@discordjs/builders": "^0.15.0",
-    "@discordjs/opus": "^0.7.0",
+    "@discordjs/opus": "^0.8.0",
     "@discordjs/voice": "^0.10.0",
     "@gonetone/hoyowiki-api": "^1.0.1",
     "app-root-path": "^3.0.0",
