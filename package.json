@@ -11,6 +11,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts"
   },
+  "engines": {
+    "node": "16.x"
+  },
   "keywords": [],
   "author": "kuma",
   "license": "MIT",
