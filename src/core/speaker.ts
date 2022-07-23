@@ -22,13 +22,13 @@ import { VTOption, VTDefaultOption } from "@src/types/VT";
 import { Readable } from "node:stream";
 const voice = new VoiceText(process.env.VTKey || "");
 
-export type SpeakerStatusType = "END"|"SPEAKING"|"ERROR"|"WAITE";
+export type SpeakerStatusType = "END"|"SPEAKING"|"ERROR"|"WAIT";
 
 export class SpeakerStatus {
   static readonly END = "END";
   static readonly SPEAKING = "SPEAKING";
   static readonly ERROR = "ERROR";
-  static readonly WAITE = "WAITE";
+  static readonly WAITE = "WAIT";
   static async set(guildId:Snowflake,status:SpeakerStatusType){
     await storage(StorageType.SETTINGS).put(status,`${guildId}:SpeakerStatus`);
   }
