@@ -7,7 +7,7 @@ export const command: Command = {
   enabled: true,
   data: new SlashCommandBuilder()
     .setName("voiceset")
-    .setDescription(""),
+    .setDescription("test"),
   execute(client, interaction) {
   },
 };

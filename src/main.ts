@@ -6,6 +6,7 @@ import path from "node:path";
 import dotenv from "dotenv";
 import { ExtensionClient } from "@src/types";
 import { fileURLToPath } from "node:url";
+import { createServer } from 'node:http';
 
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command";
@@ -118,3 +119,9 @@ client.on("warn",console.log);//warn
 client.on("debug",console.log);//debug
 
 //sudo systemctl restart code-server@$USER
+
+
+createServer(function(_req, res) {
+  res.write("OK");
+  res.end();
+}).listen(8081);

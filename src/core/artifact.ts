@@ -1,7 +1,6 @@
 import { OCRResponse } from "@src/types/OCR";
 import { MessageEmbed } from "discord.js";
 import { extract } from "fuzzball";
-import {Artifact as hoyoArtifact,setLanguage,Language} from "@gonetone/hoyowiki-api";
 
 export type ArtifactStatus = {
   name: string;
@@ -156,9 +155,6 @@ export class Artifact {
   }
 
   async init() {
-    await setLanguage(Language.Japanese)
-    const artifact = new hoyoArtifact();
-    console.log(await artifact.getList());
     this.analysis(this.ocrLines);
     this.score = this.score_calculation(this.level, this.main, this.subs);
     console.log(JSON.stringify(this));

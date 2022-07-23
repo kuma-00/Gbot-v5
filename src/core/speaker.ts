@@ -22,15 +22,18 @@ import { VTOption, VTDefaultOption } from "@src/types/VT";
 import { Readable } from "node:stream";
 const voice = new VoiceText(process.env.VTKey || "");
 
+export type SpeakerStatusType = "END"|"SPEAKING"|"ERROR"|"WAITE";
+
 export class SpeakerStatus {
   static readonly END = "END";
   static readonly SPEAKING = "SPEAKING";
   static readonly ERROR = "ERROR";
-  static async set(guildId:Snowflake,status:"END"|"SPEAKING"|"ERROR"){
+  static readonly WAITE = "WAITE";
+  static async set(guildId:Snowflake,status:SpeakerStatusType){
     await storage(StorageType.SETTINGS).put(status,`${guildId}:SpeakerStatus`);
   }
   static async get(guildId:Snowflake){
-    return (await storage(StorageType.SETTINGS).get(`${guildId}:SpeakerStatus`))?.value;
+    return (await storage(StorageType.SETTINGS).get(`${guildId}:SpeakerStatus`))?.value as SpeakerStatusType;
   }
 }
 
@@ -139,18 +142,17 @@ export class Speaker {
     SpeakerStatus.set(this.guildId,SpeakerStatus.SPEAKING);
   }
 
-  async end() {
+  async end(auto:boolean = false) {
     this._collectors.forEach((c) => c.stop());
     this.addQueue("読み上げが終了しました。");
     await this.addQueue("ご利用ありがとう御座います。");
+    SpeakerStatus.set(this.guildId,auto?SpeakerStatus.WAITE:SpeakerStatus.END);
     await sleep(4000);
     const connection = getVoiceConnection(this.voiceChannel.guild.id);
     if (connection) {
       connection.destroy();
-      SpeakerStatus.set(this.guildId,SpeakerStatus.END);
       return true;
     }
-    SpeakerStatus.set(this.guildId,SpeakerStatus.ERROR);
     return false;
   }
 
@@ -299,7 +301,7 @@ export class Speaker {
 
   async addChannel(textChannelId: Snowflake) {
     const readChannels = await this.getReadChannels();
-    this.addCollectors(textChannelId);
+    if(!readChannels.includes(textChannelId)) this.addCollectors(textChannelId);
     if (Array.isArray(readChannels)) {
       readChannels.push(textChannelId);
       await storage(StorageType.SETTINGS).put(

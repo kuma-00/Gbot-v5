@@ -35,7 +35,7 @@ export const event:Event = {
         .size;
       console.log("in", count);
       //in
-      if (isSpeaking == SpeakerStatus.SPEAKING || count != 1) return;
+      if (isSpeaking != SpeakerStatus.WAITE || count != 1) return;
       // if (!speaker)
       //   this.create(guild.id, newUserChannel, channel, () => {
       //     this.deleteSpeaking(guild.id);
@@ -70,7 +70,7 @@ export const event:Event = {
       //   speaker.end();
       // }
       if (client.speakers.has(guild.id)) {
-        client.speakers.get(guild.id)?.end();
+        client.speakers.get(guild.id)?.end(true);
         channel.send("読み上げが終了しました。");
       }
     }
