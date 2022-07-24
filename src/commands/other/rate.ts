@@ -1,4 +1,9 @@
-import { Message, EmbedBuilder ,SlashCommandBuilder,ChatInputCommandInteraction} from "discord.js";
+import {
+  Message,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import { Command, CommandCategory } from "@src/types/command";
 import { ocrSpace } from "ocr-space-api-wrapper";
 import { Artifact } from "@src/core/artifact";
@@ -47,21 +52,18 @@ export const command: Command = {
     .setName("rate")
     .setDescription(
       "与えられた画像から聖遺物のデータを解析し、スコアを計算します。オプションで各ステータスのウェイト(重み)を設定できます。"
+    )
+    .addAttachmentOption((option) =>
+      option.setName("image").setDescription("聖遺物の画像").setRequired(true)
     ),
-  async execute(client, interaction:ChatInputCommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     const text = interaction.options.getString("options");
-    await interaction.followUp("聖遺物の画像を一枚送信してください。");;
-    const filter = (m: Message<boolean>) => m.author.id == interaction.user.id && m.attachments.size == 1;
-    try{
-      const m = await (await interaction.channel?.awaitMessages({filter,max: 1, time: 60 * 1000, errors: ['time']}))?.first();
-      if(!m) return interaction.followUp(createError(`画像が見つかりませんでした`));
-      const result = await ocr(new URL(m.attachments.first()?.url ?? ""), interaction);
-      if (!result) return interaction.followUp(createError(`画像の解析に失敗しました。`));
-      const arti = new Artifact(result);
-      await arti.init();
-      interaction.followUp({embeds:[arti.toEmbedBuilder()]});
-    } catch (e){
-      interaction.followUp(createError(`画像が送信されませんでした。`));
-    }
+    const image = interaction.options.getAttachment("image")?.url;
+    const result = await ocr(new URL(image || ""), interaction);
+    if (!result)
+      return interaction.followUp(createError(`画像の解析に失敗しました。`));
+    const arti = new Artifact(result);
+    await arti.init();
+    interaction.followUp({files:[image || ""], embeds: [arti.toEmbedBuilder()] });
   },
 };

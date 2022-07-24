@@ -5,7 +5,7 @@ import { Interaction, InteractionType } from "discord.js";
 export const event: Event = {
   name: "interactionCreate",
   async execute(client, interaction:Interaction) {
-    const isDeveloping = true;
+    const isDeveloping = false;
     if (interaction.type == InteractionType.ApplicationCommand || interaction.isContextMenuCommand()) {
       await interaction.deferReply().catch(() => {});
       const command = client.commands.get(interaction.commandName.toLowerCase());

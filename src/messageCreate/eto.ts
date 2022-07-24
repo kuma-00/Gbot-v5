@@ -4,7 +4,7 @@ import { MessageResponse } from "@src/types";
 export const messageResponse: MessageResponse = {
   name: "eto",
   filter: (m) =>
-    ["干支", "十干", "十干十二支", "えと", /\beto\b/].some((i) =>
+    ["干支", "十干", "十干十二支", "えと", /(\b|^)eto(\b|$)/].some((i) =>
       m.cleanContent.match(i)
     ),
   async execute(client, message) {
