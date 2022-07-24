@@ -336,6 +336,7 @@ export class Speaker {
           .createMessageCollector({ filter: this.filter.bind(this) })
           .on("collect", this.messageCollect.bind(this))
       );
+      
     }
   }
 
