@@ -40,7 +40,7 @@ export const command: Command = {
       const send = () => {
         const embed = new EmbedBuilder();
         embed
-          .setTitle("登録済み単語一覧:" + index++)
+          .setTitle(`${keyword?`検索 ${keyword} `:""}登録済み単語一覧: ${index++}`)
           .setDescription(sendText.join("\n"));
         interaction.followUp({ embeds: [embed] });
         sendText = [];
