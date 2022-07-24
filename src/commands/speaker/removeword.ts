@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 import { CommandCategory, Command } from "@src/types/command";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -18,7 +18,7 @@ export const command: Command = {
         .setRequired(true)
     ),
 
-  async execute(client, interaction: CommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     const word = interaction.options.getString("word");
     if (!word) {
       const embed = new EmbedBuilder();

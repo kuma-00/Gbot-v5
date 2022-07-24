@@ -1,7 +1,10 @@
-import { translate } from "@src/core/translate";
 import { Command, CommandCategory } from "@src/types/command";
 import { ApplicationCommandType } from "discord-api-types/v9";
-import { ContextMenuCommandInteraction, Message,ContextMenuCommandBuilder } from "discord.js";
+import {
+  ContextMenuCommandInteraction,
+  Message,
+  ContextMenuCommandBuilder,
+} from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Util,
@@ -9,13 +12,19 @@ export const command: Command = {
   enabled: true,
   data: new ContextMenuCommandBuilder()
     .setType(ApplicationCommandType.Message as number)
-    .setName("translateToJA"),
+    .setName("ojosama"),
   async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true) as Message;
     interaction.channel?.sendTyping();
-    const text = (
-      await translate(msg.cleanContent.replace(/[*`_~>]/, ""), null, "ja")
-    ).text;
+    // const text = shuffle(tokenize(msg.cleanContent)).join("")
+    const text = (await(await fetch("https://ojosama.herokuapp.com/api/ojosama", {
+      method: "POST",
+      body: JSON.stringify({Text:msg}),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })).json()).Result as string;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
     if (interaction.guildId && interaction.guild) {
       const speaker = client.speakers.get(interaction.guildId);
