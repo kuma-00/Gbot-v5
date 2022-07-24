@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder,ChatInputCommandInteraction } from "discord.js";
 import { translate } from "@src/core/translate";
 import { Command, CommandCategory } from "@src/types/command";
-import { CommandInteraction } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -28,7 +27,7 @@ export const command: Command = {
           "翻訳元の言語(https://cloud.google.com/translate/docs/languages)"
         )
     ),
-  async execute(client, interaction:CommandInteraction) {
+  async execute(client, interaction:ChatInputCommandInteraction) {
     const word = interaction.options.getString("word", true);
     interaction.channel?.sendTyping();
     const text = (

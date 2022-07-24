@@ -1,8 +1,8 @@
 import { CustomSearchJson } from "@src/types";
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory,Command } from "@src/types/command";
+import { CommandCategory, Command } from "@src/types/command";
 import fetch from "node-fetch";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -14,7 +14,7 @@ export const command: Command = {
     .addStringOption((option) =>
       option.setName("queue").setDescription("検索したい単語").setRequired(true)
     ),
-  async execute(_client, interaction:CommandInteraction) {
+  async execute(_client, interaction: ChatInputCommandInteraction) {
     const text = interaction.options.getString("queue", true);
     interaction.followUp("`検索開始`search:" + text);
     const response = await fetch(
@@ -29,12 +29,14 @@ export const command: Command = {
           resJson.queries.request[0].searchTerms
         )}`
       );
-    resJson.items.forEach((j) =>
-      embed.addField(
-        j.title,
-        ` [${j.snippet ? j.snippet.slice(0, 90) + "..." : ""}](${j.link}) `
-      )
+    embed.addFields(
+      resJson.items.map((j) => ({
+        name: j.title,
+        value: ` [${j.snippet ? j.snippet.slice(0, 90) + "..." : ""}](${
+          j.link
+        }) `,
+      }))
     );
-    interaction.followUp({embeds: [embed]});
+    interaction.followUp({ embeds: [embed] });
   },
 };

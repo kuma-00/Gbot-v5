@@ -1,6 +1,4 @@
-import { CommandInteraction } from "discord.js";
-import { Message, EmbedBuilder } from "discord.js";
-import { SlashCommandBuilder } from "discord.js";
+import { Message, EmbedBuilder ,SlashCommandBuilder,ChatInputCommandInteraction} from "discord.js";
 import { Command, CommandCategory } from "@src/types/command";
 import { ocrSpace } from "ocr-space-api-wrapper";
 import { Artifact } from "@src/core/artifact";
@@ -11,7 +9,7 @@ const createError = (text: string) => {
   return { embeds: [embed] };
 };
 
-const ocr = async (url: URL, interaction: CommandInteraction) => {
+const ocr = async (url: URL, interaction: ChatInputCommandInteraction) => {
   const sendError = (s: string) => {
     interaction.followUp(
       createError(`OCRでエラーが発生しました。しばらく経っても同じエラーが出る場合は今月の回数上限に達した可能性があります。
@@ -50,7 +48,7 @@ export const command: Command = {
     .setDescription(
       "与えられた画像から聖遺物のデータを解析し、スコアを計算します。オプションで各ステータスのウェイト(重み)を設定できます。"
     ),
-  async execute(client, interaction:CommandInteraction) {
+  async execute(client, interaction:ChatInputCommandInteraction) {
     const text = interaction.options.getString("options");
     await interaction.followUp("聖遺物の画像を一枚送信してください。");;
     const filter = (m: Message<boolean>) => m.author.id == interaction.user.id && m.attachments.size == 1;

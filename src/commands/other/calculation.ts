@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CommandCategory,Command } from "@src/types/command";
 import { replaceText } from "@src/util";
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { VM } from "vm2";
 
 export const command: Command = {
@@ -17,7 +17,7 @@ export const command: Command = {
         .setDescription("式(JavaScript方式)")
         .setRequired(true)
     ),
-  async execute(client, interaction:CommandInteraction) {
+  async execute(client, interaction:ChatInputCommandInteraction) {
     const vm = new VM({
       timeout: 1000,
       allowAsync: false,

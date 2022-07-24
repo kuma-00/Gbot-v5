@@ -1,6 +1,5 @@
-import { SlashCommandBuilder } from "discord.js";
 import { Command,CommandCategory } from "@src/types/command";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder ,SlashCommandBuilder} from "discord.js";
 import wiki from "wikipedia";
 
 export const command: Command = {
@@ -13,7 +12,7 @@ export const command: Command = {
     .addStringOption((option) =>
       option.setName("queue").setDescription("検索したい単語").setRequired(true)
     ),
-  async execute(client, interaction:CommandInteraction) {
+  async execute(client, interaction:ChatInputCommandInteraction) {
     try {
       await wiki.setLang("ja");
       const searchResults = await wiki.search(
