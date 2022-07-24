@@ -19,7 +19,7 @@ export const command: Command = {
     // const text = shuffle(tokenize(msg.cleanContent)).join("")
     const text = (await(await fetch("https://ojosama.herokuapp.com/api/ojosama", {
       method: "POST",
-      body: JSON.stringify({Text:msg}),
+      body: JSON.stringify({Text:msg.cleanContent}),
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

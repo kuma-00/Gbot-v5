@@ -288,7 +288,7 @@ export class Speaker {
         this.playAudio();
         return;
       }
-      console.log(resource instanceof Readable || resource);
+      // console.log(resource instanceof Readable || resource);
       const audioResource = createAudioResource(resource);
       this._player = createAudioPlayer({
         behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
