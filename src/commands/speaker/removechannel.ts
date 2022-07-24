@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 import { Command, CommandCategory } from "@src/types/command";

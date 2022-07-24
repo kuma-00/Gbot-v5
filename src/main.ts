@@ -1,6 +1,6 @@
 "use strict";
 import { MessageResponse } from './types/index';
-import { Client, Collection } from "discord.js";
+import { Client, Collection,GatewayIntentBits,Partials } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
@@ -21,14 +21,15 @@ dotenv.config();
 
 const client = new Client({
   intents: [
-    "GUILDS",
-    "GUILD_MESSAGES",
-    "GUILD_MESSAGE_REACTIONS",
-    "DIRECT_MESSAGES",
-    "DIRECT_MESSAGE_REACTIONS",
-    "GUILD_VOICE_STATES",
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.GuildVoiceStates,
+    GatewayIntentBits.MessageContent
   ],
-  partials: ["CHANNEL"],
+  partials: [Partials.Channel],
 }) as ExtensionClient;
 
 client.commands = new Collection();

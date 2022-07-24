@@ -1,8 +1,8 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 import { Command, CommandCategory } from "@src/types/command";
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -25,7 +25,7 @@ export const command: Command = {
     const channels = readChannels.map((i) =>
       interaction.guild?.channels.cache.get(i)
     );
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
     embed
       .setTitle("登録済みチャンネル一覧")
       .setDescription(channels.map((i) => `\`${i?.name}\``).join("\n"));

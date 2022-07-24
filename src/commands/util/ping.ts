@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { CommandCategory,Command } from "@src/types/command";
 
 export const command:Command = {

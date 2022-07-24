@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { Command,CommandCategory } from "@src/types/command";
 
 export const command: Command = {
@@ -8,6 +8,6 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("")
     .setDescription(""),
-  execute(client, interaction) {
+  execute(client, interaction:ChatInputCommandInteraction) {
   },
 };

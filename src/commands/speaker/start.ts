@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { CommandCategory,Command } from "@src/types/command";
 import { Speaker } from "@src/core/speaker";
 import { GuildMember } from "discord.js";

@@ -1,8 +1,8 @@
-import { ContextMenuCommandBuilder } from "@discordjs/builders";
+import { ContextMenuCommandBuilder } from "discord.js";
 import { translate } from "@src/core/translate";
 import { Command, CommandCategory } from "@src/types/command";
 import { ApplicationCommandType } from "discord-api-types/v9";
-import { ContextMenuInteraction, Message } from "discord.js";
+import { ContextMenuCommandInteraction, Message } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Util,
@@ -11,7 +11,7 @@ export const command: Command = {
   data: new ContextMenuCommandBuilder()
     .setType(ApplicationCommandType.Message as number)
     .setName("translateToEN"),
-  async execute(client, interaction: ContextMenuInteraction) {
+  async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true) as Message;
     interaction.channel?.sendTyping();
     const text = (

@@ -1,6 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChatInputCommandInteraction, SlashCommandBuilder ,EmbedBuilder} from "discord.js";
 import { Command, CommandCategory } from "@src/types/command";
-import { CommandInteraction, MessageEmbed } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 
@@ -24,11 +23,11 @@ export const command: Command = {
         .setRequired(true)
     ),
 
-  execute(client, interaction: CommandInteraction) {
+  execute(client, interaction: ChatInputCommandInteraction) {
     const after = interaction.options.getString("before");
     const before = interaction.options.getString("after");
     if (!(before && after)) {
-      const embed = new MessageEmbed();
+      const embed = new EmbedBuilder();
       embed
         .setTitle("エラー")
         .setDescription("引数の数または引数の値が適切ではありません。")
@@ -41,7 +40,7 @@ export const command: Command = {
       `${interaction.guild?.id}:dicChange`
     );
     storage(StorageType.WORDS, interaction.guild?.id).put(after, before);
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
     embed
       .setTitle("単語登録")
       .setDescription(

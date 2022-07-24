@@ -1,8 +1,8 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 import { CommandCategory, Command } from "@src/types/command";
-import { CommandInteraction, MessageEmbed, Util } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder ,escapeMarkdown} from "discord.js";
 
 const getDic = async (guildId: string) => {
   const dic: { [key: string]: string } = {};
@@ -26,7 +26,7 @@ export const command: Command = {
         .setDescription("検索するキーワード")
         .setRequired(false)
     ),
-  async execute(client, interaction: CommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     const keyword = interaction.options.getString("keyword");
     const dic = await getDic(interaction.guild?.id || "");
     const keys = Object.keys(dic);
@@ -38,7 +38,7 @@ export const command: Command = {
       let sendText: string[] = [];
       let index = 1;
       const send = () => {
-        const embed = new MessageEmbed();
+        const embed = new EmbedBuilder();
         embed
           .setTitle("登録済み単語一覧:" + index++)
           .setDescription(sendText.join("\n"));
@@ -60,7 +60,7 @@ export const command: Command = {
         keys
           .map(
             (i) =>
-              `\`${Util.escapeMarkdown(i)}\` → \`${Util.escapeMarkdown(
+              `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(
                 dic[i]
               )}\``
           )
@@ -70,7 +70,7 @@ export const command: Command = {
       sendDic(
         keys.map(
           (i) =>
-            `\`${Util.escapeMarkdown(i)}\` → \`${Util.escapeMarkdown(dic[i])}\``
+            `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(dic[i])}\``
         )
       );
     }

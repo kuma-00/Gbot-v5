@@ -1,8 +1,4 @@
-import { MessageEmbed } from "discord.js";
-import {
-  ContextMenuCommandBuilder,
-  SlashCommandBuilder,
-} from "@discordjs/builders";
+import { EmbedBuilder,SlashCommandBuilder,ContextMenuCommandBuilder } from "discord.js";
 import { getUsername, getUser } from "@src/util";
 import { CommandCategory, Command } from "@src/types/command";
 
@@ -25,19 +21,19 @@ export const command: Command = {
       }
       cmd[key[1].category].push(key[1]);
     }
-    const helpEmbed = new MessageEmbed()
+    const helpEmbed = new EmbedBuilder()
       .setTitle("コマンド一覧")
       .setTimestamp(Date.now());
     for (const key in cmd) {
-      helpEmbed.addField(
-        `**${cmd[key].length} · ${key}**`,
-        cmd[key]
+      helpEmbed.addFields(
+        [{name:`**${cmd[key].length} · ${key}**`,
+        value:cmd[key]
           .map((v) => {
             const data = v.data;
             if (data instanceof ContextMenuCommandBuilder) return;
             return `\`${data.name}\` : ${data.description}`;
           })
-          .join("\n")
+          .join("\n")}]
       );
     }
     interaction.followUp({ embeds: [helpEmbed] });

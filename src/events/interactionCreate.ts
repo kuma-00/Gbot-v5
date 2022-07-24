@@ -1,12 +1,12 @@
 "use strict";
 import { followUpError } from "@src/util";
 import { Event } from "@src/types";
-import { Interaction } from "discord.js";
+import { Interaction, InteractionType } from "discord.js";
 export const event: Event = {
   name: "interactionCreate",
   async execute(client, interaction:Interaction) {
     const isDeveloping = true;
-    if (interaction.isCommand() || interaction.isContextMenu()) {
+    if (interaction.type == InteractionType.ApplicationCommand || interaction.isContextMenuCommand()) {
       await interaction.deferReply().catch(() => {});
       const command = client.commands.get(interaction.commandName.toLowerCase());
       // console.log(!command);

@@ -1,5 +1,5 @@
 import { OCRResponse } from "@src/types/OCR";
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { extract } from "fuzzball";
 
 export type ArtifactStatus = {
@@ -418,8 +418,8 @@ export class Artifact {
     }
   }
 
-  toMessageEmbed() {
-    const embed = new MessageEmbed();
+  toEmbedBuilder() {
+    const embed = new EmbedBuilder();
     embed.setTitle(this.error ? "エラー" : "結果").setDescription(
       `聖遺物名:${this.artifact_name}
 

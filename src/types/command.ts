@@ -1,8 +1,8 @@
 import {
   ContextMenuCommandBuilder,
   SlashCommandBuilder,
-} from "@discordjs/builders";
-import { CommandInteraction, ContextMenuInteraction } from "discord.js";
+} from "discord.js";
+import { CommandInteraction, ContextMenuCommandInteraction } from "discord.js";
 import { ExtensionClient } from "@src/types";
 
 export const CommandCategory = {
@@ -25,6 +25,6 @@ export interface Command {
   description?: string;
   execute(
     client: ExtensionClient,
-    interaction: CommandInteraction | ContextMenuInteraction
+    interaction: CommandInteraction | ContextMenuCommandInteraction
   ): any;
 }

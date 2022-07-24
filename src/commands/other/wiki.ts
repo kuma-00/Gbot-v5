@@ -1,6 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { Command,CommandCategory } from "@src/types/command";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction, EmbedBuilder } from "discord.js";
 import wiki from "wikipedia";
 
 export const command: Command = {
@@ -33,7 +33,7 @@ export const command: Command = {
         return array;
       })();
       const embeds = texts.map((text) =>
-        new MessageEmbed()
+        new EmbedBuilder()
           .setTitle("検索結果")
           .setURL(`https://ja.wikipedia.org/wiki/${encodeURI(title)}`)
           .setDescription(text)

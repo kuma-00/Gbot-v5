@@ -1,5 +1,6 @@
 "use strict";
 import { Event } from "@src/types";
+import { ActivityType } from "discord.js";
 
 export const event:Event = {
   name: "ready",
@@ -13,6 +14,6 @@ export const event:Event = {
     //   ?.commands.set([]);
     client.application?.commands.set(commands.map((com) => com.data.toJSON()));
     console.log(`${client.user?.username} is ready !`);
-    client.user?.setActivity("開発中...", { type: "PLAYING" });
+    client.user?.setActivity("開発中...", { type: ActivityType.Playing });
   },
 };

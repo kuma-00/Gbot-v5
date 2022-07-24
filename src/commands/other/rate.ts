@@ -1,12 +1,12 @@
 import { CommandInteraction } from "discord.js";
-import { Message, MessageEmbed } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { Message, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command";
 import { ocrSpace } from "ocr-space-api-wrapper";
 import { Artifact } from "@src/core/artifact";
 
 const createError = (text: string) => {
-  const embed = new MessageEmbed();
+  const embed = new EmbedBuilder();
   embed.setTitle("エラー").setDescription(text).setColor([255, 0, 0]);
   return { embeds: [embed] };
 };
@@ -61,7 +61,7 @@ export const command: Command = {
       if (!result) return interaction.followUp(createError(`画像の解析に失敗しました。`));
       const arti = new Artifact(result);
       await arti.init();
-      interaction.followUp({embeds:[arti.toMessageEmbed()]});
+      interaction.followUp({embeds:[arti.toEmbedBuilder()]});
     } catch (e){
       interaction.followUp(createError(`画像が送信されませんでした。`));
     }

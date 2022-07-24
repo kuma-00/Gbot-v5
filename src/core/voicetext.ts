@@ -49,18 +49,16 @@ export class VoiceText {
   }
 
   emotion(cat: VTEmotion) {
-    if (this._speaker === VTSpeaker.SHOW) {
-      return this;
+    if (this._speaker !== VTSpeaker.SHOW) {
+      this._emotion = cat;
     }
-    this._emotion = cat;
     return this;
   }
 
   emotionLevel(lvl: VTEmotionLevel) {
-    if (this._speaker === VTSpeaker.SHOW) {
-      return this;
+    if (this._speaker !== VTSpeaker.SHOW) {
+      this._emotionLevel = lvl;
     }
-    this._emotionLevel = lvl;
     return this;
   }
 

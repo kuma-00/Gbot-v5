@@ -1,8 +1,8 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage";
 import { StorageType } from "@src/types";
 import { CommandCategory, Command } from "@src/types/command";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction, EmbedBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -21,7 +21,7 @@ export const command: Command = {
   async execute(client, interaction: CommandInteraction) {
     const word = interaction.options.getString("word");
     if (!word) {
-      const embed = new MessageEmbed();
+      const embed = new EmbedBuilder();
       embed
         .setTitle("エラー")
         .setDescription(
@@ -33,7 +33,7 @@ export const command: Command = {
     } else if (
       (await storage(StorageType.WORDS, interaction.guild?.id).get(word))?.value
     ) {
-      const embed = new MessageEmbed();
+      const embed = new EmbedBuilder();
       embed
         .setTitle("エラー")
         .setDescription("その単語は登録されていません")
@@ -46,7 +46,7 @@ export const command: Command = {
       `${interaction.guild?.id}:dicChange`
     );
     await storage(StorageType.WORDS, interaction.guild?.id).delete(word);
-    const embed = new MessageEmbed();
+    const embed = new EmbedBuilder();
     embed
       .setTitle("単語削除")
       .setDescription(`以下の単語が削除されました。\n\`${word}\``);

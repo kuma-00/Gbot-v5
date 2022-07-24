@@ -1,7 +1,7 @@
 import {
-  BaseCommandInteraction,
+  CommandInteraction,
   GuildMember,
-  MessageEmbed,
+  EmbedBuilder,
   Snowflake,
   User,
 } from "discord.js";
@@ -9,12 +9,12 @@ import {
 export const followUpError = (
   error: any,
   text: string,
-  interaction: BaseCommandInteraction
+  interaction: CommandInteraction
 ) => {
   console.log(error, error?.message);
-  const disme = new MessageEmbed();
+  const disme = new EmbedBuilder();
   disme
-    .setAuthor("Error")
+    .setAuthor({name:"Error"})
     .setTitle("エラーが発生しました。")
     .setDescription(
       `${error}
@@ -27,16 +27,16 @@ ${text}`
 };
 
 export const getUser = (
-  interaction: BaseCommandInteraction
+  interaction: CommandInteraction
 ): GuildMember | User => {
   return (interaction.member as GuildMember) || interaction.user;
 };
 
 export const getUsername = (
-  interaction: BaseCommandInteraction | GuildMember | User
+  interaction: CommandInteraction | GuildMember | User
 ) => {
   const memberOrUser =
-    interaction instanceof BaseCommandInteraction
+    interaction instanceof CommandInteraction
       ? getUser(interaction)
       : interaction;
   if (memberOrUser instanceof User) {
