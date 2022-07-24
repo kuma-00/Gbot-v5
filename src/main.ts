@@ -1,12 +1,12 @@
 "use strict";
-import { MessageResponse } from './types/index';
-import { Client, Collection,GatewayIntentBits,Partials } from "discord.js";
+import { MessageResponse } from "./types/index";
+import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
 import { ExtensionClient } from "@src/types";
 import { fileURLToPath } from "node:url";
-import { createServer } from 'node:http';
+import { createServer } from "node:http";
 
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command";
@@ -27,7 +27,7 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.MessageContent
+    GatewayIntentBits.MessageContent,
   ],
   partials: [Partials.Channel],
 }) as ExtensionClient;
@@ -73,37 +73,39 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         client.on(event.name.trim(), (...args) =>
           event.execute(client, ...args)
         );
-        console.log(`Event ${event.name} loaded !`);
+        console.log(`Event              ${event.name.padEnd(20, " ")} loaded !`);
       }
     });
   });
   // SlashCommand
   (await getJsFiles(path.join(__dirname, "commands"))).forEach((path) => {
     loadFile(path, (command) => {
-      const com : Command = command.command;
+      const com: Command = command.command;
       if (com?.data?.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
-        console.log(`SlashCommand ${com.data.name} loaded !`);
+        console.log(`SlashCommand       ${com.data.name.padEnd(20, " ")} loaded !`);
       }
     });
   });
   // ContextMenu
   (await getJsFiles(path.join(__dirname, "contextMenus"))).forEach((path) => {
     loadFile(path, (contextMenu) => {
-      const com : Command = contextMenu.command;
+      const com: Command = contextMenu.command;
       if (com.data.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
-        console.log(`ContextMenuCommand ${com.data.name} loaded !`);
+        console.log(
+          `ContextMenuCommand ${com.data.name.padEnd(20, " ")} loaded !`
+        );
       }
     });
   });
   //messageCreate
   (await getJsFiles(path.join(__dirname, "messageCreate"))).forEach((path) => {
     loadFile(path, (messageResponse) => {
-      const mr : MessageResponse = messageResponse.messageResponse;
+      const mr: MessageResponse = messageResponse.messageResponse;
       if (mr.name) {
         client.messageResponses.push(mr);
-        console.log(`MessageResponse ${mr.name} loaded !`);
+        console.log(`MessageResponse    ${mr.name.padEnd(20, " ")} loaded !`);
       }
     });
   });
@@ -115,14 +117,13 @@ process.on("unhandledRejection", (reason) => {
   console.log("node:", reason);
 });
 
-client.on("error",console.log);//error
-client.on("warn",console.log);//warn
-client.on("debug",console.log);//debug
+client.on("error", console.log); //error
+client.on("warn", console.log); //warn
+client.on("debug", console.log); //debug
 
 //sudo systemctl restart code-server@$USER
 
-
-createServer(function(_req, res) {
+createServer(function (_req, res) {
   res.write("OK");
   res.end();
 }).listen(8081);
