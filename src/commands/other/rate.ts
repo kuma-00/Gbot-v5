@@ -51,7 +51,7 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("rate")
     .setDescription(
-      "与えられた画像から聖遺物のデータを解析し、スコアを計算します。オプションで各ステータスのウェイト(重み)を設定できます。"
+      "与えられた画像から聖遺物のデータを解析し、スコアを計算します。[オプションで各ステータスのウェイト(重み)を設定できます。(未実装)]"
     )
     .addAttachmentOption((option) =>
       option.setName("image").setDescription("聖遺物の画像").setRequired(true)

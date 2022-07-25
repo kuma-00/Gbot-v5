@@ -1,4 +1,5 @@
 import {
+  AutocompleteInteraction,
   ContextMenuCommandBuilder,
   SlashCommandBuilder,
 } from "discord.js";
@@ -26,5 +27,9 @@ export interface Command {
   execute(
     client: ExtensionClient,
     interaction: CommandInteraction | ContextMenuCommandInteraction
+  ): any;
+  autocomplete?(
+    client: ExtensionClient,
+    interaction: AutocompleteInteraction
   ): any;
 }
