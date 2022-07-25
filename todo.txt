@@ -1,5 +1,7 @@
 rate
 
+kaiwa
+
 games
 
 voicevox
