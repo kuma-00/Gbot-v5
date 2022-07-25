@@ -1,3 +1,4 @@
+import { VTOption } from "@src/types/VT";
 import {
   CommandInteraction,
   GuildMember,
@@ -51,13 +52,14 @@ export class SpeakData {
   userName: string = "";
   channelId: Snowflake = "";
   userId: Snowflake = "";
-  
+  vtOption?:VTOption;
   constructor(
     text: string,
     option?: {
       channelId?: Snowflake;
       userName?: string;
       userId?: Snowflake;
+      vtOption?:VTOption;
     }
   ) {
     this.text = text;
@@ -65,6 +67,7 @@ export class SpeakData {
       this.channelId = option.channelId ?? "";
       this.userName = option.userName ?? "";
       this.userId = option.userId ?? "";
+      this.vtOption = option.vtOption ?? undefined;
     }
   }
 
@@ -76,6 +79,7 @@ export class SpeakData {
     this.channelId = speakData.channelId;
     this.userName = speakData.userName;
     this.userId = speakData.userId;
+    this.vtOption = speakData.vtOption;
     return this;
   }
 }

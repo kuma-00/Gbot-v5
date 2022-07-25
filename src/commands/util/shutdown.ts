@@ -15,11 +15,11 @@ export const command: Command = {
   async execute(client, interaction) {
     if (process.env.MY_USER_ID == interaction.user.id) {
       client.speakers.forEach((speaker) => {
-        speaker.textChannel.send("強制終了されました。");
+        speaker.textChannel.send("終了されました。");
         speaker.end();
       });
       interaction.followUp(`終了します。`);
-      await wait(10000);
+      await wait(13000);
       process.exit(0);
     }
     return interaction.followUp(`権限が足りません。(Only Gbot Administrator)`);

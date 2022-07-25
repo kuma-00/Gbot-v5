@@ -254,7 +254,7 @@ export class Speaker {
   }
 
   async addSpeak(data: SpeakData) {
-    const vicData: VTOption =
+    const vicData: VTOption = data.vtOption !== undefined?data.vtOption:
       ((
         await storage(StorageType.SETTINGS).get(
           `${this.guildId}:${data.userId}`
