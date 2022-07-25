@@ -24,8 +24,8 @@ export const command: Command = {
     ),
 
   execute(client, interaction: ChatInputCommandInteraction) {
-    const after = interaction.options.getString("before");
-    const before = interaction.options.getString("after");
+    const after = interaction.options.getString("after");
+    const before = interaction.options.getString("before");
     if (!(before && after)) {
       const embed = new EmbedBuilder();
       embed

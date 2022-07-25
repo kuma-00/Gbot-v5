@@ -7,19 +7,14 @@
 //   setLanguage,
 // } from "@gonetone/hoyowiki-api";
 
-// test(
-//   "replaceText test",
-//   async () => {
-//     // console.log(replaceText("test test po mo nw", { test: "base" ,"po":"trident"}));
+import {artifacts, Languages} from "genshin-db";
 
-//     await setLanguage(Language.Japanese);
-//     const artifact = new hoyoArtifact();
-//     const res = await artifact.getList();
-//     console.log(res);
-//     console.log(res[0].filter_values);
-//     const entry = new Entry();
-//     const result = await entry.get(2099);
-//     console.log(result,result.modules.find(({name})=>name=="セット"));
-//   },
-//   20 * 60 * 1000
-// );
+test(
+  "replaceText test",
+  async () => {
+    // console.log(replaceText("test test po mo nw", { test: "base" ,"po":"trident"}));
+    console.log(artifacts("5",{queryLanguages: [Languages.Japanese], resultLanguage: Languages.Japanese,matchCategories: true}))
+
+  },
+  20 * 60 * 1000
+);

@@ -51,6 +51,7 @@ export class SpeakData {
   userName: string = "";
   channelId: Snowflake = "";
   userId: Snowflake = "";
+  
   constructor(
     text: string,
     option?: {

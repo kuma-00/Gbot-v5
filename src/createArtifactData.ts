@@ -24,3 +24,16 @@
 //   const data = JSON.stringify(d);
 //   await writeFile("./artifactData.json", data);
 // })();
+import genshin from "genshin-db";
+const { artifacts, Languages } = genshin;
+
+(async () => {
+  console.log(
+    artifacts("海染硨磲", {
+      queryLanguages: [Languages.Japanese],
+      resultLanguage: Languages.Japanese,
+      matchCategories: true,
+      dumpResult: true,
+    })
+  );
+})();
