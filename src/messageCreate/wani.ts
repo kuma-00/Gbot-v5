@@ -1,5 +1,6 @@
 "use strict";
 import { MessageResponse } from "@src/types";
+import { speak } from "@src/util";
 
 export const messageResponse: MessageResponse = {
   name: "wani",
@@ -12,5 +13,11 @@ export const messageResponse: MessageResponse = {
       ],
       allowedMentions: { repliedUser: false },
     });
+    if (message.guild)
+      speak(
+        client,
+        message.guild,
+        "ワニ"
+      );
   },
 };

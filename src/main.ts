@@ -36,6 +36,7 @@ const client = new Client({
 client.commands = new Collection();
 client.speakers = new Collection();
 client.minigames = new Collection();
+client.gameData = new Collection();
 client.messageResponses = [];
 
 const getJsFiles = async (dirpath: string) => {

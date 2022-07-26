@@ -1,9 +1,9 @@
+import { speak } from './../../util/index';
 import { Command, CommandCategory } from "@src/types/command";
-import { ApplicationCommandType } from "discord-api-types/v9";
 import {
   ContextMenuCommandInteraction,
-  Message,
   ContextMenuCommandBuilder,
+  ApplicationCommandType,
 } from "discord.js";
 
 export const command: Command = {
@@ -11,24 +11,25 @@ export const command: Command = {
   guildOnly: false,
   enabled: true,
   data: new ContextMenuCommandBuilder()
-    .setType(ApplicationCommandType.Message as number)
+    .setType(ApplicationCommandType.Message)
     .setName("ojosama"),
   async execute(client, interaction: ContextMenuCommandInteraction) {
-    const msg = interaction.options.getMessage("message", true) as Message;
+    const msg = interaction.options.getMessage("message", true);
     interaction.channel?.sendTyping();
     // const text = shuffle(tokenize(msg.cleanContent)).join("")
-    const text = (await(await fetch("https://ojosama.herokuapp.com/api/ojosama", {
-      method: "POST",
-      body: JSON.stringify({Text:msg.cleanContent}),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })).json()).Result as string;
+    const text = (
+      await (
+        await fetch("https://ojosama.herokuapp.com/api/ojosama", {
+          method: "POST",
+          body: JSON.stringify({ Text: msg.cleanContent }),
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
+      ).json()
+    ).Result as string;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if (interaction.guildId && interaction.guild) {
-      const speaker = client.speakers.get(interaction.guildId);
-      if (speaker) speaker.addQueue(text);
-    }
+    if(interaction.guild)speak(client,interaction.guild,text);
   },
 };

@@ -1,5 +1,6 @@
 "use strict";
 import { MessageResponse } from "@src/types";
+import { speak } from "@src/util";
 
 export const messageResponse: MessageResponse = {
   name: "sm",
@@ -11,5 +12,11 @@ export const messageResponse: MessageResponse = {
       }`,
       allowedMentions: { repliedUser: false },
     });
+    if (message.guild)
+      speak(
+        client,
+        message.guild,
+        "URL省略"
+      );
   },
 };

@@ -1,3 +1,4 @@
+import { ExtensionClient } from "@src/types";
 import { VTOption } from "@src/types/VT";
 import {
   CommandInteraction,
@@ -5,6 +6,7 @@ import {
   EmbedBuilder,
   Snowflake,
   User,
+  Guild,
 } from "discord.js";
 
 export const followUpError = (
@@ -15,7 +17,7 @@ export const followUpError = (
   console.log(error, error?.message);
   const disme = new EmbedBuilder();
   disme
-    .setAuthor({name:"Error"})
+    .setAuthor({ name: "Error" })
     .setTitle("エラーが発生しました。")
     .setDescription(
       `${error}
@@ -52,14 +54,14 @@ export class SpeakData {
   userName: string = "";
   channelId: Snowflake = "";
   userId: Snowflake = "";
-  vtOption?:VTOption;
+  vtOption?: VTOption;
   constructor(
     text: string,
     option?: {
       channelId?: Snowflake;
       userName?: string;
       userId?: Snowflake;
-      vtOption?:VTOption;
+      vtOption?: VTOption;
     }
   ) {
     this.text = text;
@@ -108,3 +110,9 @@ export const shuffle = ([...array]) => {
   }
   return array;
 };
+
+export const randomId = () =>
+  Math.random().toString(32).substring(2).padStart(11, "0");
+
+export const speak = (client: ExtensionClient, guild: Guild, text: string) =>
+  client.speakers.get(guild.id)?.addQueue(text);

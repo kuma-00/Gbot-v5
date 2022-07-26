@@ -10,7 +10,7 @@ export const messageResponse: MessageResponse = {
       content: "えへってなんだよ!",
       allowedMentions: { repliedUser: false },
     });
-    if (message.guildId && message.guild) {
+    if (message.guildId) {
       const speaker = client.speakers.get(message.guildId);
       await sleep(500);
       if (speaker) speaker.addQueue("えへってなんだよ!");

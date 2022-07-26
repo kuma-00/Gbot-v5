@@ -1,15 +1,15 @@
-import { GuildMember, TextChannel } from "discord.js";
+import { GuildMember, Message, TextChannel } from "discord.js";
 
 export type MinigameData = {
-  gameConstructor :MinigameConstructor;
-  game: Minigame;
+  gameConstructor: MinigameConstructor;
+  game?: Minigame;
   id: string;
   members: GuildMember[];
-  rules: GameRuleValue;
+  rules?: GameRuleValue;
   channel: TextChannel;
-  close: Function;
   isEnd: boolean;
   isStart: boolean;
+  message?: Message;
 };
 
 export interface MinigameConstructor {
@@ -23,8 +23,9 @@ export interface MinigameConstructor {
     minMember: number;
     joinInMidway: boolean;
     ruleData?: GameRule[];
+    defaultRule?: GameRuleValue;
   };
-};
+}
 
 export interface Minigame {
   data: MinigameData;
@@ -35,12 +36,11 @@ export interface Minigame {
 export type GameRule = {
   id: string;
   options: GameRuleOptions[];
-  defaultRule: GameRuleValue;
 };
 export type GameRuleValue = Record<string, string[]>;
 export type GameRuleOptions = {
   description?: string;
-  default?:boolean;
+  default?: boolean;
   label: string;
   value: string;
 };

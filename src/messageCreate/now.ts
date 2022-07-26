@@ -1,5 +1,6 @@
 "use strict";
 import { MessageResponse } from "@src/types";
+import { speak } from "@src/util";
 
 export const messageResponse: MessageResponse = {
   name: "now",
@@ -13,5 +14,11 @@ export const messageResponse: MessageResponse = {
       content: date.toLocaleString(),
       allowedMentions: { repliedUser: false },
     });
+    if (message.guild)
+      speak(
+        client,
+        message.guild,
+        date.toLocaleString()
+      );
   },
 };

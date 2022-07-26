@@ -1,16 +1,21 @@
+import { MinigameConstructor } from "./../../types/minigame";
 import {
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
-} from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
-import {
+  TextChannel,
   ActionRowBuilder,
   ButtonBuilder,
+  MessageActionRowComponentBuilder,
   SelectMenuBuilder,
-} from "@discordjs/builders";
+  ButtonInteraction,
+  SelectMenuInteraction,
+  GuildMember,
+} from "discord.js";
+import { Command, CommandCategory } from "@src/types/command";
 import { MinigameData } from "@src/types/minigame";
+import { randomId } from "@src/util";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -22,28 +27,109 @@ export const command: Command = {
     .addStringOption((option) =>
       option.setName("name").setDescription("ゲーム名").setAutocomplete(true)
     ),
-  execute(client, interaction: ChatInputCommandInteraction) {
-    const name = interaction.options.getString("name",false);
-    if(name){
+  async execute(client, interaction: ChatInputCommandInteraction) {
+    const name = interaction.options.getString("name", false);
+    const game = client.minigames.get(name || "");
+    const channel = interaction.channel;
+    if (name && game && channel && channel instanceof TextChannel) {
+      const id = randomId();
+      const minigameData: MinigameData = {
+        gameConstructor: game,
+        game: undefined,
+        id,
+        members: [],
+        rules: game.gameData.defaultRule,
+        channel,
+        isEnd: false,
+        isStart: false,
+      };
+      const fn = {
+        gb_game_start: (interaction: ButtonInteraction) => {
+          const id = getId(interaction);
+          const data = client.gameData.get(id);
+          if (!(id in client.gameData) || !data) {
+            interaction.reply({
+              ephemeral: true,
+              content: `無効なゲームです。`,
+            });
+            return;
+          }
+          data.isStart = true;
+          data.game = new data.gameConstructor(data);
+          interaction.update(createMessage(data));
+        },
+        gb_game_close: (interaction: ButtonInteraction) => {
+          const id = getId(interaction);
+          const data = client.gameData.get(id);
+          if (!(id in client.gameData) || !data) {
+            interaction.reply({
+              ephemeral: true,
+              content: `無効なゲームです。`,
+            });
+            return;
+          }
+          data.isEnd = true;
+          interaction.update(createMessage(data));
+          if (data.isStart && data.game?.end) data.game.end();
+        },
+        gb_game_addRemoveMember: (interaction: ButtonInteraction) => {
+          const id = getId(interaction);
+          const data = client.gameData.get(id);
+          const member = interaction.member as GuildMember;
+          if (!(id in client.gameData) || !data || !member) {
+            interaction.reply({
+              ephemeral: true,
+              content: `無効なゲームです。`,
+            });
+            return;
+          }
+          if (data.members.some((m) => m.id == member.id)) {
+            data.members = data.members.filter((m) => m.id != member.id);
+          } else {
+            data.members.push(member);
+          }
+          interaction.update(createMessage(data));
+        },
+        gb_game_rule_select: (interaction: SelectMenuInteraction) => {
+          const id = getId(interaction);
+          const data = client.gameData.get(id);
+          if (!(id in client.gameData) || !data) {
+            interaction.reply({
+              ephemeral: true,
+              content: `無効なゲームです。`,
+            });
+            return;
+          }
+          const values = interaction.values.map((val) => val.split(":")[1]);
+          const cid = interaction.customId.split(":")[1];
+          if(data.rules)data.rules[cid] = values;
+          interaction.update(createMessage(data));
+        },
+      };
       
+      minigameData.message = await interaction.followUp(createMessage(minigameData));
+      client.gameData.set(id, minigameData);
     } else {
-      const list = [...client.minigames.values()].map(game => `${game.gameData.name} : ${game.gameData.description}`).join("\n");
+      const list = [...client.minigames.values()]
+        .map((game) => `${game.gameData.name} : ${game.gameData.description}`)
+        .join("\n");
       const embed = new EmbedBuilder();
-      embed
-        .setTitle("ミニゲーム")
+      embed.setTitle("ミニゲーム")
         .setDescription(`以下の一覧から選択してゲームを開始できます。
 一覧
-\`\`\`${list}\`\`\``)
-      interaction.followUp({embeds:[embed]});
+\`\`\`${list}\`\`\``);
+      interaction.followUp({ embeds: [embed] });
     }
   },
   async autocomplete(client, interaction) {
     const focusedOption = interaction.options.getFocused(true);
-		const choices = Array.from(client.minigames.keys())
-		const filtered = choices.filter(choice => choice.startsWith(focusedOption.value));
-		await interaction.respond(
-			filtered.map(choice => ({ name: choice, value: choice })),
-		);
+    const choices = Array.from(client.minigames.keys());
+    const filtered = choices.filter((choice) =>
+      choice.startsWith(focusedOption.value)
+    );
+    await interaction.respond(
+      filtered.map((choice) => ({ name: choice, value: choice }))
+    );
   },
 };
 
@@ -80,7 +166,7 @@ ${game.members.length}人${
 `);
 
   const selects = gameData.ruleData?.map((rule) => {
-    return new ActionRowBuilder().addComponents(
+    return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
       new SelectMenuBuilder()
         .setCustomId(`gb_game_rule_select:${rule.id}`)
         .setPlaceholder("ルールを選択してください。")
@@ -97,27 +183,21 @@ ${game.members.length}人${
         )
     );
   });
-  // console.log(selects)
   const add = new ButtonBuilder()
-    .setCustomId("gb_game_addRemoveMember") //buttonにIDを割り当てる   *必須
-    .setStyle(ButtonStyle.Primary) //buttonのstyleを設定する  *必須
+    .setCustomId("gb_game_addRemoveMember")
+    .setStyle(ButtonStyle.Primary)
     .setDisabled(game.isEnd || (!gameData.joinInMidway && game.isStart))
     .setLabel("参加/退出");
-  // const dc = new discorgame.MessageButton()
-  //     .setCustomId("gb_game_removeMember") //buttonにIDを割り当てる   *必須
-  //     .setStyle("SECONDARY")	//buttonのstyleを設定する  *必須
-  //     .setDisabled(data.member.length == 0 || game.end || (!gameData.joinInMidway && game.start))
-  //     .setLabel("退出");
   const start = new ButtonBuilder()
-    .setCustomId("gb_game_start") //buttonにIDを割り当てる   *必須
-    .setStyle(ButtonStyle.Success) //buttonのstyleを設定する  *必須
+    .setCustomId("gb_game_start")
+    .setStyle(ButtonStyle.Success)
     .setDisabled(
       game.isEnd || game.isStart || game.members.length < gameData.minMember
     )
     .setLabel("開始");
   const close = new ButtonBuilder()
-    .setCustomId("gb_game_close") //buttonにIDを割り当てる   *必須
-    .setStyle(ButtonStyle.Secondary) //buttonのstyleを設定する  *必須
+    .setCustomId("gb_game_close")
+    .setStyle(ButtonStyle.Secondary)
     .setDisabled(game.isEnd)
     .setLabel("終了");
 
@@ -126,8 +206,19 @@ ${game.members.length}人${
     components: gameData.ruleData
       ? [
           ...(selects?.slice(0, 4) || []),
-          new ActionRowBuilder().addComponents([add, start, close]),
+          new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+            [add, start, close]
+          ),
         ]
-      : [new ActionRowBuilder().addComponents([add, start, close])],
+      : [
+          new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+            [add, start, close]
+          ),
+        ],
   };
 };
+
+const getId = (interaction: ButtonInteraction | SelectMenuInteraction) =>
+  interaction.message.embeds[0]?.author?.name ||
+  interaction.message?.content?.match(/\((.+)\)/)?.[1] ||
+  "";

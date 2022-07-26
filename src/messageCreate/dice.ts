@@ -1,4 +1,5 @@
-"use strict";
+import { speak } from "./../util/index";
+("use strict");
 import { MessageResponse } from "@src/types";
 
 export const messageResponse: MessageResponse = {
@@ -25,5 +26,14 @@ export const messageResponse: MessageResponse = {
           : ""),
       allowedMentions: { repliedUser: false },
     });
+    if (message.guild)
+      speak(
+        client,
+        message.guild,
+        `Dice :${dices.join(" ")}` +
+          (+res[1] > 1
+            ? `\nSUM : ${dices.reduce((s, dice) => s + dice, 0)}`
+            : "")
+      );
   },
 };
