@@ -114,5 +114,11 @@ export const shuffle = ([...array]) => {
 export const randomId = () =>
   Math.random().toString(32).substring(2).padStart(11, "0");
 
-export const speak = (client: ExtensionClient, guild: Guild, text: string) =>
+export const speak = async (
+  client: ExtensionClient,
+  guild: Guild,
+  text: string
+) => {
+  await sleep(500);
   client.speakers.get(guild.id)?.addQueue(text);
+};
