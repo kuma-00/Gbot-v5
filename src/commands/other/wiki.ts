@@ -16,7 +16,7 @@ export const command: Command = {
     try {
       await wiki.setLang("ja");
       const searchResults = await wiki.search(
-        interaction.options.getString("queue") ?? "",
+        interaction.options.getString("queue",true),
         { suggestion: true, limit: 1 }
       );
       const title = searchResults.results[0].title;

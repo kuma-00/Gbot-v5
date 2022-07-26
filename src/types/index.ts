@@ -1,3 +1,4 @@
+import { MinigameConstructor } from './minigame';
 import { Speaker } from "@src/core/speaker";
 import { Client, Collection, Message } from "discord.js";
 import internal from "node:stream";
@@ -6,6 +7,7 @@ import { Command } from "@src/types/command";
 export type ExtensionClient = Client & {
   commands: Collection<string, Command>;
   speakers: Collection<string, Speaker>;
+  minigames: Collection<string, MinigameConstructor>;
   messageResponses : MessageResponse[];
 };
 

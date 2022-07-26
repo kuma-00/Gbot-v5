@@ -27,7 +27,7 @@ export const command: Command = {
         )
         .setRequired(true)
     )
-    .addNumberOption((option) =>
+    .addIntegerOption((option) =>
       option
         .setName("pitch")
         .setDescription("声の高さ 50~200(%)")
@@ -35,7 +35,7 @@ export const command: Command = {
         .setMinValue(50)
         .setRequired(true)
     )
-    .addNumberOption((option) =>
+    .addIntegerOption((option) =>
       option
         .setName("speed")
         .setDescription("喋るスピード(声の高さも変わる) 50~400(%)")
@@ -56,7 +56,7 @@ export const command: Command = {
         )
         .setRequired(true)
     )
-    .addNumberOption((option) =>
+    .addIntegerOption((option) =>
       option
         .setName("emotionlevel")
         .setDescription("感情レベル")
@@ -68,20 +68,20 @@ export const command: Command = {
         .setRequired(true)
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const speaker = interaction.options.getString("speaker") as VTSpeaker;
-    const pitch = interaction.options.getNumber("pitch") || 100;
-    const speed = interaction.options.getNumber("speed") || 100;
-    const _emotion = interaction.options.getString("emotion");
-    const _emotionlevel = interaction.options.getNumber("emotionlevel");
-    if ([speaker, pitch, speed, _emotion, _emotionlevel].includes(null)) {
-      const embed = new EmbedBuilder();
-      embed
-        .setTitle("エラー")
-        .setDescription("引数の数または引数の値が適切ではありません。")
-        .setColor([255, 0, 0]);
-      interaction.followUp({ embeds: [embed] });
-      return;
-    }
+    const speaker = interaction.options.getString("speaker",true) as VTSpeaker;
+    const pitch = interaction.options.getInteger("pitch",true);
+    const speed = interaction.options.getInteger("speed",true);
+    const _emotion = interaction.options.getString("emotion",true);
+    const _emotionlevel = interaction.options.getInteger("emotionlevel",true);
+    // if ([speaker, pitch, speed, _emotion, _emotionlevel].includes(null)) {
+    //   const embed = new EmbedBuilder();
+    //   embed
+    //     .setTitle("エラー")
+    //     .setDescription("引数の数または引数の値が適切ではありません。")
+    //     .setColor([255, 0, 0]);
+    //   interaction.followUp({ embeds: [embed] });
+    //   return;
+    // }
     const emotion = (
       _emotion == "none" || _emotion == null ? undefined : _emotion
     ) as VTEmotion;

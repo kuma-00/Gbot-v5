@@ -27,7 +27,7 @@ export const command: Command = {
         .setRequired(false)
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const keyword = interaction.options.getString("keyword");
+    const keyword = interaction.options.getString("keyword",false);
     const dic = await getDic(interaction.guild?.id || "");
     const keys = Object.keys(dic);
     const sendDic = (dicA: string[]) => {

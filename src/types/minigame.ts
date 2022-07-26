@@ -14,7 +14,7 @@ export type MinigameData = {
 
 export interface MinigameConstructor {
   new (data: MinigameData): Minigame;
-  data: {
+  gameData: {
     name: string;
     description: string;
     details: string;

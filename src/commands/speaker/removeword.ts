@@ -19,18 +19,8 @@ export const command: Command = {
     ),
 
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const word = interaction.options.getString("word");
-    if (!word) {
-      const embed = new EmbedBuilder();
-      embed
-        .setTitle("エラー")
-        .setDescription(
-          "引数の数が適切ではないか、引数に空白が含まれています。"
-        )
-        .setColor([255, 0, 0]);
-      interaction.followUp({ embeds: [embed] });
-      return;
-    } else if (
+    const word = interaction.options.getString("word",true);
+    if (
       (await storage(StorageType.WORDS, interaction.guild?.id).get(word))?.value
     ) {
       const embed = new EmbedBuilder();

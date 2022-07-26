@@ -58,12 +58,12 @@ export const command: Command = {
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
     const text = interaction.options.getString("options");
-    const image = interaction.options.getAttachment("image")?.url;
-    const result = await ocr(new URL(image || ""), interaction);
+    const image = interaction.options.getAttachment("image",true).url;
+    const result = await ocr(new URL(image), interaction);
     if (!result)
       return interaction.followUp(createError(`画像の解析に失敗しました。`));
     const arti = new Artifact(result);
     await arti.init();
-    interaction.followUp({files:[image || ""], embeds: [arti.toEmbedBuilder()] });
+    interaction.followUp({files:[image], embeds: [arti.toEmbedBuilder()] });
   },
 };

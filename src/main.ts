@@ -1,4 +1,5 @@
-"use strict";
+import { Minigame, MinigameConstructor } from "./types/minigame";
+("use strict");
 import { MessageResponse } from "./types/index";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import fs from "node:fs/promises";
@@ -34,6 +35,7 @@ const client = new Client({
 
 client.commands = new Collection();
 client.speakers = new Collection();
+client.minigames = new Collection();
 client.messageResponses = [];
 
 const getJsFiles = async (dirpath: string) => {
@@ -73,7 +75,9 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         client.on(event.name.trim(), (...args) =>
           event.execute(client, ...args)
         );
-        console.log(`Event              ${event.name.padEnd(20, " ")} loaded !`);
+        console.log(
+          `Event              ${event.name.padEnd(20, " ")} loaded !`
+        );
       }
     });
   });
@@ -83,7 +87,9 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       const com: Command = command.command;
       if (com?.data?.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
-        console.log(`SlashCommand       ${com.data.name.padEnd(20, " ")} loaded !`);
+        console.log(
+          `SlashCommand       ${com.data.name.padEnd(20, " ")} loaded !`
+        );
       }
     });
   });
@@ -106,6 +112,16 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       if (mr.name) {
         client.messageResponses.push(mr);
         console.log(`MessageResponse    ${mr.name.padEnd(20, " ")} loaded !`);
+      }
+    });
+  });
+  //MiniGame
+  (await getJsFiles(path.join(__dirname, "games"))).forEach((path) => {
+    loadFile(path, (minigame) => {
+      const mg: MinigameConstructor = minigame.minigame;
+      if (mg) {
+        client.minigames.set(mg.gameData.name, mg);
+        console.log(`minigames          ${mg.gameData.name.padEnd(20, " ")} loaded !`);
       }
     });
   });

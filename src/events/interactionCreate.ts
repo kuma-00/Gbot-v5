@@ -34,6 +34,16 @@ export const event: Event = {
       } catch (e) {
         followUpError(e, "", interaction);
       }
+    } else if (interaction.type == InteractionType.ApplicationCommandAutocomplete){
+      const command = client.commands.get(interaction.commandName.toLowerCase());
+      if(!command)interaction.respond([{value:"none",name:"none"}])
+      if(command?.autocomplete){
+        try{
+          command.autocomplete(client,interaction);
+        }catch (e) {
+          console.log("Autocomplete Error \n",e);
+        }
+      }
     }
   },
 };
