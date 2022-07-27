@@ -30,9 +30,9 @@ export const messageResponse: MessageResponse = {
       speak(
         client,
         message.guild,
-        `Dice :${dices.join(" ")}` +
+        `出た目はそれぞれ${dices.join(" ")}です` +
           (+res[1] > 1
-            ? `\nSUM : ${dices.reduce((s, dice) => s + dice, 0)}`
+            ? `\n合計は${dices.reduce((s, dice) => s + dice, 0)}です`
             : "")
       );
   },

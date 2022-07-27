@@ -62,8 +62,8 @@ export const command: Command = {
     const result = await ocr(new URL(image), interaction);
     if (!result)
       return interaction.followUp(createError(`画像の解析に失敗しました。`));
-    const arti = new Artifact(result);
-    await arti.init();
-    interaction.followUp({files:[image], embeds: [arti.toEmbedBuilder()] });
+    const arti = new Artifact(result).toEmbedBuilder();
+    arti.files?.push({attachment:image})
+    interaction.followUp(arti);
   },
 };

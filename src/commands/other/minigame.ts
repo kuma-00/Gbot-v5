@@ -12,6 +12,8 @@ import {
   ButtonInteraction,
   SelectMenuInteraction,
   GuildMember,
+  MessageComponentInteraction,
+  InteractionType,
 } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command";
 import { MinigameData } from "@src/types/minigame";
@@ -43,7 +45,7 @@ export const command: Command = {
         isEnd: false,
         isStart: false,
       };
-      const fn = {
+      const fn:Record<string,Function> = {
         gb_game_start: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
@@ -106,9 +108,23 @@ export const command: Command = {
           interaction.update(createMessage(data));
         },
       };
-      
+
       minigameData.message = await interaction.followUp(createMessage(minigameData));
       client.gameData.set(id, minigameData);
+      const filter = (interaction:MessageComponentInteraction) => {
+        if(interaction.type == InteractionType.MessageComponent){
+          const id = interaction.customId.split(":")[0];
+          return !!fn[id];
+        }
+        return false;
+      }
+      const collector = interaction.channel.createMessageComponentCollector({filter,time: 10*60*1000});
+      collector.on("collect",()=>{
+
+      })
+      collector.on("end",()=>{
+
+      })
     } else {
       const list = [...client.minigames.values()]
         .map((game) => `${game.gameData.name} : ${game.gameData.description}`)

@@ -1,6 +1,8 @@
 import { OCRResponse } from "@src/types/OCR";
-import { EmbedBuilder } from "discord.js";
+import { BufferResolvable, EmbedBuilder, InteractionReplyOptions } from "discord.js";
 import { extract } from "fuzzball";
+import genshin from "genshin-db";
+const { artifacts, Languages } = genshin;
 
 export type ArtifactStatus = {
   name: string;
@@ -25,11 +27,14 @@ export const StatusType = {
 } as const;
 // eslint-disable-next-line no-redeclare
 export type StatusType = typeof StatusType[keyof typeof StatusType];
+const type = ["flower", "plume", "sands", "goblet", "circlet"] as const;
+export type ArtifactType = typeof type[number];
 
 export class Artifact {
   ocrLines: string[];
   ocrText: string;
   error = false;
+  errorDetails: string[] = [];
   main: ArtifactStatus = {
     name: "",
     type: StatusType.hp,
@@ -40,12 +45,15 @@ export class Artifact {
   level = NaN;
   endMain = false;
   endSub = false;
-  artifact_name = "現在未実装";
+  endAname = false;
+  artifactName = "None";
+  type: ArtifactType = "circlet";
   score: {
     overall?: number;
     main?: number;
     sub?: number;
   } = {};
+  artifactData: Record<string, genshin.Artifact> = {};
   mainStatusNames = {
     hp: "HP",
     heal: "治癒効果",
@@ -145,19 +153,62 @@ export class Artifact {
     df: 0,
     healP: 0,
   } as const;
+  artifactType = {
+    flower: "生の花",
+    plume: "死の羽",
+    sands: "時の砂",
+    goblet: "空の杯",
+    circlet: "理の冠",
+  } as const;
+  artifactNameData: Record<string, { name: string; type: string }> = {};
   constructor(ocrData: OCRResponse) {
     this.ocrLines = ocrData.ParsedResults[0].ParsedText.split("\n").map(
       (line) => line.replace(/\s/g, "")
     );
     this.ocrText = ocrData.ParsedResults[0].ParsedText;
 
-    // this.init();
+    this.init();
   }
 
-  async init() {
+  init() {
     this.analysis(this.ocrLines);
     this.score = this.score_calculation(this.level, this.main, this.subs);
     console.log(JSON.stringify(this));
+    const artifactList = artifacts("5", {
+      queryLanguages: [Languages.Japanese],
+      resultLanguage: Languages.Japanese,
+      matchCategories: true,
+    });
+    if (!Array.isArray(artifactList)) return;
+    artifactList.forEach((s) => {
+      const a = artifacts(s, {
+        queryLanguages: [Languages.Japanese],
+        resultLanguage: Languages.Japanese,
+      });
+      if (a) this.artifactData[s] = a;
+    });
+    Object.values(this.artifactData).forEach((a) => {
+      this.artifactNameData[a.flower?.name || ""] = {
+        name: a.name,
+        type: "flower",
+      };
+      this.artifactNameData[a.plume?.name || ""] = {
+        name: a.name,
+        type: "plume",
+      };
+      this.artifactNameData[a.sands?.name || ""] = {
+        name: a.name,
+        type: "sands",
+      };
+      this.artifactNameData[a.goblet?.name || ""] = {
+        name: a.name,
+        type: "goblet",
+      };
+      this.artifactNameData[a.circlet?.name || ""] = {
+        name: a.name,
+        type: "circlet",
+      };
+    });
   }
 
   analysis(lines: string[]) {
@@ -165,15 +216,24 @@ export class Artifact {
     if (!this.level) {
       console.log("level");
       this.error = true;
+      this.errorDetails.push("level");
       return;
     }
     lines.forEach((line) => {
+      if (this.name_analysis(line)) return;
       if (line.match(/^\+\d\d?/)?.[0]) return;
       if (this.mainAndSub_analysis(line)) return;
-      if (this.name_analysis(line)) return;
     });
-    if (!(this.level && this.endMain && this.endSub)) {
+    if (
+      !(
+        this.level &&
+        this.endMain &&
+        this.endSub &&
+        this.artifactName != "None"
+      )
+    ) {
       console.log("all");
+      this.errorDetails.push("all");
       this.error = true;
     }
   }
@@ -182,6 +242,21 @@ export class Artifact {
     // console.log(line.match(/^\+\d\d?/), this.level);
     this.level = +(line.match(/^\+\d\d?/)?.[0]?.replace("+", "") ?? 0);
     return line.match(/^\+\d\d?/);
+  }
+
+  name_analysis(line: string) {
+    if (this.artifactName != "None") return false;
+    const typeRes = extract(line, Object.keys(this.artifactType))[0];
+    const nameRes = extract(line, Object.values(this.artifactNameData))[0];
+    if (typeRes[1] > 80) {
+      this.type = type[typeRes[2]];
+      return true;
+    }
+    if (nameRes[1] > 80) {
+      this.artifactName = Object.values(this.artifactNameData)[nameRes[2]].name;
+      return true;
+    }
+    return false;
   }
 
   mainAndSub_analysis(line: string) {
@@ -229,6 +304,7 @@ export class Artifact {
           )
         ) {
           console.log("main name");
+          this.errorDetails.push("main name");
           this.error = true;
         } else {
           this.endMain = true;
@@ -255,6 +331,7 @@ export class Artifact {
           console.log("main val");
           this.main.val = 0;
           this.error = true;
+          this.errorDetails.push("main val");
         } else {
           this.endMain = true;
           this.error = false;
@@ -290,13 +367,10 @@ export class Artifact {
       if (!this.check_subStatusVal(subLast.type, subLast.hasPercent, val)) {
         console.log("sub");
         this.error = true;
+        this.errorDetails.push("sub");
       }
       return true;
     }
-    return false;
-  }
-
-  name_analysis(line: string) {
     return false;
   }
 
@@ -418,10 +492,10 @@ export class Artifact {
     }
   }
 
-  toEmbedBuilder() {
+  toEmbedBuilder():InteractionReplyOptions {
     const embed = new EmbedBuilder();
     embed.setTitle(this.error ? "エラー" : "結果").setDescription(
-      `聖遺物名:${this.artifact_name}
+      `聖遺物名:${this.artifactName}
 
 レベル:**+${this.level}**
 メインステータス:**${this.main?.name}+${this.main?.val}${
@@ -450,10 +524,23 @@ ${
     : ""
 }
 ⬇詳細`
-    );
+    ).setImage(`attachment://${this.artifactName}-${this.type}.jpg`);
     if (this.error) embed.setColor([255, 0, 0]);
-    return embed;
+    return {
+      files: [
+        {attachment:this.artifactData[this.artifactName].images[this.type] as BufferResolvable,name:`${this.artifactName}-${this.type}.jpg`}
+      ],
+      embeds: [embed],
+    };
   }
 
-  toDetail() {}
+  toDetail():InteractionReplyOptions {
+    const embed = new EmbedBuilder();
+    embed.setTitle(this.error ? "エラー" : "詳細").setDescription(
+      `エラー:${this.errorDetails.join(" ")}
+
+`
+    );
+    return {embeds:[embed]};
+  }
 }

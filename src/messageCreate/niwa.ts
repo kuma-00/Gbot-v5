@@ -5,17 +5,17 @@ import { speak } from "@src/util";
 export const messageResponse: MessageResponse = {
   name: "wani",
   filter: (m) =>
-    ["わに", "ワニ", "鰐魚", "鰐", "wani"].some((i) => m.cleanContent == i),
+    ["にわ", "ニワ", "庭","ガーデン", "niwa","がーでん","garden"].some((i) => m.cleanContent == i),
   async execute(client, message) {
     message.reply({
-      content:"https://drive.google.com/uc?id=1cMW4xK4aXaj6zHWIEFZZb-tW24I0O9Hs",
+      content:"https://halmek.co.jp/media/article/image/4140d21df5ca81e6ff686936f39fb477.jpg",
       allowedMentions: { repliedUser: false },
     });
     if (message.guild)
       speak(
         client,
         message.guild,
-        "ワニ"
+        "庭"
       );
   },
 };

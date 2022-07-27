@@ -28,12 +28,40 @@ import genshin from "genshin-db";
 const { artifacts, Languages } = genshin;
 
 (async () => {
-  console.log(
-    artifacts("海染硨磲", {
+  const artifactList = artifacts("5", {
+    queryLanguages: [Languages.Japanese],
+    resultLanguage: Languages.Japanese,
+    matchCategories: true,
+  });
+  if (!Array.isArray(artifactList)) return;
+  const artifactData: Record<string, genshin.Artifact> = {};
+  artifactList.forEach((s) => {
+    const a = artifacts(s, {
       queryLanguages: [Languages.Japanese],
       resultLanguage: Languages.Japanese,
-      matchCategories: true,
-      dumpResult: true,
-    })
-  );
+    });
+    if (a) artifactData[s] = a;
+  });
+  console.log(artifactData);
+  const artifactNameData: Record<string, { name: string; type: string }> = {};
+  Object.values(artifactData).forEach((a) => {
+    artifactNameData[a.flower?.name || ""] = { name: a.name, type: "flower" };
+    artifactNameData[a.plume?.name || ""] = { name: a.name, type: "plume" };
+    artifactNameData[a.sands?.name || ""] = { name: a.name, type: "sands" };
+    artifactNameData[a.goblet?.name || ""] = { name: a.name, type: "goblet" };
+    artifactNameData[a.circlet?.name || ""] = { name: a.name, type: "circlet" };
+  });
+  console.log(artifactNameData);
+  const artifactType: Record<string, string> = {};
+  artifactType[artifactData["燃え盛る炎の魔女"].flower?.relictype || ""] =
+    "flower";
+  artifactType[artifactData["燃え盛る炎の魔女"].plume?.relictype || ""] =
+    "plume";
+  artifactType[artifactData["燃え盛る炎の魔女"].sands?.relictype || ""] =
+    "sands";
+  artifactType[artifactData["燃え盛る炎の魔女"].goblet?.relictype || ""] =
+    "goblet";
+  artifactType[artifactData["燃え盛る炎の魔女"].circlet?.relictype || ""] =
+    "circlet";
+  console.log(artifactType);
 })();
