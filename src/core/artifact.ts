@@ -1,8 +1,62 @@
+import { randomId } from "./../util/index";
 import { OCRResponse } from "@src/types/OCR";
-import { BufferResolvable, EmbedBuilder, InteractionReplyOptions } from "discord.js";
+import {
+  BufferResolvable,
+  ButtonStyle,
+  EmbedBuilder,
+  InteractionReplyOptions,
+  MessageActionRowComponentBuilder,
+} from "discord.js";
 import { extract } from "fuzzball";
 import genshin from "genshin-db";
+import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 const { artifacts, Languages } = genshin;
+
+const artifactList = artifacts("5", {
+  queryLanguages: [Languages.Japanese],
+  resultLanguage: Languages.Japanese,
+  matchCategories: true,
+});
+const artifactData = (() => {
+  if (!Array.isArray(artifactList)) return;
+  let artifactData: Record<string, genshin.Artifact> = {};
+  artifactList.forEach((s) => {
+    const a = artifacts(s, {
+      queryLanguages: [Languages.Japanese],
+      resultLanguage: Languages.Japanese,
+    });
+    if (a) artifactData[s] = a;
+  });
+  return artifactData;
+})();
+
+const artifactNameData = (() => {
+  if (!artifactData) return;
+  let artifactNameData: Record<string, { name: string; type: string }> = {};
+  Object.values(artifactData).forEach((a) => {
+    artifactNameData[a.flower?.name || ""] = {
+      name: a.name,
+      type: "flower",
+    };
+    artifactNameData[a.plume?.name || ""] = {
+      name: a.name,
+      type: "plume",
+    };
+    artifactNameData[a.sands?.name || ""] = {
+      name: a.name,
+      type: "sands",
+    };
+    artifactNameData[a.goblet?.name || ""] = {
+      name: a.name,
+      type: "goblet",
+    };
+    artifactNameData[a.circlet?.name || ""] = {
+      name: a.name,
+      type: "circlet",
+    };
+  });
+  return artifactNameData;
+})();
 
 export type ArtifactStatus = {
   name: string;
@@ -45,15 +99,25 @@ export class Artifact {
   level = NaN;
   endMain = false;
   endSub = false;
-  endAname = false;
+  endType = false;
   artifactName = "None";
   type: ArtifactType = "circlet";
   score: {
     overall?: number;
     main?: number;
     sub?: number;
+    mainP?: number;
+    subMax?: number;
   } = {};
-  artifactData: Record<string, genshin.Artifact> = {};
+  subDetailData: (
+    | {
+        index: number;
+        valueItems: number[];
+        indexItems: number[];
+        value: any;
+      }[]
+    | undefined
+  )[] = [];
   mainStatusNames = {
     hp: "HP",
     heal: "治癒効果",
@@ -98,7 +162,7 @@ export class Artifact {
     em: [16, 19, 21, 23],
     atk: [14, 16, 18, 19],
     atkP: [4.1, 4.7, 5.3, 5.8],
-    cdP: [5.4, 6.2, 7, 7.8],
+    cdP: [5.4, 6.2, 7.0, 7.8],
     crP: [2.7, 3.1, 3.5, 3.9],
     physP: [],
     elemP: [],
@@ -160,8 +224,9 @@ export class Artifact {
     goblet: "空の杯",
     circlet: "理の冠",
   } as const;
-  artifactNameData: Record<string, { name: string; type: string }> = {};
+
   constructor(ocrData: OCRResponse) {
+    // console.log("data:",ocrData,":data")
     this.ocrLines = ocrData.ParsedResults[0].ParsedText.split("\n").map(
       (line) => line.replace(/\s/g, "")
     );
@@ -174,41 +239,17 @@ export class Artifact {
     this.analysis(this.ocrLines);
     this.score = this.score_calculation(this.level, this.main, this.subs);
     console.log(JSON.stringify(this));
-    const artifactList = artifacts("5", {
-      queryLanguages: [Languages.Japanese],
-      resultLanguage: Languages.Japanese,
-      matchCategories: true,
-    });
-    if (!Array.isArray(artifactList)) return;
-    artifactList.forEach((s) => {
-      const a = artifacts(s, {
-        queryLanguages: [Languages.Japanese],
-        resultLanguage: Languages.Japanese,
-      });
-      if (a) this.artifactData[s] = a;
-    });
-    Object.values(this.artifactData).forEach((a) => {
-      this.artifactNameData[a.flower?.name || ""] = {
-        name: a.name,
-        type: "flower",
-      };
-      this.artifactNameData[a.plume?.name || ""] = {
-        name: a.name,
-        type: "plume",
-      };
-      this.artifactNameData[a.sands?.name || ""] = {
-        name: a.name,
-        type: "sands",
-      };
-      this.artifactNameData[a.goblet?.name || ""] = {
-        name: a.name,
-        type: "goblet",
-      };
-      this.artifactNameData[a.circlet?.name || ""] = {
-        name: a.name,
-        type: "circlet",
-      };
-    });
+    this.subDetailData = this.subs.map((sub) =>
+      this.sub_Detail(sub.val, sub.type)
+    );
+    this.score.subMax =
+      this.subDetailData
+        .map(
+          (s, i) =>
+            (s?.[0].valueItems.length || 0) * this.weights[this.subs[i].type]
+        )
+        .reduce((sum, element) => sum + element, 0) * 100;
+    // console.log(this.subDetailData);
   }
 
   analysis(lines: string[]) {
@@ -224,14 +265,7 @@ export class Artifact {
       if (line.match(/^\+\d\d?/)?.[0]) return;
       if (this.mainAndSub_analysis(line)) return;
     });
-    if (
-      !(
-        this.level &&
-        this.endMain &&
-        this.endSub &&
-        this.artifactName != "None"
-      )
-    ) {
+    if (!(this.level && this.endMain && this.endSub)) {
       console.log("all");
       this.errorDetails.push("all");
       this.error = true;
@@ -245,15 +279,18 @@ export class Artifact {
   }
 
   name_analysis(line: string) {
-    if (this.artifactName != "None") return false;
-    const typeRes = extract(line, Object.keys(this.artifactType))[0];
-    const nameRes = extract(line, Object.values(this.artifactNameData))[0];
+    if ((this.artifactName != "None" && this.endType) || !artifactNameData)
+      return false;
+    // console.log(Object.values(this.artifactType),Object.keys(this.artifactNameData),this.artifactNameData,line);
+    const typeRes = extract(line, Object.values(this.artifactType))[0];
+    const nameRes = extract(line, Object.keys(artifactNameData))[0];
     if (typeRes[1] > 80) {
       this.type = type[typeRes[2]];
+      this.endType = true;
       return true;
     }
-    if (nameRes[1] > 80) {
-      this.artifactName = Object.values(this.artifactNameData)[nameRes[2]].name;
+    if (nameRes[1] > 60) {
+      this.artifactName = Object.values(artifactNameData)[nameRes[2]].name;
       return true;
     }
     return false;
@@ -394,7 +431,7 @@ export class Artifact {
     const max = this.mainStetausData.max[type];
     const min = this.mainStetausData.min[type];
     const value = max - (max - min) * (1 - level / 20);
-    console.log(type, hasPercent, level, val, max, min);
+    // console.log(type, hasPercent, level, val, max, min);
     // console.log(val,value);
     return (
       (hasPercent ? Math.round(value * 10) / 10 : Math.round(value)) == val
@@ -406,25 +443,32 @@ export class Artifact {
     main: ArtifactStatus,
     subs: ArtifactStatus[]
   ) {
-    const result = { overall: 0, main: 0, sub: 0 };
+    const result = { overall: 0, main: 0, sub: 0, mainP: 0 };
     result.sub = subs.reduce((accumulator, currentValue) => {
       const max = this.subStatusData[currentValue.type][3];
       if (!max) return accumulator;
       const weight = this.weights[currentValue.type];
       return accumulator + (currentValue.val / max) * 100 * weight;
     }, 0);
+    // result.subMax = subs.reduce((accumulator, currentValue) => {
+    //   const max = this.subStatusData[currentValue.type][3];
+    //   if (!max) return accumulator;
+    //   const weight = this.weights[currentValue.type];
+    //   return accumulator + (currentValue.val / max) * 100 * weight;
+    // }, 0);
     result.sub = Math.round(result.sub);
     const max_main = this.mainStetausData.max[main.type];
     const weight = this.weights[main.type];
     result.main = Math.round(
       (main.val / max_main) * 100 * (3 + level / 4) * weight
     );
+    result.mainP = (main.val / max_main) * 100;
     result.overall = result.main + result.sub;
     return result;
   }
 
-  sub_Detail(value: number, name: string) {
-    const data = [5.4, 6.2, 7, 7.8];
+  sub_Detail(value: number, name: StatusType) {
+    const data = [...this.subStatusData[name]];
     const patterns: number[][] = [];
     const equalsPattern = (a: number[], b: number[]) => {
       a = a.sort();
@@ -442,7 +486,7 @@ export class Artifact {
       } = { index: 0, valueItems: [], indexItems: [], value: 0 }
     ) => {
       if (
-        base.index > 5 ||
+        base.index > 6 ||
         val < base.value ||
         (patterns.some((i) => equalsPattern(base.indexItems, i)) &&
           base.indexItems.length > 1)
@@ -463,7 +507,7 @@ export class Artifact {
           indexItems: [index, ...base.indexItems],
           value: base.value + i,
         };
-        if (newbase.value == val) {
+        if (Math.abs(newbase.value - val) <= 0.15) {
           results = [newbase, ...results];
           return [];
         }
@@ -474,6 +518,7 @@ export class Artifact {
       });
       return results;
     };
+
     if (data[0] <= value && data[3] * 6 >= value) {
       const results: {
         index: number;
@@ -481,66 +526,136 @@ export class Artifact {
         indexItems: number[];
         value: any;
       }[] = [];
-      const r = check(data, value).forEach((i) => {
+      check(data, value).forEach((i) => {
         if (results.some((j) => equalsPattern(j.indexItems, i.indexItems)))
           return;
         results.push(i);
       });
-      return { results };
+      return results;
     } else {
       return;
     }
   }
 
-  toEmbedBuilder():InteractionReplyOptions {
+  toEmbedBuilder() {
+    const id = randomId();
     const embed = new EmbedBuilder();
-    embed.setTitle(this.error ? "エラー" : "結果").setDescription(
-      `聖遺物名:${this.artifactName}
+    embed
+      .setTitle(this.error ? "エラー" : "結果")
+      .setDescription(
+        `聖遺物名:${this.artifactName}(${this.artifactType[this.type]})
+
 
 レベル:**+${this.level}**
 メインステータス:**${this.main?.name}+${this.main?.val}${
-        this.main?.hasPercent ? "%" : ""
-      }
+          this.main?.hasPercent ? "%" : ""
+        }
 **サブステータス:
 **${this.subs?.[0]?.name}+${this.subs?.[0]?.val}${
-        this.subs?.[0]?.hasPercent ? "%" : ""
-      }**
+          this.subs?.[0]?.hasPercent ? "%" : ""
+        }**
 **${this.subs?.[1]?.name}+${this.subs?.[1]?.val}${
-        this.subs?.[1]?.hasPercent ? "%" : ""
-      }**
+          this.subs?.[1]?.hasPercent ? "%" : ""
+        }**
 **${this.subs?.[2]?.name}+${this.subs?.[2]?.val}${
-        this.subs?.[2]?.hasPercent ? "%" : ""
-      }**
+          this.subs?.[2]?.hasPercent ? "%" : ""
+        }**
 **${this.subs?.[3]?.name}+${this.subs?.[3]?.val}${
-        this.subs?.[3]?.hasPercent ? "%" : ""
-      }**
+          this.subs?.[3]?.hasPercent ? "%" : ""
+        }**
 
-総合スコア:**${this.score?.overall}**
-メインスコア:**${this.score?.main}**
-サブスコア:**${this.score?.sub}**
+総合スコア:**${this.score?.overall}(${(
+          ((this.score.mainP ?? 0) +
+            ((this.score?.sub ?? 0) / (this.score?.subMax ?? 0)) * 100) /
+          2
+        ).toFixed(2)}%)**
+メインスコア:**${this.score?.main}(${this.score.mainP?.toFixed(2)}%)**
+サブスコア:**${this.score?.sub}(${(
+          ((this.score?.sub ?? 0) / (this.score?.subMax ?? 0)) *
+          100
+        ).toFixed(2)}%)**
 ${
   this.error
     ? "\n**エラーが発生しました。一部読み取れてない、または読み取った値が間違っています。画像を変えるなどを試して見てください。**\n"
     : ""
-}
-⬇詳細`
-    ).setImage(`attachment://${this.artifactName}-${this.type}.jpg`);
+}`
+      )
+      .setThumbnail(`attachment://${id}-${this.type}.jpg`)
+      .setImage("attachment://Artifact.png")
     if (this.error) embed.setColor([255, 0, 0]);
+    const button = new ButtonBuilder()
+      .setCustomId("gb_rate_detail")
+      .setStyle(ButtonStyle.Secondary)
+      .setLabel("⬇詳細");
     return {
-      files: [
-        {attachment:this.artifactData[this.artifactName].images[this.type] as BufferResolvable,name:`${this.artifactName}-${this.type}.jpg`}
-      ],
+      files:
+        artifactData && this.artifactName != "None"
+          ? [
+              {
+                attachment: artifactData[this.artifactName]
+                  ? (artifactData[this.artifactName].images[
+                      this.type
+                    ] as BufferResolvable)
+                  : "",
+                name: `${id}-${this.type}.jpg`,
+              },
+            ]
+          : undefined,
       embeds: [embed],
+      components: [
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
+          button
+        ),
+      ],
     };
   }
-
-  toDetail():InteractionReplyOptions {
+  //🟥🟨🟩🟦
+  detailRect = ["🟦", "🟩", "🟨", "🟥"];
+  toDetail(): InteractionReplyOptions {
     const embed = new EmbedBuilder();
     embed.setTitle(this.error ? "エラー" : "詳細").setDescription(
-      `エラー:${this.errorDetails.join(" ")}
+      `${
+        this.errorDetails.length > 0
+          ? "エラー:" + this.errorDetails.join(" ")
+          : ""
+      }
+${
+  this.artifactName && artifactData?.[this.artifactName]["1pc"]
+    ? "\n1pc:" + artifactData?.[this.artifactName]["1pc"]
+    : ""
+}${
+        this.artifactName && artifactData?.[this.artifactName]["2pc"]
+          ? "\n2pc:" + artifactData?.[this.artifactName]["2pc"]
+          : ""
+      }${
+        this.artifactName && artifactData?.[this.artifactName]["4pc"]
+          ? "\n4pc:" + artifactData?.[this.artifactName]["4pc"]
+          : ""
+      }
 
+サブステータス詳細:
+${this.subs
+  .map(
+    (sub, i) => `${sub.name}+${sub.val}${sub.hasPercent ? "%" : ""} \\*${this.weights[this.subs[i].type]}
+${this.subDetailData[i]
+  ?.map((d) => d.indexItems.map((v) => this.detailRect[v]).join(""))
+  .join("\n")}
+`
+  )
+  .join("\n")}
+伸び方:低🟦  中🟩  高🟨  最高🟥
+※複数ある場合は絞りきれなかった候補です。基本的には🟥が多いと良い聖遺物です。⬜の数は最大で9個、20レベルなら少なくとも8個になります。
+
+**まとめ**
+総合:${(
+        ((this.score.mainP ?? 0) +
+          ((this.score?.sub ?? 0) / (this.score?.subMax ?? 0)) * 100) /
+        2
+      ).toFixed(2)}%
+メイン:${this.score.mainP?.toFixed(2)}%
+サブ:${(((this.score?.sub ?? 0) / (this.score?.subMax ?? 0)) * 100).toFixed(2)}%
 `
     );
-    return {embeds:[embed]};
+    return { embeds: [embed] };
   }
 }
