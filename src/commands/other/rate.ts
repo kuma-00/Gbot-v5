@@ -67,8 +67,8 @@ export const command: Command = {
     e.files?.push({attachment:image,name:"Artifact.png"})
     const msg = await interaction.followUp(e);
     const i = await interaction.channel?.awaitMessageComponent({filter:i=>i.customId=="gb_rate_detail",time:60*1000})
-    e.components[0].components[0].setDisabled(false);
-      msg.edit(e);
+    e.components[0].components[0].setDisabled(true);
+    msg.edit(e);
     if(i){
       i.reply(arti.toDetail());
     }

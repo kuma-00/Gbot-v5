@@ -21,7 +21,7 @@ export const command: Command = {
   async execute(client, interaction: ChatInputCommandInteraction) {
     const word = interaction.options.getString("word",true);
     if (
-      (await storage(StorageType.WORDS, interaction.guild?.id).get(word))?.value
+      !(await storage(StorageType.WORDS, interaction.guild?.id).get(word))?.value
     ) {
       const embed = new EmbedBuilder();
       embed
