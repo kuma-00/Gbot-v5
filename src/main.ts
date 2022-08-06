@@ -1,4 +1,4 @@
-import { Minigame, MinigameConstructor } from "./types/minigame";
+import { MinigameConstructor } from "./types/minigame";
 ("use strict");
 import { MessageResponse } from "./types/index";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
@@ -140,7 +140,7 @@ client.on("debug", console.log); //debug
 
 //sudo systemctl restart code-server@$USER
 
-createServer(function (_req, res) {
-  res.write("OK");
-  res.end();
-}).listen(8081);
+// createServer(function (_req, res) {
+//   res.write("OK");
+//   res.end();
+// }).listen(8081);

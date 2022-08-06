@@ -16,12 +16,14 @@ export const command: Command = {
         .setName("word")
         .setDescription("辞書に登録されている置き換えられる文字列")
         .setRequired(true)
+        .setAutocomplete(true)
     ),
 
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const word = interaction.options.getString("word",true);
+    const word = interaction.options.getString("word", true);
     if (
-      !(await storage(StorageType.WORDS, interaction.guild?.id).get(word))?.value
+      !(await storage(StorageType.WORDS, interaction.guild?.id).get(word))
+        ?.value
     ) {
       const embed = new EmbedBuilder();
       embed
@@ -41,5 +43,19 @@ export const command: Command = {
       .setTitle("単語削除")
       .setDescription(`以下の単語が削除されました。\n\`${word}\``);
     interaction.followUp({ embeds: [embed] });
+  },
+  async autocomplete(client, interaction) {
+    const focusedOption = interaction.options.getFocused(true);
+    const words = await storage(StorageType.WORDS, interaction.guild?.id).fetch(
+      { "key?pfx": focusedOption.value },
+      { limit: 5 }
+    );
+    const dic: string[] = [];
+    words.items.forEach(({ key }, i) => {
+      dic[i] = String(key);
+    });
+    await interaction.respond(
+      dic.map((choice) => ({ name: choice, value: choice }))
+    );
   },
 };

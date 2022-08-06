@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+console.log(dotenv.config())
+
 import { APIEmbed, EmbedBuilder } from "discord.js";
 import { Artifact } from "./core/artifact";
+import { StorageType } from "./types";
 import { OCRResponse } from "./types/OCR";
+import { storage } from "./core/storage";
 // import {
 //   Artifact as hoyoArtifact,
 //   Entry,
@@ -99,4 +104,6 @@ const data: OCRResponse = {
 const arti = new Artifact(data);
 const e = arti.toEmbedBuilder();
 const f = arti.toDetail();
-console.log((e.embeds?.[0] as any).data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0] as any))
+// console.log((e.embeds?.[0] as any).data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0] as any))
+const words = await storage(StorageType.WORDS, "685883724231213234").fetch({"key?pfx": "o"});
+console.log(words);
