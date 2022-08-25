@@ -10,7 +10,7 @@ export const command: Command = {
   enabled: true,
   data: new SlashCommandBuilder()
     .setName("channellist")
-    .setDescription("読み上げを終了します。"),
+    .setDescription("読み上げのチャンネルのリストを表示する。"),
   async execute(client, interaction) {
     const readChannels =
       ((

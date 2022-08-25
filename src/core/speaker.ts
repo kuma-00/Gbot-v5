@@ -154,7 +154,7 @@ export class Speaker {
       this.guildId,
       auto ? SpeakerStatus.WAITE : SpeakerStatus.END
     );
-    await sleep(4000);
+    await sleep(5000);
     const connection = getVoiceConnection(this.voiceChannel.guild.id);
     if (connection) {
       connection.destroy();

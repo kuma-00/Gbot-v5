@@ -49,11 +49,12 @@ export const command: Command = {
         gb_game_start: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(id in client.gameData) || !data) {
-            interaction.reply({
-              ephemeral: true,
-              content: `無効なゲームです。`,
-            });
+          if (!(client.gameData.has(id)) || !data) {
+            // interaction.reply({
+            //   ephemeral: true,
+            //   content: `無効なゲームです。`,
+            // });
+            interaction.update({components:[]});
             return;
           }
           data.isStart = true;
@@ -63,11 +64,12 @@ export const command: Command = {
         gb_game_close: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(id in client.gameData) || !data) {
-            interaction.reply({
-              ephemeral: true,
-              content: `無効なゲームです。`,
-            });
+          if (!(client.gameData.has(id)) || !data) {
+            // interaction.reply({
+            //   ephemeral: true,
+            //   content: `無効なゲームです。`,
+            // });
+            interaction.update({components:[]});
             return;
           }
           data.isEnd = true;
@@ -78,11 +80,12 @@ export const command: Command = {
           const id = getId(interaction);
           const data = client.gameData.get(id);
           const member = interaction.member as GuildMember;
-          if (!(id in client.gameData) || !data || !member) {
-            interaction.reply({
-              ephemeral: true,
-              content: `無効なゲームです。`,
-            });
+          if (!(client.gameData.has(id)) || !data || !member) {
+            // interaction.reply({
+            //   ephemeral: true,
+            //   content: `無効なゲームです。`,
+            // });
+            interaction.update({components:[]});
             return;
           }
           if (data.members.some((m) => m.id == member.id)) {
@@ -95,11 +98,12 @@ export const command: Command = {
         gb_game_rule_select: (interaction: SelectMenuInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(id in client.gameData) || !data) {
-            interaction.reply({
-              ephemeral: true,
-              content: `無効なゲームです。`,
-            });
+          if (!(client.gameData.has(id)) || !data) {
+            // interaction.reply({
+            //   ephemeral: true,
+            //   content: `無効なゲームです。`,
+            // });
+            interaction.update({components:[]});
             return;
           }
           const values = interaction.values.map((val) => val.split(":")[1]);
@@ -118,9 +122,10 @@ export const command: Command = {
         }
         return false;
       }
-      const collector = interaction.channel.createMessageComponentCollector({filter,time: 10*60*1000});
-      collector.on("collect",()=>{
-
+      const collector = interaction.channel.createMessageComponentCollector({filter,idle: 10*60*1000});
+      collector.on("collect",(interaction)=>{
+        const id = interaction.customId.split(":")[0];
+        fn[id](interaction);
       })
       collector.on("end",()=>{
 

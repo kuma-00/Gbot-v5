@@ -1,6 +1,6 @@
-rate
+#rate
 
-kaiwa
+#kaiwa
 
 games
 

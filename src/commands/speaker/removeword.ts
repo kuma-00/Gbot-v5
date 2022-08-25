@@ -47,8 +47,8 @@ export const command: Command = {
   async autocomplete(client, interaction) {
     const focusedOption = interaction.options.getFocused(true);
     const words = await storage(StorageType.WORDS, interaction.guild?.id).fetch(
-      { "key?pfx": focusedOption.value },
-      { limit: 5 }
+      focusedOption.value?{ "key?pfx": focusedOption.value }:undefined,
+      { limit: 10 }
     );
     const dic: string[] = [];
     words.items.forEach(({ key }, i) => {
