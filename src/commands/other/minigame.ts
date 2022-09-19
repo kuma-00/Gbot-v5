@@ -45,32 +45,60 @@ export const command: Command = {
         isEnd: false,
         isStart: false,
       };
-      const fn:Record<string,Function> = {
+      const fn: Record<string, Function> = {
         gb_game_start: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(client.gameData.has(id)) || !data) {
+          if (!client.gameData.has(id) || !data) {
             // interaction.reply({
             //   ephemeral: true,
             //   content: `無効なゲームです。`,
             // });
-            interaction.update({components:[]});
+            interaction.update({ components: [] });
             return;
           }
-          data.isStart = true;
-          data.game = new data.gameConstructor(data);
-          interaction.update(createMessage(data));
+          if (
+            data.members
+              .map((m) => m.id)
+              .some((id) => id == interaction.user.id) ||
+            interaction.memberPermissions?.has("Administrator")
+          ) {
+            data.isStart = true;
+            console.log(id);
+            data.game = new data.gameConstructor(client, data);
+            interaction.update(createMessage(data));
+          } else {
+            return interaction.reply({
+              content: "ゲームを開始する権限がありません。\nゲームに参加してください。",
+              ephemeral: true,
+            });
+          }
         },
         gb_game_close: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(client.gameData.has(id)) || !data) {
+          if (!client.gameData.has(id) || !data) {
             // interaction.reply({
             //   ephemeral: true,
             //   content: `無効なゲームです。`,
             // });
-            interaction.update({components:[]});
+            interaction.update({ components: [] });
             return;
+          }
+          if (data.isStart) {
+            if (
+              !(
+                data.members
+                  .map((m) => m.id)
+                  .some((id) => id == interaction.user.id) ||
+                interaction.memberPermissions?.has("Administrator")
+              )
+            ) {
+              return interaction.reply({
+                content: "ゲームを終了する権限がありません。",
+                ephemeral: true,
+              });
+            }
           }
           data.isEnd = true;
           interaction.update(createMessage(data));
@@ -80,12 +108,12 @@ export const command: Command = {
           const id = getId(interaction);
           const data = client.gameData.get(id);
           const member = interaction.member as GuildMember;
-          if (!(client.gameData.has(id)) || !data || !member) {
+          if (!client.gameData.has(id) || !data || !member) {
             // interaction.reply({
             //   ephemeral: true,
             //   content: `無効なゲームです。`,
             // });
-            interaction.update({components:[]});
+            interaction.update({ components: [] });
             return;
           }
           if (data.members.some((m) => m.id == member.id)) {
@@ -98,38 +126,43 @@ export const command: Command = {
         gb_game_rule_select: (interaction: SelectMenuInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
-          if (!(client.gameData.has(id)) || !data) {
+          if (!client.gameData.has(id) || !data) {
             // interaction.reply({
             //   ephemeral: true,
             //   content: `無効なゲームです。`,
             // });
-            interaction.update({components:[]});
+            interaction.update({ components: [] });
             return;
           }
           const values = interaction.values.map((val) => val.split(":")[1]);
           const cid = interaction.customId.split(":")[1];
-          if(data.rules)data.rules[cid] = values;
+          if (data.rules) data.rules[cid] = values;
           interaction.update(createMessage(data));
         },
       };
 
-      minigameData.message = await interaction.followUp(createMessage(minigameData));
+      minigameData.message = await interaction.followUp(
+        createMessage(minigameData)
+      );
       client.gameData.set(id, minigameData);
-      const filter = (interaction:MessageComponentInteraction) => {
-        if(interaction.type == InteractionType.MessageComponent){
+      const filter = (interaction: MessageComponentInteraction) => {
+        if (interaction.type == InteractionType.MessageComponent) {
           const id = interaction.customId.split(":")[0];
           return !!fn[id];
         }
         return false;
-      }
-      const collector = interaction.channel.createMessageComponentCollector({filter,idle: 10*60*1000});
-      collector.on("collect",(interaction)=>{
+      };
+      if (this.collector) this.collector.stop();
+
+      this.collector = interaction.channel.createMessageComponentCollector({
+        filter,
+        idle: 10 * 60 * 1000,
+      });
+      this.collector.on("collect", (interaction) => {
         const id = interaction.customId.split(":")[0];
         fn[id](interaction);
-      })
-      collector.on("end",()=>{
-
-      })
+      });
+      this.collector.on("end", () => {});
     } else {
       const list = [...client.minigames.values()]
         .map((game) => `${game.gameData.name} : ${game.gameData.description}`)

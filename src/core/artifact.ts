@@ -112,8 +112,8 @@ export class Artifact {
   subDetailData: (
     | {
         index: number;
-        valueItems: number[];
-        indexItems: number[];
+        valueItems: number[]|undefined;
+        indexItems: number[]|undefined;
         value: any;
       }[]
     | undefined
@@ -135,6 +135,7 @@ export class Artifact {
     hydro: "水元素ダメージ",
     cryo: "氷元素ダメージ",
     geo: "岩元素ダメージ",
+    gra: "草元素ダメージ",
   } as const;
   mainElement = [
     "風元素ダメージ",
@@ -143,6 +144,7 @@ export class Artifact {
     "水元素ダメージ",
     "氷元素ダメージ",
     "岩元素ダメージ",
+    "草元素ダメージ",
   ] as const;
   subStatusNames = {
     hp: "HP",
@@ -246,7 +248,7 @@ export class Artifact {
       this.subDetailData
         .map(
           (s, i) =>
-            (s?.[0].valueItems.length || 0) * this.weights[this.subs[i].type]
+            (s?.[0]?.valueItems?.length || 0) * this.weights[this.subs[i].type]
         )
         .reduce((sum, element) => sum + element, 0) * 100;
     // console.log(this.subDetailData);
@@ -412,7 +414,7 @@ export class Artifact {
   }
 
   match_number(str: string) {
-    return str.match(/\d+(?:[.,]\d+)?/)?.[0] ?? "0";
+    return str.match(/\d+(?:[.,]\d+)?/)?.[0] ?? "";
   }
 
   check_subStatusVal(type: StatusType, hasPercent: boolean, val: string) {
@@ -495,8 +497,8 @@ export class Artifact {
       if (base.value == val) return [base];
       let results: {
         index: number;
-        valueItems: number[];
-        indexItems: number[];
+        valueItems: number[]|undefined;
+        indexItems: number[]|undefined;
         value: number;
       }[] = [];
       if (base.indexItems.length > 1) patterns.push(base.indexItems);
@@ -522,12 +524,12 @@ export class Artifact {
     if (data[0] <= value && data[3] * 6 >= value) {
       const results: {
         index: number;
-        valueItems: number[];
-        indexItems: number[];
+        valueItems: number[]|undefined;
+        indexItems: number[]|undefined;
         value: any;
       }[] = [];
       check(data, value).forEach((i) => {
-        if (results.some((j) => equalsPattern(j.indexItems, i.indexItems)))
+        if (results.some((j) => equalsPattern(j.indexItems || [0], i.indexItems || [0])))
           return;
         results.push(i);
       });
@@ -638,7 +640,7 @@ ${this.subs
   .map(
     (sub, i) => `${sub.name}+${sub.val}${sub.hasPercent ? "%" : ""} \\*${this.weights[this.subs[i].type]}
 ${this.subDetailData[i]
-  ?.map((d) => d.indexItems.map((v) => this.detailRect[v]).join(""))
+  ?.map((d) => d.indexItems?.map((v) => this.detailRect[v]).join(""))
   .join("\n")}
 `
   )

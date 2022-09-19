@@ -1,4 +1,5 @@
 import { GuildMember, Message, TextChannel } from "discord.js";
+import { ExtensionClient } from ".";
 
 export type MinigameData = {
   gameConstructor: MinigameConstructor;
@@ -13,7 +14,7 @@ export type MinigameData = {
 };
 
 export interface MinigameConstructor {
-  new (data: MinigameData): Minigame;
+  new (client:ExtensionClient,data: MinigameData): Minigame;
   gameData: {
     name: string;
     description: string;

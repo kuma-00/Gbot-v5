@@ -1,5 +1,21 @@
 import { ButtonBuilder } from "@discordjs/builders";
-import { EmbedBuilder, GuildMember, User } from "discord.js";
+import { ExtensionClient } from "@src/types";
+import { random, shuffle } from "@src/util";
+import {
+  ActionRowBuilder,
+  ButtonInteraction,
+  ButtonStyle,
+  CacheType,
+  CollectorFilter,
+  EmbedBuilder,
+  GuildMember,
+  InteractionCollector,
+  Message,
+  MessageActionRowComponentBuilder,
+  MessageComponentInteraction,
+  SelectMenuInteraction,
+  User,
+} from "discord.js";
 import {
   Minigame,
   MinigameData,
@@ -9,10 +25,10 @@ import {
 type oxGmaeLog = {
   pos: number;
   user?: GuildMember;
-  emoji: string;
+  emoji?: string;
   username: string;
-  pattern: string;
-  isEnd?:string;
+  pattern?: string;
+  isEnd?: string;
 };
 
 export const minigame: MinigameConstructor = class ox implements Minigame {
@@ -25,61 +41,205 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
     minMember: 1,
     joinInMidway: false,
   };
-  board = Array(9).fill(null);
+  board: (string | null)[] = Array(9).fill(null);
   emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
-  log = [];
+  pattern = ["⭕", "❌"];
+  log: oxGmaeLog[] = [];
   data: MinigameData;
-  playerPos: 0|1 = 0;
-  get nextPlayer() {
+  playerPos: 0 | 1 = 0;
+  msg!: Message;
+  collector!: InteractionCollector<
+    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+  >;
+  client: ExtensionClient;
+  get nextPlayer(): GuildMember | undefined {
     return this.data.members[this.playerPos];
   }
-  constructor(data: MinigameData) {
+  constructor(client: ExtensionClient, data: MinigameData) {
     this.data = data;
+    this.client = client;
+    this.data.members = shuffle(this.data.members);
+    this.start();
   }
 
-  start(): void {}
-  end(): void {}
+  async start(): Promise<void> {
+    this.msg = await this.data.channel.send(this.draw());
+    const filter = (interaction: MessageComponentInteraction) =>
+      interaction.customId.indexOf("gbot_ox_button") == 0;
+    this.collector = this.msg.createMessageComponentCollector({ filter });
+    this.collector.on("collect", this.collect.bind(this));
+  }
+  end(): void {
+    this.data.isEnd = true;
+    this.msg.edit(this.draw());
+    this.collector.stop();
+    this.data.message?.edit({ components: [] });
+    this.client.gameData.delete(this.data.id);
+  }
   draw() {
-    const board = sliceByNumber(
-      this.board.map((b, i) => (b ? b : this.emojis[i])),
-      3
-    ).reduce((i, j) => i + "\n" + j.reduce((k, l) => k + l, ""), "");
-    const embed = new EmbedBuilder();
-    embed
-      .setTitle("OXゲーム")
-      .setDescription(
-        `
-${board}
+    const buttons = this.board.map((b, i) =>
+      new ButtonBuilder()
+        .setCustomId(`gbot_ox_button:${i}`)
+        .setEmoji({ name: b || this.emojis[i] })
+        .setDisabled(b != null || this.data.isEnd)
+        .setStyle(ButtonStyle.Secondary)
+    );
+    return {
+      content: `${this.log.map((log) => this.logToText(log)).join("\n")}
 
-
-ログ
-${this.log.map((log) => this.logToText(log)).join("\n")}
-`
-      )
-      .setFooter(
-        {text: this.data.isEnd
-          ? "終了しました。"
-          : `次のプレイヤー:${
-              this.nextPlayer == undefined
-                ? "CPU"
-                : this.nextPlayer.displayName
-            }`}
-      );
-            const buttons = new Array(9).fill(0).map((_,i)=>new ButtonBuilder().setCustomId(`gobt_ox_button:${i}`).setLabel(this.emojis[i]))
-    return {embeds:embed};
+        ${
+          this.data.isEnd
+            ? "終了しました。"
+            : `次のプレイヤー:${
+                this.nextPlayer == undefined
+                  ? "CPU"
+                  : this.nextPlayer.displayName
+              }`
+        }`,
+      //embeds: embed,
+      components: [
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+          buttons[0],
+          buttons[1],
+          buttons[2],
+        ]),
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+          buttons[3],
+          buttons[4],
+          buttons[5],
+        ]),
+        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+          buttons[6],
+          buttons[7],
+          buttons[8],
+        ]),
+      ],
+    };
   }
 
-  logToText(log:oxGmaeLog) {
+  collect(
+    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+  ) {
+    // const pos = this.emojis.indexOf(reaction.emoji.name)
+    if (this.nextPlayer?.id != interaction.user.id) {
+      interaction.reply({
+        content: this.data.members
+          .map((m) => m.id)
+          .some((id) => id == interaction.user.id)
+          ? "あなたの番ではありません。"
+          : "ゲームに参加していません。",
+        ephemeral: true,
+      });
+    }
+    const pos = +interaction.customId.split(":")[1];
+    console.log(pos);
+    this.put(interaction.member as GuildMember, pos, interaction);
+    // if (this.put(user, pos)) reaction.remove();
+  }
+
+  async put(
+    user: GuildMember | undefined,
+    pos: number,
+    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+  ) {
+    const isCPU = user == undefined;
+    if (!isCPU && user.id != this.nextPlayer?.id) return false;
+    if (this.putPossible(pos)) {
+      this.board[pos] = this.pattern[this.playerPos];
+      this.log.push({
+        pos,
+        user,
+        emoji: this.emojis[pos],
+        username: user?.displayName || user?.id || "cpu",
+        pattern: this.pattern[this.playerPos],
+      });
+    }
+    // console.log()
+    if (this.checkWin(this.playerPos) || this.putPossibleArray().length == 0) {
+      // console.log("end")
+      this.log.push({
+        pos,
+        user,
+        username: user?.displayName || user?.id || "cpu",
+        isEnd: this.checkWin(this.playerPos) ? "win" : "draw",
+      });
+      await interaction.update(this.draw());
+      this.end();
+    } else {
+      // this.msg.reactions.cache.get(this.emojis[pos]) ?.remove();
+      this.playerPos = this.playerPos == 0 ? 1 : 0;
+      if (!this.cpu(interaction)) interaction.update(this.draw());
+    }
+
+    return true;
+  }
+
+  cpu(
+    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+  ) {
+    if (this.nextPlayer != undefined) return false;
+    const reach =
+      this.checkReach(this.playerPos) ||
+      this.checkReach(Number(!this.playerPos));
+    if (reach) {
+      this.put(undefined, reach, interaction);
+    } else {
+      const array = this.board
+        .map((b, i) => (b ? +b : i))
+        .filter((b, i) => b == i);
+      this.put(undefined, array[random(0, array.length - 1)], interaction);
+    }
+    return true;
+  }
+
+  checkReach(id: number) {
+    const bd = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+    ];
+    const reachLine = bd.filter((b) => {
+      const line = b.map((i) => this.board[i]);
+      return (
+        line.filter((k) => k == null).length == 1 &&
+        line.filter((k) => k == this.pattern[id]).length == 2
+      );
+    })[0];
+    return reachLine ? reachLine.find((pos) => this.putPossible(pos)) : null;
+  }
+
+  logToText(log: oxGmaeLog) {
     const putText = `${log.username}が${log.emoji}に${log.pattern}を打った。`;
     const endText =
       log.isEnd == "win" ? `${log.username}が勝利した。` : `引き分け`;
     return log.isEnd ? endText : putText;
   }
-};
 
-function sliceByNumber<T>(array: T[], number: number) {
-  const length = Math.ceil(array.length / number);
-  return new Array(length)
-    .fill(0)
-    .map((_, i) => array.slice(i * number, (i + 1) * number));
-}
+  putPossible(pos: number) {
+    return this.board[pos] === null;
+  }
+  putPossibleArray(array?: (number | string | null)[]) {
+    if (!array) array = this.board;
+    return array
+      .map((b, i) => (b ? b : this.emojis[i]))
+      .filter((b, i) => this.putPossible(i));
+  }
+  checkWin(id: number) {
+    const bd = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+    ];
+    return bd.some((i) => i.every((j) => this.board[j] == this.pattern[id]));
+  }
+};

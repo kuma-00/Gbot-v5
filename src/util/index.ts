@@ -122,3 +122,5 @@ export const speak = async (
   await sleep(500);
   client.speakers.get(guild.id)?.addQueue(text);
 };
+
+export const random = (min:number, max:number) => Math.round(Math.random() * (max - min)) + min;
