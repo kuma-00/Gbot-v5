@@ -35,6 +35,24 @@ export interface Minigame {
   end(): void;
 }
 
+export class MinigameBase implements Minigame{
+  data: MinigameData;
+  client: ExtensionClient;
+  constructor(client:ExtensionClient,data: MinigameData){
+    this.client = client;
+    this.data = data;
+  }
+  start(): void {
+
+  }
+  end(): void {
+    this.data.isEnd = true;
+    this.data.message?.edit({ components: [] });
+    this.client.gameData.delete(this.data.id);
+  }
+
+}
+
 export type GameRule = {
   id: string;
   options: GameRuleOptions[];

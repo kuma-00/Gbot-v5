@@ -10,15 +10,14 @@ import {
   GuildMember,
   InteractionCollector,
   Message,
-  MessageActionRowComponentBuilder,
   MessageComponentInteraction,
   SelectMenuInteraction,
 } from "discord.js";
 import {
-  Minigame,
   MinigameData,
   MinigameConstructor,
-} from "./../types/minigame";
+  MinigameBase,
+} from "@src/types/minigame";
 
 type oxGmaeLog = {
   pos: number;
@@ -29,7 +28,7 @@ type oxGmaeLog = {
   isEnd?: string;
 };
 
-export const minigame: MinigameConstructor = class ox implements Minigame {
+export const minigame: MinigameConstructor = class ox extends MinigameBase {
   static gameData = {
     name: "ox",
     description: "マルバツゲーム",
@@ -54,6 +53,7 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
     return this.data.members[this.playerPos];
   }
   constructor(client: ExtensionClient, data: MinigameData) {
+    super(client,data);
     this.data = data;
     this.client = client;
     this.data.members = shuffle(this.data.members);
@@ -61,6 +61,7 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
   }
 
   async start(): Promise<void> {
+    super.start();
     this.msg = await this.data.channel.send(this.draw());
     const filter = (interaction: MessageComponentInteraction) =>
       interaction.customId.indexOf("gbot_ox_button") == 0;
@@ -68,11 +69,9 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
     this.collector.on("collect", this.collect.bind(this));
   }
   end(): void {
-    this.data.isEnd = true;
+    super.end();
     this.msg.edit(this.draw());
     this.collector.stop();
-    this.data.message?.edit({ components: [] });
-    this.client.gameData.delete(this.data.id);
   }
   draw() {
     const buttons = this.board.map((b, i) =>
