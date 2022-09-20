@@ -30,6 +30,7 @@ export interface MinigameConstructor {
 
 export interface Minigame {
   data: MinigameData;
+  client:ExtensionClient;
   start(): void;
   end(): void;
 }

@@ -6,15 +6,13 @@ import {
   ButtonInteraction,
   ButtonStyle,
   CacheType,
-  CollectorFilter,
-  EmbedBuilder,
+  escapeMarkdown,
   GuildMember,
   InteractionCollector,
   Message,
   MessageActionRowComponentBuilder,
   MessageComponentInteraction,
   SelectMenuInteraction,
-  User,
 } from "discord.js";
 import {
   Minigame,
@@ -36,7 +34,7 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
     name: "ox",
     description: "マルバツゲーム",
     details:
-      "3x3で一列自分の駒を揃えると勝ちな簡単なゲーム。先手と後手に分かれて:o:と:x:を交互に打っていきます。:one:~:nine:のマスがあるので、:one:~:nine:のリアクションで打てます。はじめに一列揃えたほうが勝ちです。",
+      "3x3で一列自分の駒を揃えると勝ちな簡単なゲーム。先手と後手に分かれて:o:と:x:を交互に打っていきます。:one:~:nine:のボタンがあるので、打ちたいところを押してください。はじめに一列揃えたほうが勝ちです。",
     maxMember: 2,
     minMember: 1,
     joinInMidway: false,
@@ -87,28 +85,28 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
     return {
       content: `${this.log.map((log) => this.logToText(log)).join("\n")}
 
-        ${
-          this.data.isEnd
-            ? "終了しました。"
-            : `次のプレイヤー:${
-                this.nextPlayer == undefined
-                  ? "CPU"
-                  : this.nextPlayer.displayName
-              }`
-        }`,
+${
+  this.data.isEnd
+    ? "終了しました。"
+    : `次のプレイヤー:${
+        this.nextPlayer == undefined
+          ? "CPU"
+          : "`" + escapeMarkdown(this.nextPlayer.displayName) + "`"
+      }`
+}`,
       //embeds: embed,
       components: [
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+        new ActionRowBuilder<ButtonBuilder>().setComponents([
           buttons[0],
           buttons[1],
           buttons[2],
         ]),
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+        new ActionRowBuilder<ButtonBuilder>().setComponents([
           buttons[3],
           buttons[4],
           buttons[5],
         ]),
-        new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents([
+        new ActionRowBuilder<ButtonBuilder>().setComponents([
           buttons[6],
           buttons[7],
           buttons[8],
@@ -214,9 +212,13 @@ export const minigame: MinigameConstructor = class ox implements Minigame {
   }
 
   logToText(log: oxGmaeLog) {
-    const putText = `${log.username}が${log.emoji}に${log.pattern}を打った。`;
+    const putText = `\`${escapeMarkdown(log.username)}\`が${log.emoji}に${
+      log.pattern
+    }を打った。`;
     const endText =
-      log.isEnd == "win" ? `${log.username}が勝利した。` : `引き分け`;
+      log.isEnd == "win"
+        ? `\`${escapeMarkdown(log.username)}\`が勝利した。`
+        : `引き分け`;
     return log.isEnd ? endText : putText;
   }
 

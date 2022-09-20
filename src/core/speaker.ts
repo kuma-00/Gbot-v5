@@ -82,6 +82,7 @@ export class Speaker {
       return m.cleanContent;
     })();
     const userName = m.member?.nickname || m.member?.user.username;
+    if(content.indexOf("!") == 0) return;
     this.addQueue(
       new SpeakData(content, {
         channelId: m.channelId,
@@ -221,6 +222,8 @@ export class Speaker {
     if (!this._dicPattern) await this.createDicPattern();
     // 辞書による置き換え
     text = text.replace(this._dicPattern, (e) => this._dic[e]);
+    // 絵文字読み上げ調整
+    text = text.replace(/<a?:(.+?):\d{18}>/g, (_,s)=>s);
     // 辞書変換後の発声URLの一次変換
     text = text.replace(/{\s*http/, "{");
     // text = text.replace(/<\/?(.+):?(\d+)>/, "");
@@ -350,6 +353,7 @@ export class Speaker {
 
   addCollectors(textChannelId: Snowflake) {
     const channel = this.voiceChannel.guild.channels.cache.get(textChannelId);
+    this.removeCollectors(textChannelId);
     if (channel && "createMessageCollector" in channel) {
       this._collectors.push(
         channel
