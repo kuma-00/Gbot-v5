@@ -19,7 +19,7 @@ import {
   MinigameBase,
 } from "@src/types/minigame.js";
 
-type oxGmaeLog = {
+type oxGameLog = {
   pos: number;
   user?: GuildMember;
   emoji?: string;
@@ -43,7 +43,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
   board: (string | null)[] = Array(9).fill(null);
   emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
   pattern = ["⭕", "❌"];
-  log: oxGmaeLog[] = [];
+  log: oxGameLog[] = [];
   data: MinigameData;
   playerPos: 0 | 1 = 0;
   msg!: Message;
@@ -212,7 +212,7 @@ ${
     return reachLine ? reachLine.find((pos) => this.putPossible(pos)) : null;
   }
 
-  logToText(log: oxGmaeLog) {
+  logToText(log: oxGameLog) {
     const putText = `\`${escapeMarkdown(log.username)}\`が${log.emoji}に${
       log.pattern
     }を打った。`;

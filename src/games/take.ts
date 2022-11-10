@@ -25,7 +25,7 @@ import {
   Guild,
 } from "discord.js";
 
-type takeGmaeLog = {
+type takeGameLog = {
   type: "log" | "end";
   pos: string;
   member: GuildMember;
@@ -44,7 +44,7 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
     minMember: 2,
     joinInMidway: false,
   };
-  log: takeGmaeLog[] = [];
+  log: takeGameLog[] = [];
   countMsg!: Message;
   isCountDownEnd = false;
   UIMsg!: Message;
@@ -173,7 +173,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
     return { components, content };
   }
 
-  logToText(log: takeGmaeLog) {
+  logToText(log: takeGameLog) {
     const putText = `\`${escapeMarkdown(log.member.displayName)}\` : ${
       log.pos + 1
     }ニョッキ`;

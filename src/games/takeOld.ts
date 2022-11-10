@@ -15,7 +15,7 @@ import {
   User,
 } from "discord.js";
 
-type takeGmaeLog = {
+type takeGameLog = {
   type: "log" | "end";
   pos: number;
   user?: User;
@@ -38,7 +38,7 @@ export const minigame: MinigameConstructor = class takeOld extends MinigameBase 
   emojis: string[];
   completionReact!: boolean;
   collector!: ReactionCollector;
-  log: takeGmaeLog[] = [];
+  log: takeGameLog[] = [];
   constructor(client: ExtensionClient, data: MinigameData) {
     super(client, data);
     this.data = data;
@@ -126,7 +126,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
     return disme;
   }
 
-  logToText(log: takeGmaeLog) {
+  logToText(log: takeGameLog) {
     const putText = `${log.username} : ${log.pos + 1}ニョッキ`;
     return log.type == "log" ? putText : "";
   }

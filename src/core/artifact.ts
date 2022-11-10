@@ -170,7 +170,7 @@ export class Artifact {
     elemP: [],
     healP: [],
   } as const;
-  mainStetausData = {
+  mainStatusData = {
     max: {
       hp: 4780,
       dfP: 58.3,
@@ -430,8 +430,8 @@ export class Artifact {
     level: number,
     val: number
   ) {
-    const max = this.mainStetausData.max[type];
-    const min = this.mainStetausData.min[type];
+    const max = this.mainStatusData.max[type];
+    const min = this.mainStatusData.min[type];
     const value = max - (max - min) * (1 - level / 20);
     // console.log(type, hasPercent, level, val, max, min);
     // console.log(val,value);
@@ -459,7 +459,7 @@ export class Artifact {
     //   return accumulator + (currentValue.val / max) * 100 * weight;
     // }, 0);
     result.sub = Math.round(result.sub);
-    const max_main = this.mainStetausData.max[main.type];
+    const max_main = this.mainStatusData.max[main.type];
     const weight = this.weights[main.type];
     result.main = Math.round(
       (main.val / max_main) * 100 * (3 + level / 4) * weight
