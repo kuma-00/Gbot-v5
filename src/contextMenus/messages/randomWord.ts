@@ -1,5 +1,5 @@
-import { Command, CommandCategory } from "@src/types/command";
-import { shuffle, speak } from "@src/util";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { shuffle, speak } from "@src/util/index.js";
 import {
   ContextMenuCommandInteraction,
   ApplicationCommandType,

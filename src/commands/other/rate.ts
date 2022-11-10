@@ -4,9 +4,9 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
+import { Command, CommandCategory } from "@src/types/command.js";
 import { ocrSpace } from "ocr-space-api-wrapper";
-import { Artifact } from "@src/core/artifact";
+import { Artifact } from "@src/core/artifact.js";
 
 const createError = (text: string) => {
   const embed = new EmbedBuilder();

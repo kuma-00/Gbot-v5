@@ -6,7 +6,7 @@ import {
   VTFormat,
   VTOption,
   VTDefaultOption,
-} from "@src/types/VT";
+} from "@src/types/VT.js";
 import { URLSearchParams } from "node:url";
 
 // https://github.com/pchw/node-voicetext

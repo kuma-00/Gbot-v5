@@ -2,10 +2,10 @@ import dotenv from "dotenv";
 console.log(dotenv.config())
 
 import { APIEmbed, EmbedBuilder } from "discord.js";
-import { Artifact } from "./core/artifact";
-import { StorageType } from "./types";
-import { OCRResponse } from "./types/OCR";
-import { storage } from "./core/storage";
+import { Artifact } from "./core/artifact.js";
+import { StorageType } from "./types/index.js";
+import { OCRResponse } from "./types/OCR.js";
+import { storage } from "./core/storage.js";
 // import {
 //   Artifact as hoyoArtifact,
 //   Entry,

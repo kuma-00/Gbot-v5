@@ -1,4 +1,4 @@
-import { Command,CommandCategory } from "@src/types/command";
+import { Command,CommandCategory } from "@src/types/command.js";
 import { ChatInputCommandInteraction, EmbedBuilder ,SlashCommandBuilder} from "discord.js";
 import wiki from "wikipedia";
 

@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types";
+import { ExtensionClient } from "@src/types/index.js";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame";
-import { random } from "@src/util";
+} from "@src/types/minigame.js";
+import { random } from "@src/util/index.js";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -15,12 +15,13 @@ import {
   SelectMenuBuilder,
 } from "discord.js";
 
-export const minigame: MinigameConstructor = class ox extends MinigameBase {
+export const minigame: MinigameConstructor = class wordwolf extends MinigameBase {
   static gameData = {
-    name: "word",
+    name: "wordwolf",
     description: "ワードウルフ",
-    details:
-      "渡されたお題について話し合いをし、投票で追放する人を決めます。だれが人狼かどうか考えましょう。人狼が追放された場合市民の勝利で、市民が追放された場合は人狼の勝利です。",
+    details: `渡されたお題について話し合いをし、投票で追放する人を決めます。
+だれが人狼かどうか考えましょう。
+人狼が追放された場合市民の勝利で、市民が追放された場合は人狼の勝利です。`,
     maxMember: 20,
     minMember: 2,
     joinInMidway: false,

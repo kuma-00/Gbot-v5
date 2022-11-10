@@ -1,13 +1,12 @@
-import { VTFormat, VTOption } from './../../types/VT';
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from "discord.js";
-import { VTEmotion, VTEmotionLevel, VTSpeaker } from "@src/types/VT";
+import { VTEmotion, VTEmotionLevel, VTSpeaker,VTFormat, VTOption } from "@src/types/VT.js";
 import { SlashCommandBuilder } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
-import { createVoiceEmbed } from "./voiceset";
-import { SpeakData } from "@src/util";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { createVoiceEmbed } from "./voiceset.js";
+import { SpeakData } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

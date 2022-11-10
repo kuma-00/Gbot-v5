@@ -1,8 +1,7 @@
 "use strict";
-import { ExtensionClient, MessageResponse } from "@src/types";
-import { storage } from "@src/core/storage";
-import { StorageType } from "@src/types";
-import { speak } from "@src/util";
+import { ExtensionClient, MessageResponse,StorageType } from "@src/types/index.js";
+import { storage } from "@src/core/storage.js";
+import { speak } from "@src/util/index.js";
 import { Message } from "discord.js";
 
 const classify = async (imageURL: URL) => {

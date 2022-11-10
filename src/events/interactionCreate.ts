@@ -1,6 +1,6 @@
 "use strict";
-import { followUpError } from "@src/util";
-import { Event } from "@src/types";
+import { followUpError } from "@src/util/index.js";
+import { Event } from "@src/types/index.js";
 import { Interaction, InteractionType } from "discord.js";
 export const event: Event = {
   name: "interactionCreate",
@@ -44,6 +44,8 @@ export const event: Event = {
           console.log("Autocomplete Error \n",e);
         }
       }
-    }
+    }// else if(interaction.isMessageComponent()){
+    //   if(["gb_game","gbot_ox","gb_take","gb_ww"].some(id=>id.indexOf(interaction.customId)==0))interaction.update({components:[]})
+    // }
   },
 };

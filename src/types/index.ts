@@ -1,9 +1,8 @@
-import { MinigameData } from '@src/types/minigame';
-import { MinigameConstructor } from './minigame';
-import { Speaker } from "@src/core/speaker";
+import { MinigameData,MinigameConstructor } from '@src/types/minigame.js';
+import { Speaker } from "@src/core/speaker.js";
 import { Client, Collection, Message } from "discord.js";
 import internal from "node:stream";
-import { Command } from "@src/types/command";
+import { Command } from "@src/types/command.js";
 
 export type ExtensionClient = Client & {
   commands: Collection<string, Command>;

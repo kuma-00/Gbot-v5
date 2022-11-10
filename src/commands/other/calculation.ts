@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory,Command } from "@src/types/command";
-import { replaceText } from "@src/util";
+import { CommandCategory,Command } from "@src/types/command.js";
+import { replaceText } from "@src/util/index.js";
 import { ChatInputCommandInteraction } from "discord.js";
 import { VM } from "vm2";
 

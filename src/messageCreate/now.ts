@@ -1,6 +1,6 @@
 "use strict";
-import { MessageResponse } from "@src/types";
-import { speak } from "@src/util";
+import { MessageResponse } from "@src/types/index.js";
+import { speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "now",

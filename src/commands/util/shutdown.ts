@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory, Command } from "@src/types/command";
+import { CommandCategory, Command } from "@src/types/command.js";
 
 const wait = async (ms: number) => {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,6 +1,6 @@
-import { translate } from "@src/core/translate";
-import { Command, CommandCategory } from "@src/types/command";
-import { speak } from "@src/util";
+import { translate } from "@src/core/translate.js";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { speak } from "@src/util/index.js";
 import {
   ContextMenuCommandInteraction,
   ApplicationCommandType,

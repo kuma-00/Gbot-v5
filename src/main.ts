@@ -1,16 +1,15 @@
-import { MinigameConstructor } from "./types/minigame";
+import { MinigameConstructor } from "./types/minigame.js";
 ("use strict");
-import { MessageResponse } from "./types/index";
 import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
-import { ExtensionClient } from "@src/types";
+import { ExtensionClient,MessageResponse } from "@src/types/index.js";
 import { fileURLToPath } from "node:url";
-import { createServer } from "node:http";
+// import { createServer } from "node:http";
 
 import { generateDependencyReport } from "@discordjs/voice";
-import { Command } from "@src/types/command";
+import { Command } from "@src/types/command.js";
 console.log(generateDependencyReport());
 
 console.log("起動準備開始");

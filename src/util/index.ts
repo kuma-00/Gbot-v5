@@ -1,5 +1,5 @@
-import { ExtensionClient } from "@src/types";
-import { VTOption } from "@src/types/VT";
+import { ExtensionClient } from "@src/types/index.js";
+import { VTOption } from "@src/types/VT.js";
 import {
   CommandInteraction,
   GuildMember,
@@ -86,8 +86,8 @@ export class SpeakData {
   }
 }
 
-export const sleep = (time: number) =>
-  new Promise((resolve) => setTimeout(resolve, time));
+export const sleep = (microSecond: number) =>
+  new Promise((resolve) => setTimeout(resolve, microSecond));
 
 export const replaceText = (
   text: string,

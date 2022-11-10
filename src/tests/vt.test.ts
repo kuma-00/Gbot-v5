@@ -1,4 +1,4 @@
-import { VoiceText } from "@src/core/voicetext";
+import { VoiceText } from "@src/core/voicetext.js";
 import fs from "node:fs/promises";
 import dotenv from "dotenv";
 dotenv.config();

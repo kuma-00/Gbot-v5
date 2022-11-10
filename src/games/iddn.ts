@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types";
+import { ExtensionClient } from "@src/types/index.js";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame";
-import { random, speak } from "@src/util";
+} from "@src/types/minigame.js";
+import { random, speak } from "@src/util/index.js";
 import { EmbedBuilder, escapeMarkdown, GuildMember, Message } from "discord.js";
 
 export const minigame: MinigameConstructor = class iddn extends MinigameBase {

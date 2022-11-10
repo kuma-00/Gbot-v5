@@ -1,5 +1,5 @@
 "use strict";
-import { Event } from "@src/types";
+import { Event } from "@src/types/index.js";
 import { Message } from "discord.js";
 
 export const event: Event = {

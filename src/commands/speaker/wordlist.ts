@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
-import { storage } from "@src/core/storage";
-import { StorageType } from "@src/types";
-import { CommandCategory, Command } from "@src/types/command";
+import { storage } from "@src/core/storage.js";
+import { StorageType } from "@src/types/index.js";
+import { CommandCategory, Command } from "@src/types/command.js";
 import { ChatInputCommandInteraction, EmbedBuilder ,escapeMarkdown} from "discord.js";
 
 const getDic = async (guildId: string) => {

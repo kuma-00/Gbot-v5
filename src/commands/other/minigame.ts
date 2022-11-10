@@ -1,4 +1,3 @@
-import { MinigameConstructor } from "./../../types/minigame";
 import {
   ButtonStyle,
   ChatInputCommandInteraction,
@@ -15,9 +14,9 @@ import {
   MessageComponentInteraction,
   InteractionType,
 } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
-import { MinigameData } from "@src/types/minigame";
-import { randomId } from "@src/util";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { MinigameData } from "@src/types/minigame.js";
+import { randomId } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -69,7 +68,8 @@ export const command: Command = {
             interaction.update(createMessage(data));
           } else {
             return interaction.reply({
-              content: "ゲームを開始する権限がありません。\nゲームに参加してください。",
+              content:
+                "ゲームを開始する権限がありません。\nゲームに参加してください。",
               ephemeral: true,
             });
           }

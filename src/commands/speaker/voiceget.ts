@@ -1,9 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
-import { storage } from "@src/core/storage";
-import { StorageType } from "@src/types";
-import { VTOption } from "@src/types/VT";
-import { createVoiceEmbed } from "./voiceset";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { storage } from "@src/core/storage.js";
+import { StorageType } from "@src/types/index.js";
+import { VTOption } from "@src/types/VT.js";
+import { createVoiceEmbed } from "./voiceset.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

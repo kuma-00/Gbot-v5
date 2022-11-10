@@ -1,8 +1,8 @@
 "use strict";
-import { Event, StorageType } from "@src/types";
+import { Event, StorageType } from "@src/types/index.js";
 import { TextBasedChannel, VoiceState } from "discord.js";
-import { Speaker, SpeakerStatus } from '@src/core/speaker';
-import { storage } from "@src/core/storage";
+import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
+import { storage } from "@src/core/storage.js";
 
 export const event:Event = {
   name: "voiceStateUpdate",

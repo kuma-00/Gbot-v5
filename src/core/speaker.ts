@@ -16,11 +16,11 @@ import {
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
-import { ExtensionClient, SpeakResource, StorageType } from "@src/types";
-import { storage } from "@src/core/storage";
-import { VoiceText } from "@src/core/voicetext";
-import { SpeakData, sleep } from "@src/util";
-import { VTOption, VTDefaultOption } from "@src/types/VT";
+import { ExtensionClient, SpeakResource, StorageType } from "@src/types/index.js";
+import { storage } from "@src/core/storage.js";
+import { VoiceText } from "@src/core/voicetext.js";
+import { SpeakData, sleep } from "@src/util/index.js";
+import { VTOption, VTDefaultOption } from "@src/types/VT.js";
 import { Readable } from "node:stream";
 const voice = new VoiceText(process.env.VTKey || "");
 
@@ -103,6 +103,7 @@ export class Speaker {
     this.isPlaying = false;
     this.voiceChannel = voiceChannel;
     this.textChannel = textChannel;
+    this.queue = [];
     await storage(StorageType.SETTINGS).put(
       textChannel.id,
       `${this.guildId}:cacheChannelId`
@@ -223,7 +224,7 @@ export class Speaker {
     // 辞書による置き換え
     text = text.replace(this._dicPattern, (e) => this._dic[e]);
     // 絵文字読み上げ調整
-    text = text.replace(/<a?:(.+?):\d{18}>/g, (_,s)=>s);
+    text = text.replace(/<a?:(.+?):\d{18,19}>/g, (_,s)=>s);
     // 辞書変換後の発声URLの一次変換
     text = text.replace(/{\s*http/, "{");
     // text = text.replace(/<\/?(.+):?(\d+)>/, "");

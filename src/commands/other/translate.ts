@@ -1,6 +1,6 @@
 import { SlashCommandBuilder,ChatInputCommandInteraction } from "discord.js";
-import { translate } from "@src/core/translate";
-import { Command, CommandCategory } from "@src/types/command";
+import { translate } from "@src/core/translate.js";
+import { Command, CommandCategory } from "@src/types/command.js";
 
 export const command: Command = {
   category: CommandCategory.Other,

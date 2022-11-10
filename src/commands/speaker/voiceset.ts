@@ -3,12 +3,12 @@ import {
   CommandInteraction,
   EmbedBuilder,
 } from "discord.js";
-import { VTEmotion, VTEmotionLevel, VTSpeaker } from "@src/types/VT";
+import { VTEmotion, VTEmotionLevel, VTSpeaker } from "@src/types/VT.js";
 import { SlashCommandBuilder } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command";
-import { storage } from "@src/core/storage";
-import { StorageType } from "@src/types";
-import { getUsername } from "@src/util";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { storage } from "@src/core/storage.js";
+import { StorageType } from "@src/types/index.js";
+import { getUsername } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

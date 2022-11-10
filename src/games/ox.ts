@@ -1,6 +1,6 @@
 import { ButtonBuilder } from "@discordjs/builders";
-import { ExtensionClient } from "@src/types";
-import { random, shuffle } from "@src/util";
+import { ExtensionClient } from "@src/types/index.js";
+import { random, shuffle } from "@src/util/index.js";
 import {
   ActionRowBuilder,
   ButtonInteraction,
@@ -32,8 +32,10 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
   static gameData = {
     name: "ox",
     description: "マルバツゲーム",
-    details:
-      "3x3で一列自分の駒を揃えると勝ちな簡単なゲーム。先手と後手に分かれて:o:と:x:を交互に打っていきます。:one:~:nine:のボタンがあるので、打ちたいところを押してください。はじめに一列揃えたほうが勝ちです。",
+    details: `3x3で一列自分の駒を揃えると勝ちな簡単なゲーム。
+先手と後手に分かれて:o:と:x:を交互に打っていきます。
+:one:~:nine:のボタンがあるので、打ちたいところを押してください。
+はじめに一列揃えたほうが勝ちです。`,
     maxMember: 2,
     minMember: 1,
     joinInMidway: false,
@@ -53,7 +55,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
     return this.data.members[this.playerPos];
   }
   constructor(client: ExtensionClient, data: MinigameData) {
-    super(client,data);
+    super(client, data);
     this.data = data;
     this.client = client;
     this.data.members = shuffle(this.data.members);
@@ -76,7 +78,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
   draw() {
     const buttons = this.board.map((b, i) =>
       new ButtonBuilder()
-        .setCustomId(`gbot_ox_button:${i}`)
+        .setCustomId(`gb_ox_button:${i}`)
         .setEmoji({ name: b || this.emojis[i] })
         .setDisabled(b != null || this.data.isEnd)
         .setStyle(ButtonStyle.Secondary)

@@ -1,4 +1,4 @@
-import { StorageType } from "@src/types";
+import { StorageType } from "@src/types/index.js";
 import { Deta } from "deta";
 import Base from "deta/dist/types/base";
 import { CompositeType } from 'deta/dist/types/types/basic';

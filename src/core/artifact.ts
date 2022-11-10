@@ -1,5 +1,5 @@
-import { randomId } from "./../util/index";
-import { OCRResponse } from "@src/types/OCR";
+import { randomId } from "./../util/index.js";
+import { OCRResponse } from "@src/types/OCR.js";
 import {
   BufferResolvable,
   ButtonStyle,
