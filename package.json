@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
-    "start": "node --experimental-specifier-resolution=node build/main.js",
+    "start": "node build/main.js",
     "compile": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
-    "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts"
+    "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts",
+    "git":""
   },
   "engines": {
     "node": "16.x"

@@ -17,7 +17,7 @@ import {
   MinigameData,
   MinigameConstructor,
   MinigameBase,
-} from "@src/types/minigame";
+} from "@src/types/minigame.js";
 
 type oxGmaeLog = {
   pos: number;
