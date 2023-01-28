@@ -3,12 +3,16 @@ import { Speaker } from "@src/core/speaker.js";
 import { Client, Collection, Message } from "discord.js";
 import internal from "node:stream";
 import { Command } from "@src/types/command.js";
+import { Recorder } from '@src/core/recorder.js';
+import { Timer } from './timer';
 
 export type ExtensionClient = Client & {
   commands: Collection<string, Command>;
   speakers: Collection<string, Speaker>;
+  recorder: Collection<string, Recorder>;
   minigames: Collection<string, MinigameConstructor>;
   gameData:Collection<string,MinigameData>;
+  timers:Collection<string,Timer[]>;
   messageResponses : MessageResponse[];
 };
 

@@ -30,6 +30,6 @@ export const command: Command = {
       ).json()
     ).Result as string;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if(interaction.guild)speak(client,interaction.guild,text);
+    if(interaction.guild)speak(client,interaction.guild,text,interaction.channelId);
   },
 };

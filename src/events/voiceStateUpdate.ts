@@ -1,4 +1,3 @@
-"use strict";
 import { Event, StorageType } from "@src/types/index.js";
 import { TextBasedChannel, VoiceState } from "discord.js";
 import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
@@ -25,7 +24,7 @@ export const event:Event = {
       } else {
         const speaker = new Speaker(client, newUserChannel, channel);
         client.speakers.set(guild.id, speaker);
-        speaker.start(newUserChannel, channel);
+        speaker.start();
       }
       channel.send("読み上げが開始しました。")
       return;
@@ -53,7 +52,7 @@ export const event:Event = {
       } else {
         const speaker = new Speaker(client, newUserChannel, channel);
         client.speakers.set(guild.id, speaker);
-        speaker.start(newUserChannel, channel);
+        speaker.start();
       }
       channel.send("読み上げが開始しました。")
       return;

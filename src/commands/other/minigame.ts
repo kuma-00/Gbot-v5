@@ -165,13 +165,20 @@ export const command: Command = {
       this.collector.on("end", () => {});
     } else {
       const list = [...client.minigames.values()]
-        .map((game) => `${game.gameData.name} : ${game.gameData.description}`)
+        .map(
+          (game) =>
+            `> ${
+              game.gameData.disabled
+                ? `~~${game.gameData.name}~~`
+                : game.gameData.name
+            } : ${game.gameData.description}`
+        )
         .join("\n");
       const embed = new EmbedBuilder();
       embed.setTitle("ミニゲーム")
         .setDescription(`以下の一覧から選択してゲームを開始できます。
 一覧
-\`\`\`${list}\`\`\``);
+${list}`);
       interaction.followUp({ embeds: [embed] });
     }
   },
@@ -189,8 +196,8 @@ export const command: Command = {
 
 export const createMessage = (game: MinigameData) => {
   const gameData = game.gameConstructor.gameData;
-  const disme = new EmbedBuilder();
-  disme
+  const embed = new EmbedBuilder();
+  embed
     .setAuthor({ name: game.isEnd ? "終了しました。" : game.id })
     .setTitle(`${gameData.name}`).setDescription(`${gameData.description}
 
@@ -256,7 +263,7 @@ ${game.members.length}人${
     .setLabel("終了");
 
   return {
-    embeds: [disme],
+    embeds: [embed],
     components: gameData.ruleData
       ? [
           ...(selects?.slice(0, 4) || []),

@@ -1,4 +1,3 @@
-"use strict";
 import { ExtensionClient, MessageResponse,StorageType } from "@src/types/index.js";
 import { storage } from "@src/core/storage.js";
 import { speak } from "@src/util/index.js";
@@ -31,7 +30,7 @@ const classify = async (imageURL: URL) => {
 export const messageResponse: MessageResponse = {
   name: "tero",
   filter: (m) =>
-    ((m.cleanContent &&
+    ((!m.cleanContent &&
       m.attachments.size == 1 &&
       m.attachments.first()?.contentType?.includes("image")) ||
     /^(\S)テロ(?!ッ)/.test(m.cleanContent) ||

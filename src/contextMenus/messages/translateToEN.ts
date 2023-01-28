@@ -21,6 +21,6 @@ export const command: Command = {
       await translate(msg.cleanContent.replace(/[*`_~>]/, ""), null, "en")
     ).text;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if(interaction.guild)speak(client,interaction.guild,text);
+    if(interaction.guild)speak(client,interaction.guild,text,interaction.channelId);
   },
 };

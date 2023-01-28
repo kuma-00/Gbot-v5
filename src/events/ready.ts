@@ -1,4 +1,3 @@
-"use strict";
 import { Event } from "@src/types/index.js";
 import { ActivityType } from "discord.js";
 

@@ -1,4 +1,3 @@
-"use strict";
 import { MessageResponse } from "@src/types/index.js";
 import { speak } from "@src/util/index.js";
 
@@ -21,7 +20,8 @@ export const messageResponse: MessageResponse = {
       speak(
         client,
         message.guild,
-        Math.E + ""
+        Math.E + "",
+        message.channelId
       );
   },
 

@@ -1,11 +1,10 @@
-"use strict";
 import { MessageResponse } from "@src/types/index.js";
 import { speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "eto",
   filter: (m) =>
-    ["干支", "十干", "十干十二支", "えと", /(\b|^)eto(\b|$)/].some((i) =>
+    ["干支", "十干", "十干十二支", /(\b|^)えと(\b|$)/, /(\b|^)eto(\b|$)/].some((i) =>
       m.cleanContent.match(i)
     ),
   async execute(client, message) {
@@ -25,7 +24,8 @@ export const messageResponse: MessageResponse = {
       speak(
         client,
         message.guild,
-        data1[year % 10] + data2[year % 12]
+        data1[year % 10] + data2[year % 12],
+        message.channelId
       );
   },
 };

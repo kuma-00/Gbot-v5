@@ -25,6 +25,7 @@ export interface MinigameConstructor {
     joinInMidway: boolean;
     ruleData?: GameRule[];
     defaultRule?: GameRuleValue;
+    disabled?: boolean;
   };
 }
 

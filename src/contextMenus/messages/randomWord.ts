@@ -19,6 +19,6 @@ export const command: Command = {
     interaction.channel?.sendTyping();
     const text = shuffle(tokenize(msg.cleanContent)).join("");
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if(interaction.guild)speak(client,interaction.guild,text);
+    if(interaction.guild)speak(client,interaction.guild,text,interaction.channelId);
   },
 };

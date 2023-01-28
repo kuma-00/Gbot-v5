@@ -1,5 +1,4 @@
 import { speak } from "@src/util/index.js";
-("use strict");
 import { MessageResponse } from "@src/types/index.js";
 
 export const messageResponse: MessageResponse = {
@@ -17,6 +16,7 @@ export const messageResponse: MessageResponse = {
       content: "えへってなんだよ!",
       allowedMentions: { repliedUser: false },
     });
-    if (message.guild) speak(client, message.guild, "えへってなんだよ!");
+    if (message.guild)
+      speak(client, message.guild, "えへってなんだよ!", message.channelId);
   },
 };

@@ -99,16 +99,16 @@ export class Speaker {
     return isGuild && isReadingChannel && isNotMyMessage;
   };
 
-  async start(voiceChannel: VoiceBasedChannel, textChannel: TextBasedChannel) {
+  async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
     this.isPlaying = false;
-    this.voiceChannel = voiceChannel;
-    this.textChannel = textChannel;
+    if(voiceChannel)this.voiceChannel = voiceChannel;
+    if(textChannel)this.textChannel = textChannel;
     this.queue = [];
-    await storage(StorageType.SETTINGS).put(
+    if(textChannel)await storage(StorageType.SETTINGS).put(
       textChannel.id,
       `${this.guildId}:cacheChannelId`
     );
-    this.addChannel(textChannel.id);
+    if(textChannel)this.addChannel(textChannel.id);
     const connection = joinVoiceChannel({
       channelId: this.voiceChannel.id,
       guildId: this.guildId,
@@ -123,27 +123,13 @@ export class Speaker {
         ]);
       } catch (error) {
         console.log("強制切断されました");
-        SpeakerStatus.set(this.guildId, SpeakerStatus.END);
+        SpeakerStatus.set(this.guildId, SpeakerStatus.ERROR);
       }
     });
     this.addQueue("読み上げが開始しました。");
     const readChannels = await this.getReadChannels();
-    // const filter: CollectorFilter<[Message<boolean>]> = async (m) => {
-    //   const isGuild = !!m.guild;
-    //   const isReadingChannel = await this.isReadingChannel(m.channelId);
-    //   const isNotMyMessage = m.author.id !== this.client.user?.id;
-    //   return isGuild && isReadingChannel && isNotMyMessage;
-    // };
     readChannels.forEach((id) => {
       this.addCollectors(id);
-      // let collector: MessageCollector | undefined;
-      // const channel = this.voiceChannel.guild.channels.cache.get(id);
-      // if (channel && "createMessageCollector" in channel) {
-      //   collector = channel
-      //     .createMessageCollector({ filter: this.filter.bind(this) })
-      //     .on("collect", this.messageCollect.bind(this));
-      // }
-      // return collector;
     });
     SpeakerStatus.set(this.guildId, SpeakerStatus.SPEAKING);
   }

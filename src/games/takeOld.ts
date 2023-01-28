@@ -33,6 +33,7 @@ export const minigame: MinigameConstructor = class takeOld extends MinigameBase 
     maxMember: 10,
     minMember: 2,
     joinInMidway: false,
+    disabled:true
   };
   msg!: Message;
   emojis: string[];
@@ -102,8 +103,8 @@ export const minigame: MinigameConstructor = class takeOld extends MinigameBase 
   }
 
   draw() {
-    const disme = new EmbedBuilder();
-    disme
+    const embed = new EmbedBuilder();
+    embed
       .setTitle("たけのこたけのこニョッキッキ")
       .setDescription(
         `${
@@ -123,7 +124,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
         }`
       )
       .setFooter({ text: this.data.isEnd ? "終了しました。" : "" });
-    return disme;
+    return embed;
   }
 
   logToText(log: takeGameLog) {

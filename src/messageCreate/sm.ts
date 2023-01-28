@@ -1,4 +1,3 @@
-"use strict";
 import { MessageResponse } from "@src/types/index.js";
 import { speak } from "@src/util/index.js";
 
@@ -16,7 +15,8 @@ export const messageResponse: MessageResponse = {
       speak(
         client,
         message.guild,
-        "URL省略"
+        "URL省略",
+        message.channelId
       );
   },
 };

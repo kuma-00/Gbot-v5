@@ -100,7 +100,6 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["青", "水色"],
     ["ポイントカード", "クレジットカード"],
     ["色鉛筆", "クレヨン"],
-    ["不倫", "浮気"],
     ["トマトパスタ", "クリームパスタ"],
     ["餃子", "シューマイ"],
     ["友達", "親友"],
@@ -112,29 +111,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["野球", "ソフトボール"],
     ["肉まん", "ピザまん"],
     ["ポカリスエット", "アクエリアス"],
-    ["片思い", "失恋"],
-    ["ファーストキス", "初デート"],
-    ["LINEで告白", "手紙で告白"],
     ["束縛系", "ストーカー"],
-    ["筋肉フェチ", "手フェチ"],
-    ["声フェチ", "匂いフェチ"],
-    ["高収入の異性", "高身長の異性"],
-    ["誠実な恋人", "優しい恋人"],
-    ["好みの顔の異性", "好みの体系の異性"],
-    ["金銭感覚が合う", "趣味が合う"],
-    ["笑顔が素敵な異性", "ユーモアがある異性"],
-    ["肉食男子", "草食男子"],
-    ["水族館デート", "動物園デート"],
-    ["カラオケデート", "映画館デート"],
-    ["花畑デート", "牧場デート"],
-    ["浮気", "性格の不一致"],
-    ["結婚", "同棲"],
-    ["約束を破る恋人", "悪口を言う恋人"],
-    ["煙草をたくさん吸う異性", "お酒をたくさん飲む異性"],
-    ["浪費癖がある恋人", "スマホ中毒の恋人"],
-    ["社内恋愛", "校内恋愛"],
-    ["話しが合う異性", "ユーモアがある異性"],
-    ["制服デート", "浴衣デート"],
     ["誕生日プレゼント", "サプライズプレゼント"],
     ["かわいい系", "キレイ系"],
     ["ツンデレ", "ヤンデレ"],
@@ -176,7 +153,6 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["充電ケーブル", "延長コード"],
     ["スニーカー", "革靴"],
     ["枕", "クッション"],
-    ["とっくり", "升酒"],
     ["キーホルダー", "ぬいぐるみ"],
     ["ショートカット", "黒髪"],
     ["トートバッグ", "リュックサック"],
@@ -192,7 +168,6 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["シーソー", "ブランコ"],
     ["あやとり", "ヨーヨー"],
     ["パチンコ", "宝くじ"],
-    ["二日酔い", "風邪"],
     ["ハリウッド映画", "韓国ドラマ"],
     ["レビュー", "送料"],
     ["二次会", "誕生日会"],
@@ -207,27 +182,14 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["初恋", "ファーストキス"],
     ["香水", "ヘアワックス"],
     ["マッチングアプリ", "インスタグラム"],
-    ["真実の愛", "本当の幸せ"],
-    ["告白", "プロポーズ"],
-    ["ひとめぼれ", "片思い"],
-    ["第一印象", "理想の恋人像"],
     ["いたずら", "ケンカ"],
-    ["ハネムーン", "お泊まりデート"],
     ["価値観", "フィーリング"],
-    ["アイコンタクト", "ボディタッチ"],
-    ["口説き文句", "ピロートーク"],
     ["縁結び", "合格祈願"],
-    ["間接キス", "スキンシップ"],
-    ["すっぴん", "本性"],
     ["心理テスト", "相性占い"],
     ["アヒル口", "作り笑顔"],
     ["サバを読む", "猫をかぶる"],
-    ["三角関係", "遠距離恋愛"],
-    ["ラブレター", "交換日記"],
     ["愛情", "友情"],
     ["ハートの絵文字", "笑顔の顔文字"],
-    ["ウェディングドレス", "振袖"],
-    ["おうちデート", "映画館デート"],
     ["筋トレ", "ランニング"],
     ["ヨガ", "ラジオ体操"],
     ["オリンピック", "ワールドカップ"],
@@ -308,7 +270,6 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["ヨーグルト", "プリン"],
     ["ローストビーフ", "ステーキ"],
     ["ラッパー", "DJ"],
-    ["声優", "ウグイス嬢"],
     ["弁護士", "公認会計士"],
     ["ユーチューバー", "ゲームクリエイター"],
     ["ディレクター", "指揮者"],
@@ -328,7 +289,6 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     ["メイド喫茶店員", "コスプレイヤー"],
     ["通訳", "英会話講師"],
     ["警察官", "消防士"],
-    ["ベビーシッター", "助産師"],
     ["バレエダンサー", "体操選手"],
     ["外交官", "政治家"],
     ["医者", "大学教授"],
@@ -362,16 +322,16 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     this.selfTheme = this.theme[random(0, this.theme.length - 1)];
     this.wolfThemePos = random(0, 1);
     this.wolfUser.forEach((user) => {
-      const disme = new EmbedBuilder().setTitle("WW  GAME")
+      const embed = new EmbedBuilder().setTitle("WW  GAME")
         .setDescription(`**ワードウルフ!!!**
 あなたのお題は\` ${this.selfTheme[this.wolfThemePos]} \`です`);
-      user.send({ embeds: [disme] });
+      user.send({ embeds: [embed] });
     });
     this.CitizenUser.forEach((user) => {
-      const disme = new EmbedBuilder().setTitle("WW  GAME")
+      const embed = new EmbedBuilder().setTitle("WW  GAME")
         .setDescription(`**ワードウルフ!!!**
 あなたのお題は\` ${this.selfTheme[1 - this.wolfThemePos]} \`です`);
-      user.send({ embeds: [disme] });
+      user.send({ embeds: [embed] });
     });
     await this.data.channel.send(`話し合いをはじめてください。
 制限時間は${"2:00"}です。`);
@@ -440,7 +400,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     Object.values(this.voteData).forEach((ds) =>
       ds.forEach((d) => (voteD[d] = voteD[d] ? voteD[d] + 1 : 1))
     );
-    const disme = new EmbedBuilder().setTitle("WW  GAME")
+    const embed = new EmbedBuilder().setTitle("WW  GAME")
       .setDescription(`**ワードウルフ!!**
 \`投票結果\`
 ${Object.entries(voteD)
@@ -463,7 +423,7 @@ ${this.CitizenUser.map(
     }\``
 ).join("\n")}
 `);
-    this.data.channel.send({ embeds: [disme] });
+    this.data.channel.send({ embeds: [embed] });
   }
 
   getName(users: GuildMemberManager, userId: string) {

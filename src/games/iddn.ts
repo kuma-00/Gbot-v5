@@ -32,11 +32,11 @@ export const minigame: MinigameConstructor = class iddn extends MinigameBase {
     this.progress();
     const result = await Promise.all(
       this.data.members.map((member) => {
-        const disme = new EmbedBuilder().setTitle("IDDN  GAME")
+        const embed = new EmbedBuilder().setTitle("IDDN  GAME")
           .setDescription(`**いつ どこで 誰が 何をした ゲーム!!!**
 \`いつ どこで 誰が 何をした\`をスペースで区切って入力してください。
         `);
-        member.send({ embeds: [disme] });
+        member.send({ embeds: [embed] });
         return this.add(member);
       })
     );
@@ -64,15 +64,16 @@ export const minigame: MinigameConstructor = class iddn extends MinigameBase {
         text: `**${escapeMarkdown(text)}**`,
       };
     });
-    const disme = new EmbedBuilder();
-    disme.setTitle("IDDN  GAME").setDescription(`完成した文章たち
+    const embed = new EmbedBuilder();
+    embed.setTitle("IDDN  GAME").setDescription(`完成した文章たち
 
 ${articles.map((a) => `${a.user}\n${a.text}`).join("\n\n")}`);
-    await this.data.channel.send({ embeds: [disme] });
+    await this.data.channel.send({ embeds: [embed] });
     speak(
       this.client,
       this.data.channel.guild,
-      `完成した文章:${articles.map((a) => a.text).join("\n")}`
+      `完成した文章:${articles.map((a) => a.text).join("\n")}`,
+      this.data.channel.id
     );
     // const read = await this.data.channel.send(`::${articles.map(a=>a.text).join("\n")}`);
     // read.delete();

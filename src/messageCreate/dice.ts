@@ -1,5 +1,4 @@
 import { speak } from "./../util/index.js";
-("use strict");
 import { MessageResponse } from "@src/types/index.js";
 
 export const messageResponse: MessageResponse = {
@@ -33,7 +32,8 @@ export const messageResponse: MessageResponse = {
         `出た目はそれぞれ${dices.join(" ")}です` +
           (+res[1] > 1
             ? `\n合計は${dices.reduce((s, dice) => s + dice, 0)}です`
-            : "")
+          : ""),
+        message.channelId
       );
   },
 };

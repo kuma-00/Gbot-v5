@@ -66,7 +66,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
     super.start();
     this.msg = await this.data.channel.send(this.draw());
     const filter = (interaction: MessageComponentInteraction) =>
-      interaction.customId.indexOf("gbot_ox_button") == 0;
+      interaction.customId.indexOf("gb_ox_button") == 0;
     this.collector = this.msg.createMessageComponentCollector({ filter });
     this.collector.on("collect", this.collect.bind(this));
   }
@@ -154,13 +154,14 @@ ${
       });
     }
     // console.log()
-    if (this.checkWin(this.playerPos) || this.putPossibleArray().length == 0) {
+    const isWin = this.checkWin(this.playerPos);
+    if (isWin || this.putPossibleArray().length == 0) {
       // console.log("end")
       this.log.push({
         pos,
         user,
         username: user?.displayName || user?.id || "cpu",
-        isEnd: this.checkWin(this.playerPos) ? "win" : "draw",
+        isEnd: isWin ? "win" : "draw",
       });
       await interaction.update(this.draw());
       this.end();

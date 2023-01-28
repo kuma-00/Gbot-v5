@@ -1,16 +1,34 @@
 import { MinigameConstructor } from "./types/minigame.js";
-("use strict");
-import { Client, Collection, GatewayIntentBits, Partials } from "discord.js";
+import {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+  TextBasedChannel,
+} from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import dotenv from "dotenv";
-import { ExtensionClient,MessageResponse } from "@src/types/index.js";
+import {
+  ExtensionClient,
+  MessageResponse,
+  StorageType,
+} from "@src/types/index.js";
 import { fileURLToPath } from "node:url";
-// import { createServer } from "node:http";
-
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command.js";
+import Base from "deta/dist/types/base/index.js";
+import { CompositeType } from "deta/dist/types/types/basic.js";
+import { FetchOptions } from "deta/dist/types/types/base/request.js";
+import { FetchResponse } from "deta/dist/types/types/base/response.js";
 console.log(generateDependencyReport());
+
+export type ExtensionBase = Base & {
+  fetchAll(
+    query?: CompositeType,
+    options?: FetchOptions
+  ): Promise<FetchResponse>;
+};
 
 console.log("起動準備開始");
 
@@ -34,8 +52,10 @@ const client = new Client({
 
 client.commands = new Collection();
 client.speakers = new Collection();
+client.recorder = new Collection();
 client.minigames = new Collection();
 client.gameData = new Collection();
+client.timers = new Collection();
 client.messageResponses = [];
 
 const getJsFiles = async (dirpath: string) => {
@@ -64,6 +84,35 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+const comeback = async (storage: ExtensionBase, Speaker: any) => {
+  const { items } = await storage.fetchAll({ "key?contains": "SpeakerStatus" });
+  const guilds = items
+    .filter((item) =>
+      ["SPEAKING", "ERROR", "WAIT"].some((v) => v == item.value)
+    )
+    .map((item) => (item.key as string)?.replace(":SpeakerStatus", ""));
+  const logs = [["comeback--------------------"]];
+  await client.guilds.fetch();
+  await Promise.all(
+    guilds.map(async (guildId) => {
+      const guild = client.guilds.cache.get(guildId);
+      if (!guild) return;
+      logs.push([guild.id, ":", guild.name]);
+      const vc = guild.voiceStates.cache.first()?.channel;
+      const tcId = (await storage.get(`${guildId}:cacheChannelId`))?.value as string;
+      if (!tcId) return console.log(`Can't get ${guildId}:cacheChannelId`);
+      await guild.channels.fetch();
+      const tc = await guild.channels.cache.get(tcId);
+      if (!vc || !tc) return;
+      const speaker = new Speaker(client, vc, tc as TextBasedChannel);
+      client.speakers.set(guildId, speaker);
+      speaker.start();
+    })
+  );
+  logs.push(["----------------------------"]);
+  logs.forEach((log) => console.log(...log));
 };
 
 (async () => {
@@ -121,10 +170,16 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       const mg: MinigameConstructor = minigame.minigame;
       if (mg) {
         client.minigames.set(mg.gameData.name, mg);
-        console.log(`minigames          ${mg.gameData.name.padEnd(20, " ")} loaded !`);
+        console.log(
+          `minigames          ${mg.gameData.name.padEnd(20, " ")} loaded !`
+        );
       }
     });
   });
+
+  const { storage } = await import(path.join(__dirname, "core/storage.js"));
+  const { Speaker } = await import(path.join(__dirname, "core/speaker.js"));
+  await comeback(storage(StorageType.SETTINGS), Speaker);
 })();
 
 client.login(process.env.DISCORD_TOKEN);
@@ -136,8 +191,6 @@ process.on("unhandledRejection", (reason) => {
 client.on("error", console.log); //error
 client.on("warn", console.log); //warn
 client.on("debug", console.log); //debug
-
-//sudo systemctl restart code-server@$USER
 
 // createServer(function (_req, res) {
 //   res.write("OK");

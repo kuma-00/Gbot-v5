@@ -1,4 +1,3 @@
-"use strict";
 import { followUpError } from "@src/util/index.js";
 import { Event } from "@src/types/index.js";
 import { Interaction, InteractionType } from "discord.js";

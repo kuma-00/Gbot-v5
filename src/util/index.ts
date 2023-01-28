@@ -15,8 +15,8 @@ export const followUpError = (
   interaction: CommandInteraction
 ) => {
   console.log(error, error?.message);
-  const disme = new EmbedBuilder();
-  disme
+  const embed = new EmbedBuilder();
+  embed
     .setAuthor({ name: "Error" })
     .setTitle("エラーが発生しました。")
     .setDescription(
@@ -26,7 +26,7 @@ ${text}`
     )
     .setTimestamp(Date.now())
     .setColor([255, 0, 0]);
-  interaction.followUp({ embeds: [disme] });
+  interaction.followUp({ embeds: [embed] });
 };
 
 export const getUser = (
@@ -117,10 +117,18 @@ export const randomId = () =>
 export const speak = async (
   client: ExtensionClient,
   guild: Guild,
-  text: string
+  text: string,
+  textChannelId?: string
 ) => {
   await sleep(500);
-  client.speakers.get(guild.id)?.addQueue(text);
+  const speaker = client.speakers.get(guild.id);
+  if (!speaker) return;
+  if (
+    textChannelId === undefined ||
+    (textChannelId && (await speaker.isReadingChannel(textChannelId)))
+  )
+    speaker.addQueue(text);
 };
 
-export const random = (min:number, max:number) => Math.round(Math.random() * (max - min)) + min;
+export const random = (min: number, max: number) =>
+  Math.round(Math.random() * (max - min)) + min;
