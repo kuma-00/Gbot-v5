@@ -1,4 +1,15 @@
-import { MinigameConstructor } from "./types/minigame.js";
+import { generateDependencyReport } from "@discordjs/voice";
+import { Command } from "@src/types/command.js";
+import {
+  ExtensionClient,
+  MessageResponse,
+  StorageType,
+} from "@src/types/index.js";
+import { WitAiCommand } from "@src/types/witAiCommand.js";
+import Base from "deta/dist/types/base/index.js";
+import { FetchOptions } from "deta/dist/types/types/base/request.js";
+import { FetchResponse } from "deta/dist/types/types/base/response.js";
+import { CompositeType } from "deta/dist/types/types/basic.js";
 import {
   Client,
   Collection,
@@ -6,21 +17,11 @@ import {
   Partials,
   TextBasedChannel,
 } from "discord.js";
+import dotenv from "dotenv";
 import fs from "node:fs/promises";
 import path from "node:path";
-import dotenv from "dotenv";
-import {
-  ExtensionClient,
-  MessageResponse,
-  StorageType,
-} from "@src/types/index.js";
 import { fileURLToPath } from "node:url";
-import { generateDependencyReport } from "@discordjs/voice";
-import { Command } from "@src/types/command.js";
-import Base from "deta/dist/types/base/index.js";
-import { CompositeType } from "deta/dist/types/types/basic.js";
-import { FetchOptions } from "deta/dist/types/types/base/request.js";
-import { FetchResponse } from "deta/dist/types/types/base/response.js";
+import { MinigameConstructor } from "./types/minigame.js";
 console.log(generateDependencyReport());
 
 export type ExtensionBase = Base & {
@@ -56,6 +57,7 @@ client.recorder = new Collection();
 client.minigames = new Collection();
 client.gameData = new Collection();
 client.timers = new Collection();
+client.witAiCommands = new Collection();
 client.messageResponses = [];
 
 const getJsFiles = async (dirpath: string) => {
@@ -94,18 +96,19 @@ const comeback = async (storage: ExtensionBase, Speaker: any) => {
     )
     .map((item) => (item.key as string)?.replace(":SpeakerStatus", ""));
   const logs = [["comeback--------------------"]];
-  await client.guilds.fetch();
+  // await client.guilds.fetch();
   await Promise.all(
     guilds.map(async (guildId) => {
-      const guild = client.guilds.cache.get(guildId);
+      const guild = await client.guilds.fetch(guildId);
       if (!guild) return;
       logs.push([guild.id, ":", guild.name]);
-      const vc = guild.voiceStates.cache.first()?.channel;
-      const tcId = (await storage.get(`${guildId}:cacheChannelId`))?.value as string;
+      const tcId = (await storage.get(`${guildId}:cacheChannelId`))
+        ?.value as string;
       if (!tcId) return console.log(`Can't get ${guildId}:cacheChannelId`);
       await guild.channels.fetch();
-      const tc = await guild.channels.cache.get(tcId);
-      if (!vc || !tc) return;
+      const tc = await guild.channels.fetch(tcId);
+      const vc = guild.voiceStates.cache.first()?.channel;
+      if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
       const speaker = new Speaker(client, vc, tc as TextBasedChannel);
       client.speakers.set(guildId, speaker);
       speaker.start();
@@ -176,9 +179,20 @@ const comeback = async (storage: ExtensionBase, Speaker: any) => {
       }
     });
   });
+  //witAiCommands
+  (await getJsFiles(path.join(__dirname, "witAiCommands"))).forEach((path) => {
+    loadFile(path, (witAiCommand) => {
+      const wac: WitAiCommand = witAiCommand.command;
+      if (wac) {
+        client.witAiCommands.set(wac.name, wac);
+        console.log(`witAiCommands      ${wac.name.padEnd(20, " ")} loaded !`);
+      }
+    });
+  });
 
   const { storage } = await import(path.join(__dirname, "core/storage.js"));
   const { Speaker } = await import(path.join(__dirname, "core/speaker.js"));
+  const { loadTimer } = await import(path.join(__dirname, "core/timer.js"));
   await comeback(storage(StorageType.SETTINGS), Speaker);
 })();
 

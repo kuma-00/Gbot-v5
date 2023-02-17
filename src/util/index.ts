@@ -7,6 +7,8 @@ import {
   Snowflake,
   User,
   Guild,
+  Message,
+  ReplyMessageOptions,
 } from "discord.js";
 
 export const followUpError = (
@@ -132,3 +134,13 @@ export const speak = async (
 
 export const random = (min: number, max: number) =>
   Math.round(Math.random() * (max - min)) + min;
+
+export const reply = (
+  message: Message,
+  options: string | ReplyMessageOptions
+) => {
+  if (!(options instanceof Object)) options = { content: options };
+  return message.reply({ ...options, allowedMentions: { repliedUser: false } });
+};
+
+export const isNullOrWhitespace = (input?: string) => !input || !input.trim();

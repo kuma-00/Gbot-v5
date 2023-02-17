@@ -1,5 +1,5 @@
 import { MessageResponse } from "@src/types/index.js";
-import { speak } from "@src/util/index.js";
+import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "E",
@@ -12,10 +12,7 @@ export const messageResponse: MessageResponse = {
       "Napier's constant",
     ].some((i) => m.cleanContent == i),
   async execute(client, message) {
-    message.reply({
-      content: Math.E + "",
-      allowedMentions: { repliedUser: false },
-    });
+    reply(message,Math.E + "");
     if (message.guild)
       speak(
         client,

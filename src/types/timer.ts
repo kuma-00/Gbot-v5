@@ -1,5 +1,7 @@
 export type Timer = {
   duration: number;
-  start: Date;
+  start: number;
   textChannelId: string;
+  userId: string;
+  id: string;
 }

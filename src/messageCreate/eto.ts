@@ -1,5 +1,5 @@
 import { MessageResponse } from "@src/types/index.js";
-import { speak } from "@src/util/index.js";
+import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "eto",
@@ -16,10 +16,7 @@ export const messageResponse: MessageResponse = {
       date.getFullYear();
     const data1 = "庚辛壬癸甲乙丙丁戊己";
     const data2 = "申酉戌亥子丑寅卯辰巳午未";
-    message.reply({
-      content: data1[year % 10] + data2[year % 12],
-      allowedMentions: { repliedUser: false },
-    });
+    reply(message, data1[year % 10] + data2[year % 12]);
     if (message.guild)
       speak(
         client,

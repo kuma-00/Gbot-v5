@@ -3,6 +3,8 @@ import { FetchWeatherJson } from "@src/types/weather.js";
 import { extractAsPromised } from "fuzzball";
 import fetch from "node-fetch";
 
+//https://qiita.com/youtoy/items/932bc48b03ced5a45c71
+
 const jma_url = "https://www.jma.go.jp/bosai/forecast/data/forecast/";
 const jma_image_url = "https://www.jma.go.jp/bosai/forecast/img/";
 
@@ -37,12 +39,12 @@ export const getWeather = async (areaCode: string) => {
 
 export const getArea = async (
   area: string
-): Promise<{ name: string; value: string; getCode: string }> => {
+): Promise<{ name: string; value: string; getCode: string } | undefined> => {
   return (
     await extractAsPromised(area, Area, {
       processor: (choice) => choice.name,
       limit: 1,
       cutoff: 50,
     })
-  )[0][0];
+  )?.[0]?.[0];
 };

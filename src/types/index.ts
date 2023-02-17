@@ -1,19 +1,21 @@
-import { MinigameData,MinigameConstructor } from '@src/types/minigame.js';
+import { Recorder } from "@src/core/recorder.js";
 import { Speaker } from "@src/core/speaker.js";
+import { Command } from "@src/types/command.js";
+import { MinigameConstructor, MinigameData } from "@src/types/minigame.js";
+import { WitAiCommand } from "@src/types/witAiCommand.js";
 import { Client, Collection, Message } from "discord.js";
 import internal from "node:stream";
-import { Command } from "@src/types/command.js";
-import { Recorder } from '@src/core/recorder.js';
-import { Timer } from './timer';
+import { Timer } from "./timer";
 
 export type ExtensionClient = Client & {
   commands: Collection<string, Command>;
+  witAiCommands: Collection<string, WitAiCommand>;
   speakers: Collection<string, Speaker>;
   recorder: Collection<string, Recorder>;
   minigames: Collection<string, MinigameConstructor>;
-  gameData:Collection<string,MinigameData>;
-  timers:Collection<string,Timer[]>;
-  messageResponses : MessageResponse[];
+  gameData: Collection<string, MinigameData>;
+  timers: Collection<string, Timer>;
+  messageResponses: MessageResponse[];
 };
 
 export interface Event {
@@ -44,7 +46,7 @@ export type CustomSearchJson = {
     totalResults: string;
     formattedTotalResults: string;
   };
-  items:CustomSearchItem[]
+  items: CustomSearchItem[];
 };
 
 export type CustomSearchPage = {
@@ -60,37 +62,37 @@ export type CustomSearchPage = {
 };
 
 export type CustomSearchItem = {
-  kind:string
-  title:string
-  htmlTitle:string
-  link:string
-  displayLink:string
-  snippet:string
-  htmlSnippet:string
-  cacheId:string
-  formattedUrl:string
-  htmlFormattedUrl:string
-  pagemap:CustomSearchPagemap[]
-}
+  kind: string;
+  title: string;
+  htmlTitle: string;
+  link: string;
+  displayLink: string;
+  snippet: string;
+  htmlSnippet: string;
+  cacheId: string;
+  formattedUrl: string;
+  htmlFormattedUrl: string;
+  pagemap: CustomSearchPagemap[];
+};
 
 export type CustomSearchPagemap = {
-  cse_thumbnail?:{[key:string]:string}
-  metatags?:{[key:string]:string}
-  cse_image?:{[key:string]:string}
-}
+  cse_thumbnail?: { [key: string]: string };
+  metatags?: { [key: string]: string };
+  cse_image?: { [key: string]: string };
+};
 
 export type TranslateResponseJson = {
-  params?:{
-    text:string
-    source:string
-    target:string
-  }
-  code?:number
-  text:string
-}
+  params?: {
+    text: string;
+    source: string;
+    target: string;
+  };
+  code?: number;
+  text: string;
+};
 
 export type MessageResponse = {
-  name:string;
-  filter(message:Message):Boolean;
-  execute(client:ExtensionClient,message:Message) : any;
-}
+  name: string;
+  filter(message: Message): Boolean;
+  execute(client: ExtensionClient, message: Message): any;
+};

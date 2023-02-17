@@ -1,6 +1,6 @@
 import { ExtensionClient, MessageResponse,StorageType } from "@src/types/index.js";
 import { storage } from "@src/core/storage.js";
-import { speak } from "@src/util/index.js";
+import { reply, speak } from "@src/util/index.js";
 import { Message } from "discord.js";
 
 const classify = async (imageURL: URL) => {
@@ -55,10 +55,7 @@ export const messageResponse: MessageResponse = {
 };
 
 const tero = (client:ExtensionClient,message:Message) =>{
-  message.reply({
-    content: "飯テロが検出されました",
-    allowedMentions: { repliedUser: false },
-  });
+  reply(message,"飯テロが検出されました");
   if (message.guild)
       speak(
         client,

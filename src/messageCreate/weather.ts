@@ -1,6 +1,6 @@
 import { getArea, getWeather } from "@src/core/weather.js";
 import { MessageResponse } from "@src/types/index.js";
-import { speak } from "@src/util/index.js";
+import { isNullOrWhitespace, reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "weather",
@@ -8,17 +8,18 @@ export const messageResponse: MessageResponse = {
   async execute(client, message) {
     const areaCode = (
       await getArea(message.cleanContent.replace(/^(天気|weather)/i, ""))
-    ).getCode;
+    )?.getCode;
+    if (!areaCode) return reply(message,`場所の取得に失敗しました。`);
     const weather = await getWeather(areaCode);
-    message.reply({
-      content: weather[0]
+    reply(
+      message,
+      weather[0]
         .map(
           (w) => `> \`${w.name}\`
 > ${w.weather}`
         )
-        .join("\n\n"),
-      allowedMentions: { repliedUser: false },
-    });
+        .join("\n\n")
+    );
     if (message.guild)
       speak(
         client,

@@ -1,4 +1,4 @@
-import { speak } from "./../util/index.js";
+import { reply, speak } from "@src/util/index.js";
 import { MessageResponse } from "@src/types/index.js";
 
 export const messageResponse: MessageResponse = {
@@ -9,22 +9,15 @@ export const messageResponse: MessageResponse = {
     const res = message.cleanContent.match(
       /^([1-9][0-9]{0,1}|100)[dD]([1-9][0-9]{0,4})$/
     );
-    if (!res)
-      return message.reply({
-        content: `エラー`,
-        allowedMentions: { repliedUser: false },
-      });
+    if (!res) return reply(message, `エラー`);
     const dices = new Array(+res[1])
       .fill(0)
       .map(() => Math.floor(Math.random() * +res[2]) + 1);
-    message.reply({
-      content:
-        `Dice :${dices.join(" ")}` +
-        (+res[1] > 1
-          ? `\nSUM : ${dices.reduce((s, dice) => s + dice, 0)}`
-          : ""),
-      allowedMentions: { repliedUser: false },
-    });
+    reply(
+      message,
+      `Dice :${dices.join(" ")}` +
+        (+res[1] > 1 ? `\nSUM : ${dices.reduce((s, dice) => s + dice, 0)}` : "")
+    );
     if (message.guild)
       speak(
         client,
@@ -32,7 +25,7 @@ export const messageResponse: MessageResponse = {
         `出た目はそれぞれ${dices.join(" ")}です` +
           (+res[1] > 1
             ? `\n合計は${dices.reduce((s, dice) => s + dice, 0)}です`
-          : ""),
+            : ""),
         message.channelId
       );
   },
