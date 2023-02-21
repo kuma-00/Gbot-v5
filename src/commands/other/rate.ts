@@ -58,20 +58,24 @@ export const command: Command = {
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
     const text = interaction.options.getString("options");
-    const image = interaction.options.getAttachment("image",true).url;
+    const image = interaction.options.getAttachment("image", true).url;
     const result = await ocr(new URL(image), interaction);
     if (!result)
       return interaction.followUp(createError(`画像の解析に失敗しました。`));
     const arti = new Artifact(result);
     const e = arti.toEmbedBuilder();
-    e.files?.push({attachment:image,name:"Artifact.png"})
+    e.files?.push({ attachment: image, name: "Artifact.png" });
     const msg = await interaction.followUp(e);
-    const i = await interaction.channel?.awaitMessageComponent({filter:i=>i.customId=="gb_rate_detail",time:60*1000})
+    const channel = interaction.channel;
+    if (!(channel && "awaitMessageComponent" in channel)) return;
+    const i = await channel.awaitMessageComponent({
+      filter: (i) => i.customId == "gb_rate_detail",
+      time: 60 * 1000,
+    });
     e.components[0].components[0].setDisabled(true);
     msg.edit(e);
-    if(i){
+    if (i) {
       i.reply(arti.toDetail());
     }
-
   },
 };

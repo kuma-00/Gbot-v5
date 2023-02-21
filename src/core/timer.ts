@@ -66,7 +66,7 @@ export const removeTimer = (client: ExtensionClient, id: string) => {
 
 export const timer = async (client: ExtensionClient, timer: Timer) => {
   const channel = await client.channels.fetch(timer.textChannelId);
-  if (channel && channel.isTextBased()) {
+  if (channel && channel.isTextBased() && "send" in channel) {
     const user = await client.users.fetch(timer.userId);
     const embed = new EmbedBuilder();
     embed.setAuthor({

@@ -18,7 +18,7 @@ export const command: Command = {
           interaction.guild.voiceStates.cache.first()?.channel
         );
       })();
-      if (voiceChannel == null || interaction.channel === null) {
+      if (voiceChannel == null || interaction.channel === null || !("send" in interaction.channel)) {
         interaction.followUp("VoiceChannelが見つかりませんでした")
         return;
       }

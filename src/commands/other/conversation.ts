@@ -16,9 +16,18 @@ export const command: Command = {
     interaction.followUp("何か話しかけてみて!(**終了**で停止)");
     const filter = (m: Message) =>
       !!m.content && m.author.id != client.user?.id;
-    const collector = interaction.channel?.createMessageCollector({ filter });
+    const channel = interaction.channel;
+    if (!(channel && "createMessageCollector" in channel)) {
+      interaction.followUp("初期化に失敗しました");
+      return;
+    }
+    const collector = channel.createMessageCollector({ filter });
     collector?.on("collect", async (m) => {
       // if(m.author.id == this.client.user.id) return;
+      const channel = m.channel;
+      if (!(channel && "createMessageCollector" in channel)) {
+        return;
+      }
       if (
         [
           "end",
@@ -33,12 +42,12 @@ export const command: Command = {
       ) {
         collector.stop();
         console.log("end noby");
-        m.channel.send("さよなら (終了)");
+        channel.send("さよなら (終了)");
         return;
       }
-      m.channel.sendTyping();
+      channel.sendTyping();
       const ret = await noby(m.content);
-      if (ret) m.channel.send(ret);
+      if (ret) channel.send(ret);
       //console.log(`Collected ${m.content}`)
     });
     // collector?.on('end', collected => console.log(`Collected ${collected.size} items`));

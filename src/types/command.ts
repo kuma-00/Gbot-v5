@@ -1,10 +1,9 @@
 import {
   AutocompleteInteraction,
-  ButtonInteraction,
-  CacheType,
   ContextMenuCommandBuilder,
   InteractionCollector,
-  SelectMenuInteraction,
+  MappedInteractionTypes,
+  MessageComponentType,
   SlashCommandBuilder,
 } from "discord.js";
 import { CommandInteraction, ContextMenuCommandInteraction } from "discord.js";
@@ -20,7 +19,7 @@ export type CommandCategory =
   typeof CommandCategory[keyof typeof CommandCategory];
 
 export interface Command {
-  collector?: InteractionCollector<ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>>;
+  collector?: InteractionCollector<MappedInteractionTypes[MessageComponentType]>;
   category: CommandCategory;
   guildOnly: boolean;
   enabled: boolean;

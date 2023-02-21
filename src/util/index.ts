@@ -8,7 +8,7 @@ import {
   User,
   Guild,
   Message,
-  ReplyMessageOptions,
+  MessageReplyOptions,
 } from "discord.js";
 
 export const followUpError = (
@@ -137,7 +137,7 @@ export const random = (min: number, max: number) =>
 
 export const reply = (
   message: Message,
-  options: string | ReplyMessageOptions
+  options: string | MessageReplyOptions
 ) => {
   if (!(options instanceof Object)) options = { content: options };
   return message.reply({ ...options, allowedMentions: { repliedUser: false } });

@@ -15,7 +15,9 @@ export const command: Command = {
     .setName("ojosama"),
   async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true);
-    interaction.channel?.sendTyping();
+    const channel = interaction.channel;
+    if (!(channel && "sendTyping" in channel)) return;
+    channel.sendTyping();
     // const text = shuffle(tokenize(msg.cleanContent)).join("")
     const text = (
       await (

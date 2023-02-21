@@ -8,7 +8,6 @@
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node build/main.js",
     "compile": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
-    "build": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
     "compRes": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json && pm2 restart gbot-v5Ranger",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts",
@@ -26,8 +25,6 @@
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",
     "@types/jest": "^29.4.0",
-    "@types/node": "^18.14.0",
-    "@types/wav": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "esbuild-node-loader": "^0.8.0",
@@ -43,7 +40,9 @@
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.2",
     "tsconfig-paths": "^4.1.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "@types/node": "^18.14.0",
+    "@types/wav": "^1.0.1"
   },
   "dependencies": {
     "@discordjs/opus": "^0.9.0",

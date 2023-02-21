@@ -1,5 +1,5 @@
 import { Event, StorageType } from "@src/types/index.js";
-import { TextBasedChannel, VoiceState } from "discord.js";
+import { StageChannel, TextBasedChannel, VoiceState } from "discord.js";
 import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
 import { storage } from "@src/core/storage.js";
 
@@ -9,7 +9,7 @@ export const event:Event = {
     const newUserChannel = newState.channel;
     const oldUserChannel = oldState.channel;
     const guild = oldState.guild;
-    const channel = await guild.channels.cache.get((await storage(StorageType.SETTINGS).get(`${guild.id}:cacheChannelId`))?.value as string) as TextBasedChannel;
+    const channel = await guild.channels.cache.get((await storage(StorageType.SETTINGS).get(`${guild.id}:cacheChannelId`))?.value as string) as Exclude<TextBasedChannel,StageChannel>;
     const isSpeaking = await SpeakerStatus.get(guild.id);
     // const speaker = this.speaker(guild.id);
     if (isSpeaking == SpeakerStatus.ERROR) {

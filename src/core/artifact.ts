@@ -8,22 +8,22 @@ import {
   MessageActionRowComponentBuilder,
 } from "discord.js";
 import { extract } from "fuzzball";
-import genshin from "genshin-db";
+import  { artifacts, Language ,Artifact as genshinDBArtifact} from "genshin-db";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
-const { artifacts, Languages } = genshin;
+// const { artifacts, Language } = genshin;
 
 const artifactList = artifacts("5", {
-  queryLanguages: [Languages.Japanese],
-  resultLanguage: Languages.Japanese,
+  queryLanguages: [Language.Japanese],
+  resultLanguage: Language.Japanese,
   matchCategories: true,
 });
 const artifactData = (() => {
   if (!Array.isArray(artifactList)) return;
-  let artifactData: Record<string, genshin.Artifact> = {};
+  let artifactData: Record<string, genshinDBArtifact> = {};
   artifactList.forEach((s) => {
     const a = artifacts(s, {
-      queryLanguages: [Languages.Japanese],
-      resultLanguage: Languages.Japanese,
+      queryLanguages: [Language.Japanese],
+      resultLanguage: Language.Japanese,
     });
     if (a) artifactData[s] = a;
   });

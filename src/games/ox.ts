@@ -9,8 +9,10 @@ import {
   escapeMarkdown,
   GuildMember,
   InteractionCollector,
+  MappedInteractionTypes,
   Message,
   MessageComponentInteraction,
+  MessageComponentType,
   SelectMenuInteraction,
 } from "discord.js";
 import {
@@ -48,7 +50,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
   playerPos: 0 | 1 = 0;
   msg!: Message;
   collector!: InteractionCollector<
-    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+    MappedInteractionTypes[MessageComponentType]
   >;
   client: ExtensionClient;
   get nextPlayer(): GuildMember | undefined {

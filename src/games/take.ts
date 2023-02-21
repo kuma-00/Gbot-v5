@@ -23,6 +23,8 @@ import {
   GuildManager,
   GuildMember,
   Guild,
+  MappedInteractionTypes,
+  MessageComponentType,
 } from "discord.js";
 
 type takeGameLog = {
@@ -49,7 +51,7 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
   isCountDownEnd = false;
   UIMsg!: Message;
   collector!: InteractionCollector<
-    ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+  MappedInteractionTypes[MessageComponentType]
   >;
   nyokiData = new Collection<string, string>();
   constructor(client: ExtensionClient, data: MinigameData) {

@@ -13,6 +13,7 @@ import {
   GuildMember,
   MessageComponentInteraction,
   InteractionType,
+  StringSelectMenuBuilder,
 } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import { MinigameData } from "@src/types/minigame.js";
@@ -32,7 +33,7 @@ export const command: Command = {
     const name = interaction.options.getString("name", false);
     const game = client.minigames.get(name || "");
     const channel = interaction.channel;
-    if (name && game && channel && channel instanceof TextChannel) {
+    if (name && game && channel && channel instanceof TextChannel && "createMessageCollector" in channel) {
       const id = randomId();
       const minigameData: MinigameData = {
         gameConstructor: game,
@@ -153,8 +154,7 @@ export const command: Command = {
         return false;
       };
       if (this.collector) this.collector.stop();
-
-      this.collector = interaction.channel.createMessageComponentCollector({
+      this.collector = channel.createMessageComponentCollector({
         filter,
         idle: 10 * 60 * 1000,
       });
@@ -228,7 +228,7 @@ ${game.members.length}人${
 
   const selects = gameData.ruleData?.map((rule) => {
     return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-      new SelectMenuBuilder()
+      new StringSelectMenuBuilder()
         .setCustomId(`gb_game_rule_select:${rule.id}`)
         .setPlaceholder("ルールを選択してください。")
         .setMinValues(1)

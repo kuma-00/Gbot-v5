@@ -1,4 +1,4 @@
-import { Guild, GuildMember, TextBasedChannel, User } from "discord.js";
+import { Guild, GuildMember, StageChannel, TextBasedChannel, User } from "discord.js";
 import { ExtensionClient } from ".";
 import { MessageResponseJson } from "./witAi.js";
 
@@ -13,6 +13,6 @@ export type WitAiCommandData = {
   guild?: Guild;
   member?: GuildMember;
   user: User;
-  channel: TextBasedChannel;
+  channel: Exclude<TextBasedChannel,StageChannel>;
   res: MessageResponseJson;
 };

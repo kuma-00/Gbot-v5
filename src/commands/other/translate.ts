@@ -1,4 +1,4 @@
-import { SlashCommandBuilder,ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import { translate } from "@src/core/translate.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 
@@ -27,12 +27,13 @@ export const command: Command = {
           "翻訳元の言語(https://cloud.google.com/translate/docs/languages)"
         )
     ),
-  async execute(client, interaction:ChatInputCommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     const word = interaction.options.getString("word", true);
-    interaction.channel?.sendTyping();
-    const text = (
-      await translate(word.replace(/[*`_~>]/, ""), null, "ja")
-    ).text;
+    const channel = interaction.channel;
+    if (!(channel && "sendTyping" in channel)) return;
+    channel.sendTyping();
+    const text = (await translate(word.replace(/[*`_~>]/, ""), null, "ja"))
+      .text;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
     if (interaction.guildId && interaction.guild) {
       const speaker = client.speakers.get(interaction.guildId);

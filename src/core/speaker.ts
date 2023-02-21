@@ -6,13 +6,13 @@ import {
   AudioPlayerStatus,
   createAudioResource,
   createAudioPlayer,
-  StreamType,
   NoSubscriberBehavior,
 } from "@discordjs/voice";
 import {
   Message,
   MessageCollector,
   Snowflake,
+  StageChannel,
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
@@ -57,7 +57,7 @@ export class Speaker {
   constructor(
     public client: ExtensionClient,
     public voiceChannel: VoiceBasedChannel,
-    public textChannel: TextBasedChannel
+    public textChannel: Exclude<TextBasedChannel,StageChannel>
   ) {
     this.client = client;
     this.voiceChannel = voiceChannel;
@@ -99,7 +99,7 @@ export class Speaker {
     return isGuild && isReadingChannel && isNotMyMessage;
   };
 
-  async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
+  async start(voiceChannel?: VoiceBasedChannel, textChannel?: Exclude<TextBasedChannel,StageChannel>) {
     this.isPlaying = false;
     if(voiceChannel)this.voiceChannel = voiceChannel;
     if(textChannel)this.textChannel = textChannel;
