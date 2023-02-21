@@ -8,6 +8,7 @@
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node build/main.js",
     "compile": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
+    "build": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
     "compRes": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json && pm2 restart gbot-v5Ranger",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts",
