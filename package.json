@@ -14,7 +14,8 @@
     "pm2-start": "pm2 start build/main.js --name gbot-v5Ranger",
     "pm2-restart": "pm2 restart gbot-v5Ranger",
     "pm2-stop": "pm2 stop gbot-v5Ranger",
-    "pm2-logs": "pm2 logs gbot-v5Ranger --lines 100"
+    "pm2-logs": "pm2 logs gbot-v5Ranger --lines 100",
+    "deploy":"npm run compile && flyctl deploy"
   },
   "engines": {
     "node": "18.x"

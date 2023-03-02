@@ -10,17 +10,19 @@ export const command: WitAiCommand = {
     const location = data.res.entities["wit$location:location"]?.[0].body || "";
     if (isNullOrWhitespace(location))
       return data.channel.send(`場所の取得に失敗しました。`);
-    console.log(data.res.entities["wit$location:location"]?.[0], location);
-    const areaCode = (await getArea(location))?.getCode;
-    if (!areaCode) return data.channel.send(`場所の取得に失敗しました。`);
-    const weather = await getWeather(areaCode);
+    // console.log(data.res.entities["wit$location:location"]?.[0], location);
+    const area = (await getArea(location));
+    if (!area) return data.channel.send(`場所の取得に失敗しました。`);
+    const weather = await getWeather(area.getCode);
     data.channel.send(
-      weather[0]
+      `**${area.name}**
+
+${weather[0]
         .map(
           (w) => `> \`${w.name}\`
 > ${w.weather}`
         )
-        .join("\n\n")
+        .join("\n\n")}`
     );
     if (data.guild)
       speak(

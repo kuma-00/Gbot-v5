@@ -126,6 +126,23 @@ export class Speaker {
         SpeakerStatus.set(this.guildId, SpeakerStatus.ERROR);
       }
     });
+    // -----------------------------------------------------------------------------
+    connection.on("stateChange", (old_state, new_state) => {
+      console.log(
+        "join",
+        "Connection state change from",
+        old_state.status,
+        "to",
+        new_state.status
+      );
+      if (
+        old_state.status === VoiceConnectionStatus.Ready &&
+        new_state.status === VoiceConnectionStatus.Connecting
+      ) {
+        connection.configureNetworking();
+      }
+    });
+    // -----------------------------------------------------------------------------
     this.addQueue("読み上げが開始しました。");
     const readChannels = await this.getReadChannels();
     readChannels.forEach((id) => {
