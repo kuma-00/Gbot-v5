@@ -127,20 +127,17 @@ export class Speaker {
       }
     });
     // -----------------------------------------------------------------------------
-    connection.on("stateChange", (old_state, new_state) => {
-      console.log(
-        "join",
-        "Connection state change from",
-        old_state.status,
-        "to",
-        new_state.status
-      );
-      if (
-        old_state.status === VoiceConnectionStatus.Ready &&
-        new_state.status === VoiceConnectionStatus.Connecting
-      ) {
-        connection.configureNetworking();
+    connection.on('stateChange', (oldState, newState) => {
+      const oldNetworking = Reflect.get(oldState, 'networking');
+      const newNetworking = Reflect.get(newState, 'networking');
+
+      const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+        const newUdp = Reflect.get(newNetworkState, 'udp');
+        clearInterval(newUdp?.keepAliveInterval);
       }
+
+      oldNetworking?.off('stateChange', networkStateChangeHandler);
+      newNetworking?.on('stateChange', networkStateChangeHandler);
     });
     // -----------------------------------------------------------------------------
     this.addQueue("読み上げが開始しました。");

@@ -31,7 +31,7 @@ export type ExtensionBase = Base & {
   ): Promise<FetchResponse>;
 };
 
-console.log("起動準備開始");
+console.log("起動準備開始 var:",process.env.npm_package_version);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
