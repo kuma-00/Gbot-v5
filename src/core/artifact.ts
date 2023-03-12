@@ -8,9 +8,10 @@ import {
   MessageActionRowComponentBuilder,
 } from "discord.js";
 import { extract } from "fuzzball";
-import  { artifacts, Language ,Artifact as genshinDBArtifact} from "genshin-db";
+import genshin_db, { Artifact as genshinDBArtifact } from "genshin-db";
 import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
 // const { artifacts, Language } = genshin;
+const { artifacts, Language } = genshin_db;
 
 const artifactList = artifacts("5", {
   queryLanguages: [Language.Japanese],
@@ -112,8 +113,8 @@ export class Artifact {
   subDetailData: (
     | {
         index: number;
-        valueItems: number[]|undefined;
-        indexItems: number[]|undefined;
+        valueItems: number[] | undefined;
+        indexItems: number[] | undefined;
         value: any;
       }[]
     | undefined
@@ -497,8 +498,8 @@ export class Artifact {
       if (base.value == val) return [base];
       let results: {
         index: number;
-        valueItems: number[]|undefined;
-        indexItems: number[]|undefined;
+        valueItems: number[] | undefined;
+        indexItems: number[] | undefined;
         value: number;
       }[] = [];
       if (base.indexItems.length > 1) patterns.push(base.indexItems);
@@ -524,12 +525,16 @@ export class Artifact {
     if (data[0] <= value && data[3] * 6 >= value) {
       const results: {
         index: number;
-        valueItems: number[]|undefined;
-        indexItems: number[]|undefined;
+        valueItems: number[] | undefined;
+        indexItems: number[] | undefined;
         value: any;
       }[] = [];
       check(data, value).forEach((i) => {
-        if (results.some((j) => equalsPattern(j.indexItems || [0], i.indexItems || [0])))
+        if (
+          results.some((j) =>
+            equalsPattern(j.indexItems || [0], i.indexItems || [0])
+          )
+        )
           return;
         results.push(i);
       });
@@ -583,7 +588,7 @@ ${
 }`
       )
       .setThumbnail(`attachment://${id}-${this.type}.jpg`)
-      .setImage("attachment://Artifact.png")
+      .setImage("attachment://Artifact.png");
     if (this.error) embed.setColor([255, 0, 0]);
     const button = new ButtonBuilder()
       .setCustomId("gb_rate_detail")
@@ -638,7 +643,9 @@ ${
 サブステータス詳細:
 ${this.subs
   .map(
-    (sub, i) => `${sub.name}+${sub.val}${sub.hasPercent ? "%" : ""} \\*${this.weights[this.subs[i].type]}
+    (sub, i) => `${sub.name}+${sub.val}${sub.hasPercent ? "%" : ""} \\*${
+      this.weights[this.subs[i].type]
+    }
 ${this.subDetailData[i]
   ?.map((d) => d.indexItems?.map((v) => this.detailRect[v]).join(""))
   .join("\n")}
