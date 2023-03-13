@@ -5,6 +5,8 @@ kill_signal = "SIGINT"
 kill_timeout = 5
 
 [env]
+  NODE_OPTIONS="--max-old-space-size=192"
+  SWAP="true"
 
 [experimental]
   auto_rollback = true
