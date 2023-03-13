@@ -3,7 +3,6 @@
 app = "gbot-v5ranger"
 kill_signal = "SIGINT"
 kill_timeout = 5
-processes = []
 
 [env]
 

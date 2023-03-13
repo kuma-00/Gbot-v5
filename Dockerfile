@@ -7,6 +7,7 @@ RUN curl https://get.volta.sh | bash
 ENV VOLTA_HOME /root/.volta
 ENV PATH /root/.volta/bin:$PATH
 RUN volta install node@${NODE_VERSION}
+RUN npm install -g npm@9.6.1
 
 #######################################################################
 
@@ -33,4 +34,6 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV PATH /root/.volta/bin:$PATH
 
-CMD [ "npm", "run", "start" ]
+RUN free -m
+CMD if [ ! -z "$SWAP" ]; then fallocate -l $(($(stat -f -c "(%a*%s/10)*7" .))) _swapfile && mkswap _swapfile && swapon _swapfile && ls -hla; fi; free -m; /app/run
+# CMD [ "npm", "run", "start" ]
