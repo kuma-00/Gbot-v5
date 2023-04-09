@@ -6,9 +6,9 @@ import { StageChannel } from "discord.js";
 
 export const messageResponse: MessageResponse = {
   name: "witAi",
-  filter: (m) => /^(gbot)/i.test(m.cleanContent),
+  filter: (m) => /^(gbot)\s+/i.test(m.cleanContent),
   async execute(client, message) {
-    const text = message.cleanContent.replace(/^(gbot)/i, "");
+    const text = message.cleanContent.replace(/^(gbot)\s+/i, "");
     const res = await witMessage(tokenize(text).join(" "));
     if ("error" in res || message.channel instanceof StageChannel) {
       reply(

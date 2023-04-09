@@ -6,16 +6,16 @@ import { parse } from "date-fns";
 export const messageResponse: MessageResponse = {
   name: "timer",
   filter: (m) =>
-    (m.guild ?? false) && /^(タイマー|timer)/i.test(m.cleanContent),
+    (m.guild ?? false) && /^(タイマー|timer)\s+/i.test(m.cleanContent),
   async execute(client, message) {
     const second =
       parse(
-        message.cleanContent.replace(/^(タイマー|timer)/i, ""),
+        message.cleanContent.replace(/^(タイマー|timer)\s+/i, ""),
         "m:ss",
         new Date(0)
       ).getTime() / 1000;
     console.log(
-      message.cleanContent.replace(/^(タイマー|timer)/i, ""),
+      message.cleanContent.replace(/^(タイマー|timer)\s+/i, ""),
       "timer:",
       second
     );
