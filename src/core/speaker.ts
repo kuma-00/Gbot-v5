@@ -36,7 +36,7 @@ export class SpeakerStatus {
   }
   static async get(guildId: Snowflake) {
     return (await storage(StorageType.SETTINGS).get(`${guildId}:SpeakerStatus`))
-      ?.value as SpeakerStatusType;
+      ?.value as SpeakerStatusType | undefined;
   }
 }
 
@@ -57,7 +57,7 @@ export class Speaker {
   constructor(
     public client: ExtensionClient,
     public voiceChannel: VoiceBasedChannel,
-    public textChannel: Exclude<TextBasedChannel,StageChannel>
+    public textChannel: Exclude<TextBasedChannel, StageChannel>
   ) {
     this.client = client;
     this.voiceChannel = voiceChannel;
@@ -82,7 +82,7 @@ export class Speaker {
       return m.cleanContent;
     })();
     const userName = m.member?.nickname || m.member?.user.username;
-    if(content.indexOf("!") == 0) return;
+    if (content.indexOf("!") == 0) return;
     this.addQueue(
       new SpeakData(content, {
         channelId: m.channelId,
@@ -99,16 +99,18 @@ export class Speaker {
     return isGuild && isReadingChannel && isNotMyMessage;
   };
 
-  async start(voiceChannel?: VoiceBasedChannel, textChannel?: Exclude<TextBasedChannel,StageChannel>) {
+  async start(voiceChannel?: VoiceBasedChannel, textChannel?: Exclude<TextBasedChannel, StageChannel>) {
     this.isPlaying = false;
-    if(voiceChannel)this.voiceChannel = voiceChannel;
-    if(textChannel)this.textChannel = textChannel;
+    this.voiceChannel = voiceChannel || this.voiceChannel;
     this.queue = [];
-    if(textChannel)await storage(StorageType.SETTINGS).put(
-      textChannel.id,
-      `${this.guildId}:cacheChannelId`
-    );
-    if(textChannel)this.addChannel(textChannel.id);
+    if (textChannel) {
+      this.textChannel = textChannel;
+      await storage(StorageType.SETTINGS).put(
+        textChannel.id,
+        `${this.guildId}:cacheChannelId`
+      );
+      this.addChannel(textChannel.id);
+    }
     const connection = joinVoiceChannel({
       channelId: this.voiceChannel.id,
       guildId: this.guildId,
@@ -126,20 +128,6 @@ export class Speaker {
         SpeakerStatus.set(this.guildId, SpeakerStatus.ERROR);
       }
     });
-    // -----------------------------------------------------------------------------
-    connection.on('stateChange', (oldState, newState) => {
-      const oldNetworking = Reflect.get(oldState, 'networking');
-      const newNetworking = Reflect.get(newState, 'networking');
-
-      const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-        const newUdp = Reflect.get(newNetworkState, 'udp');
-        clearInterval(newUdp?.keepAliveInterval);
-      }
-
-      oldNetworking?.off('stateChange', networkStateChangeHandler);
-      newNetworking?.on('stateChange', networkStateChangeHandler);
-    });
-    // -----------------------------------------------------------------------------
     this.addQueue("読み上げが開始しました。");
     const readChannels = await this.getReadChannels();
     readChannels.forEach((id) => {
@@ -150,8 +138,10 @@ export class Speaker {
 
   async end(auto: boolean = false) {
     this._collectors.forEach((c) => c.stop());
-    this.addQueue("読み上げが終了しました。");
-    await this.addQueue("ご利用ありがとう御座います。");
+    await Promise.all([
+      this.addQueue("読み上げが終了しました。"),
+      this.addQueue("ご利用ありがとうございました。")
+    ]);
     SpeakerStatus.set(
       this.guildId,
       auto ? SpeakerStatus.WAITE : SpeakerStatus.END
@@ -168,31 +158,25 @@ export class Speaker {
   async addQueue(data: SpeakData | string) {
     if (typeof data === "string")
       data = new SpeakData(data, { channelId: this.textChannel.id });
-    if (
-      data.userName &&
-      data.userName.match(/\S/g) &&
-      data.userName !== this._lastUserName
-    ) {
+    if (data.text.startsWith("::")) {
+      data = new SpeakData(data.text.replace(/^\:\:/, ""), { channelId: this.textChannel.id });
+    }
+    if (/\S/.test(data.userName) && data.userName !== this._lastUserName) {
       data.addUserName();
       this._lastUserName = data.userName;
     }
     data.text = await this.textReplace(data.text);
     console.log("読み上げ:", data.text);
-    if (data.text.match(/{\s*s?:\/\/[\w!?/+\-_~=;.,*&@#$%()'[\]]+\s*}/)) {
+
+    if (/({|})/.test(data.text)) {
       const texts = data.text.split(/({|})/);
       for (const text of texts) {
         console.log({ text });
         if (text === "{" || text === "}" || text === "") continue;
         if (text.match(/s?:\/\//)) {
-          if (data.text.match(/s?:\/\/drive.google.com\/file\/d\/(.+)\/view/)) {
-            const id = data.text.match(
-              /s?:\/\/drive.google.com\/file\/d\/(.+)\/view/
-            )?.[1];
-            this.queue.push(new URL(`https://drive.google.com/uc?id=${id}`));
-          } else {
-            this.queue.push(new URL(`http${text}`));
-          }
-          this.playAudio();
+          const idMatches = data.text.match(/s?:\/\/drive.google.com\/file\/d\/(.+)\/view/);
+          const url = (idMatches ? `https://drive.google.com/uc?id=${idMatches[1]}` : `http${text}`);
+          this.queue.push(new URL(url));
         } else {
           await this.addSpeak(new SpeakData(text).inheritance(data));
         }
@@ -210,25 +194,19 @@ export class Speaker {
     // DiscordSRV & LunaChat 矯正
     text = text.replace(/»(.)+\(/g, "");
     // 辞書読み込み
-    if (
-      (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`))
-        ?.value
-    ) {
+    const dicChange = (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`))?.value;
+    if (!this._dicPattern || dicChange) {
+      if (dicChange) await storage(StorageType.SETTINGS).put(false, `${this.guildId}:dicChange`);
       await this.createDicPattern();
-      await storage(StorageType.SETTINGS).put(
-        false,
-        `${this.guildId}:dicChange`
-      );
     }
-    if (!this._dicPattern) await this.createDicPattern();
+
     // 辞書による置き換え
     text = text.replace(this._dicPattern, (e) => this._dic[e]);
     // 絵文字読み上げ調整
-    text = text.replace(/<a?:(.+?):\d{18,19}>/g, (_,s)=>s);
+    text = text.replace(/<a?:(.+?):\d{18,19}>/g, (_, s) => s);
     // 辞書変換後の発声URLの一次変換
     text = text.replace(/{\s*http/, "{");
-    // text = text.replace(/<\/?(.+):?(\d+)>/, "");
-    // 以下略
+    // 文字列が長すぎたら切り落として、「以下略」を付ける
     text = text.length > 190 ? text.slice(0, 190) + "以下略" : text;
     return text;
   }
@@ -258,63 +236,48 @@ export class Speaker {
   }
 
   async addSpeak(data: SpeakData) {
-    const vicData: VTOption = data.vtOption !== undefined?data.vtOption:
-      ((
-        await storage(StorageType.SETTINGS).get(
-          `${this.guildId}:${data.userId}`
-        )
-      )?.value as VTOption) || VTDefaultOption;
-    const buf = new Uint8Array(await voice.option(vicData).speak(data.text));
-    const stream = new Readable({
-      read() {
-        this.push(buf);
-        this.push(null);
-      },
-    });
+    const { userId, vtOption } = data;
+    const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
+    const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
+    const buf = await voice.option(vicData).speak(data.text);
+    const stream = Readable.from(new Uint8Array(buf));
     this.queue.push(stream);
     this.playAudio();
   }
 
   async playAudio() {
-    if (!this.isPlaying && this.queue.length > 0) {
-      this.isPlaying = true;
-      const resource =
-        this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body as unknown as Readable : this.queue[0];
-      if(!resource){
-        // console.log("test");
-        if (this._loop) {
-          this.queue.push(this.queue[0]);
-          this.queue.shift();
-        } else {
-          this.queue.shift();
-        }
-        this.isPlaying = false;
-        this.playAudio();
-        return;
+    if (this.isPlaying && this.queue.length == 0) return;
+    this.isPlaying = true;
+    const resource =
+      this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body as unknown as Readable : this.queue[0];
+    if (!resource) {
+      // console.log("test");
+      if (this._loop) {
+        this.queue.push(this.queue[0]);
       }
-      // console.log(resource instanceof Readable || resource);
-      const audioResource = createAudioResource(resource);
-      this._player = createAudioPlayer({
-        behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
-      });
-      this._player.play(audioResource);
-      const connection = getVoiceConnection(this.guildId);
-      connection?.subscribe(this._player);
-      this._player.on("error", (error) => {
-        console.error(error);
-      });
-      this._player.on(AudioPlayerStatus.Idle, () => {
-        // console.log("test");
-        if (this._loop) {
-          this.queue.push(this.queue[0]);
-          this.queue.shift();
-        } else {
-          this.queue.shift();
-        }
-        this.isPlaying = false;
-        this.playAudio();
-      });
+      this.queue.shift();
+      this.isPlaying = false;
+      this.playAudio();
+      return;
     }
+    // console.log(resource instanceof Readable || resource);
+    const audioResource = createAudioResource(resource);
+    this._player = createAudioPlayer({
+      behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
+    });
+    this._player.play(audioResource);
+    const connection = getVoiceConnection(this.guildId);
+    connection?.subscribe(this._player);
+    this._player.on("error", console.error);
+    this._player.on(AudioPlayerStatus.Idle, () => {
+      // console.log("test");
+      if (this._loop) {
+        this.queue.push(this.queue[0]);
+      }
+      this.queue.shift();
+      this.isPlaying = false;
+      this.playAudio();
+    });
   }
 
   async isReadingChannel(textChannelId: Snowflake) {
