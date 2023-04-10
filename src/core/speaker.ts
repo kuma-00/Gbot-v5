@@ -40,8 +40,8 @@ export class SpeakerStatus {
 }
 
 export class Speaker {
-  isPlaying = false;
-  queue = new Array<SpeakResource>(0);
+  // isPlaying = false;
+  queue:SpeakResource[] = [];
   private _player = createAudioPlayer();
   private _loop = false;
   private _lastUserName = "";
@@ -99,7 +99,7 @@ export class Speaker {
   };
 
   async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
-    this.isPlaying = false;
+    // this.isPlaying = false;
     this.voiceChannel = voiceChannel || this.voiceChannel;
     this.queue = [];
     if (textChannel) {
@@ -238,26 +238,15 @@ export class Speaker {
     const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
     const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
     const stream = await voice.option(vicData).speak(data.text);
-    if(stream == undefined) return;
+    if (stream == undefined) return;
     this.queue.push(stream);
     this.playAudio();
   }
 
   async playAudio() {
-    if (this.isPlaying && this.queue.length == 0) return;
-    this.isPlaying = true;
-    const resource =
-      this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body : this.queue[0];
-    if (!resource) {
-      // console.log("test");
-      if (this._loop) {
-        this.queue.push(this.queue[0]);
-      }
-      this.queue.shift();
-      this.isPlaying = false;
-      this.playAudio();
-      return;
-    }
+    if (this.isPlaying || this.queue.length == 0) return;
+    const resource = this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body : this.queue[0];
+    if (!resource) return this.next();
     const audioResource = createAudioResource(new ReadableWebToNodeStream(resource));
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
@@ -266,15 +255,30 @@ export class Speaker {
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);
     this._player.on("error", console.error);
-    this._player.on(AudioPlayerStatus.Idle, () => {
-      // console.log("test");
-      if (this._loop) {
-        this.queue.push(this.queue[0]);
-      }
-      this.queue.shift();
-      this.isPlaying = false;
-      this.playAudio();
-    });
+    this._player.on(AudioPlayerStatus.Idle, this.next);
+  }
+
+  next() {
+    console.log("next");
+    if (this._loop) {
+      this.queue.push(this.queue[0]);
+    }
+    if(!this.queue) return;
+    this.queue.shift();
+    this.playAudio();
+  }
+
+  get isPlaying() {
+    return this._player?.state.status == AudioPlayerStatus.Playing;
+  }
+
+  skip() {
+    if (this.isPlaying) this._player?.stop();
+  }
+
+  clear() {
+    this.queue = [];
+    this.skip();
   }
 
   async isReadingChannel(textChannelId: Snowflake) {
