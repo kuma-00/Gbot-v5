@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import {
   VTSpeaker,
   VTEmotion,
@@ -8,6 +7,7 @@ import {
   VTDefaultOption,
 } from "@src/types/VT.js";
 import { URLSearchParams } from "node:url";
+import {ReadableWebToNodeStream} from "readable-web-to-node-stream";
 
 // https://github.com/pchw/node-voicetext
 
@@ -136,6 +136,9 @@ export class VoiceText {
         )}`
       );
     }
-    return await response.arrayBuffer();
+    const body = response.body;
+    if (body) {
+      return body;
+    }
   }
 }

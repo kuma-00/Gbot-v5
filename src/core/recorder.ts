@@ -1,7 +1,7 @@
 import { Stream, TransformOptions } from "stream";
 import { Writer } from "wav";
 import mm from "music-metadata";
-import { Transform } from "node:stream";
+import { Transform } from "readable-stream";
 import {
   EndBehaviorType,
   getVoiceConnection,

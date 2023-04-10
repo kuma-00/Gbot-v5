@@ -1,7 +1,6 @@
 import { Area, WeatherCode } from "@src/data/weather_area.js";
 import { FetchWeatherJson } from "@src/types/weather.js";
 import { extractAsPromised } from "fuzzball";
-import fetch from "node-fetch";
 
 //https://qiita.com/youtoy/items/932bc48b03ced5a45c71
 

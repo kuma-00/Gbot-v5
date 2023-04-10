@@ -12,7 +12,6 @@ import {
   Message,
   MessageCollector,
   Snowflake,
-  StageChannel,
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
@@ -21,7 +20,7 @@ import { storage } from "@src/core/storage.js";
 import { VoiceText } from "@src/core/voicetext.js";
 import { SpeakData, sleep } from "@src/util/index.js";
 import { VTOption, VTDefaultOption } from "@src/types/VT.js";
-import { Readable } from "node:stream";
+import { ReadableWebToNodeStream } from "readable-web-to-node-stream";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export type SpeakerStatusType = "END" | "SPEAKING" | "ERROR" | "WAIT";
@@ -57,7 +56,7 @@ export class Speaker {
   constructor(
     public client: ExtensionClient,
     public voiceChannel: VoiceBasedChannel,
-    public textChannel: Exclude<TextBasedChannel, StageChannel>
+    public textChannel: TextBasedChannel
   ) {
     this.client = client;
     this.voiceChannel = voiceChannel;
@@ -99,7 +98,7 @@ export class Speaker {
     return isGuild && isReadingChannel && isNotMyMessage;
   };
 
-  async start(voiceChannel?: VoiceBasedChannel, textChannel?: Exclude<TextBasedChannel, StageChannel>) {
+  async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
     this.isPlaying = false;
     this.voiceChannel = voiceChannel || this.voiceChannel;
     this.queue = [];
@@ -156,8 +155,7 @@ export class Speaker {
   }
 
   async addQueue(data: SpeakData | string) {
-    if (typeof data === "string")
-      data = new SpeakData(data, { channelId: this.textChannel.id });
+    if (typeof data === "string") data = new SpeakData(data, { channelId: this.textChannel.id });
     if (data.text.startsWith("::")) {
       data = new SpeakData(data.text.replace(/^\:\:/, ""), { channelId: this.textChannel.id });
     }
@@ -239,8 +237,8 @@ export class Speaker {
     const { userId, vtOption } = data;
     const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
     const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
-    const buf = await voice.option(vicData).speak(data.text);
-    const stream = Readable.from(new Uint8Array(buf));
+    const stream = await voice.option(vicData).speak(data.text);
+    if(stream == undefined) return;
     this.queue.push(stream);
     this.playAudio();
   }
@@ -249,7 +247,7 @@ export class Speaker {
     if (this.isPlaying && this.queue.length == 0) return;
     this.isPlaying = true;
     const resource =
-      this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body as unknown as Readable : this.queue[0];
+      this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body : this.queue[0];
     if (!resource) {
       // console.log("test");
       if (this._loop) {
@@ -260,8 +258,7 @@ export class Speaker {
       this.playAudio();
       return;
     }
-    // console.log(resource instanceof Readable || resource);
-    const audioResource = createAudioResource(resource);
+    const audioResource = createAudioResource(new ReadableWebToNodeStream(resource));
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
     });

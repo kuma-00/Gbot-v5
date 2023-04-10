@@ -4,7 +4,6 @@ import { Command } from "@src/types/command.js";
 import { MinigameConstructor, MinigameData } from "@src/types/minigame.js";
 import { WitAiCommand } from "@src/types/witAiCommand.js";
 import { Client, Collection, Message } from "discord.js";
-import internal from "node:stream";
 import { Timer } from "./timer";
 
 export type ExtensionClient = Client & {
@@ -30,7 +29,7 @@ export const StorageType = {
 // eslint-disable-next-line no-redeclare
 export type StorageType = typeof StorageType[keyof typeof StorageType];
 
-export type SpeakResource = URL | internal.Readable;
+export type SpeakResource = URL | ReadableStream<Uint8Array>;
 
 export type CustomSearchJson = {
   kind: string;

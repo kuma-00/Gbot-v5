@@ -3,7 +3,6 @@ import { MessageError, MessageResponseJson } from "@src/types/witAi.js";
 import { WitAiCommandData } from "@src/types/witAiCommand";
 import { isNullOrWhitespace } from "@src/util/index.js";
 import { EmbedBuilder } from "discord.js";
-import fetch from "node-fetch";
 
 const baseUrl = "https://api.wit.ai";
 const apiVersion = "20221114";

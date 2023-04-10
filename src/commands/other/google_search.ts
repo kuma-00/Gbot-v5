@@ -1,7 +1,6 @@
 import { CustomSearchJson } from "@src/types/index.js";
 import { SlashCommandBuilder } from "discord.js";
 import { CommandCategory, Command } from "@src/types/command.js";
-import fetch from "node-fetch";
 import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 
 export const command: Command = {

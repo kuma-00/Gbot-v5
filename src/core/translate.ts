@@ -1,5 +1,4 @@
 import { TranslateResponseJson } from "@src/types/index.js";
-import fetch from "node-fetch";
 
 export const translate = async (
   text: string,
