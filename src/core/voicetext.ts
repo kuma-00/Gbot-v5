@@ -136,7 +136,7 @@ export class VoiceText {
         )}`
       );
     }
-    const buf = new Uint8Array(await response.arrayBuffer());
+    const buf = (await response.arrayBuffer());
     return buf;
   }
 }

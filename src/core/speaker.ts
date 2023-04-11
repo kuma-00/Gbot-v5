@@ -273,8 +273,6 @@ export class Speaker {
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);
     this._player.on("error", console.error);
-    // once(this._player, AudioPlayerStatus.Idle).then(this.next.bind(this));
-    // once(this._player, "error").then(console.error);
     this._player.on(AudioPlayerStatus.Idle, this.next.bind(this));
   }
 
