@@ -7,7 +7,7 @@ import {
   VTDefaultOption,
 } from "@src/types/VT.js";
 import { URLSearchParams } from "node:url";
-import {ReadableWebToNodeStream} from "readable-web-to-node-stream";
+import { Readable } from "node:stream";
 
 // https://github.com/pchw/node-voicetext
 
@@ -136,9 +136,7 @@ export class VoiceText {
         )}`
       );
     }
-    const body = response.body;
-    if (body) {
-      return body;
-    }
+    const buf = new Uint8Array(await response.arrayBuffer());
+    return buf;
   }
 }

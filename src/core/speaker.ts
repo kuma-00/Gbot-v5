@@ -20,7 +20,8 @@ import { storage } from "@src/core/storage.js";
 import { VoiceText } from "@src/core/voicetext.js";
 import { SpeakData, sleep } from "@src/util/index.js";
 import { VTOption, VTDefaultOption } from "@src/types/VT.js";
-import { ReadableWebToNodeStream } from "readable-web-to-node-stream";
+import { Readable } from "node:stream";
+import { once } from "node:events";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export type SpeakerStatusType = "END" | "SPEAKING" | "ERROR" | "WAIT";
@@ -41,7 +42,7 @@ export class SpeakerStatus {
 
 export class Speaker {
   // isPlaying = false;
-  queue:SpeakResource[] = [];
+  queue: SpeakResource[] = [];
   private _player = createAudioPlayer();
   private _loop = false;
   private _lastUserName = "";
@@ -237,17 +238,34 @@ export class Speaker {
     const { userId, vtOption } = data;
     const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
     const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
-    const stream = await voice.option(vicData).speak(data.text);
-    if (stream == undefined) return;
+    const buf = await voice.option(vicData).speak(data.text);
+    const stream = new Readable({
+      read() {
+        this.push(buf);
+        this.push(null);
+      },
+    });
     this.queue.push(stream);
     this.playAudio();
   }
 
   async playAudio() {
     if (this.isPlaying || this.queue.length == 0) return;
-    const resource = this.queue[0] instanceof URL ? (await fetch(this.queue[0].toString())).body : this.queue[0];
+    const resource = await (async () => {
+      if (this.queue[0] instanceof URL) {
+        const buf = new Uint8Array(await (await fetch(this.queue[0].toString())).arrayBuffer());
+        const stream = new Readable({
+          read() {
+            this.push(buf);
+            this.push(null);
+          },
+        });
+        return stream
+      }
+      return this.queue[0]
+    })();
     if (!resource) return this.next();
-    const audioResource = createAudioResource(new ReadableWebToNodeStream(resource));
+    const audioResource = createAudioResource(resource);
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
     });
@@ -255,15 +273,15 @@ export class Speaker {
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);
     this._player.on("error", console.error);
-    this._player.on(AudioPlayerStatus.Idle, this.next);
+    // once(this._player, AudioPlayerStatus.Idle).then(this.next.bind(this));
+    // once(this._player, "error").then(console.error);
+    this._player.on(AudioPlayerStatus.Idle, this.next.bind(this));
   }
 
   next() {
-    console.log("next");
     if (this._loop) {
       this.queue.push(this.queue[0]);
     }
-    if(!this.queue) return;
     this.queue.shift();
     this.playAudio();
   }
