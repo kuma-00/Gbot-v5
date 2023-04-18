@@ -6,7 +6,7 @@ export const messageResponse: MessageResponse = {
   filter: (m) =>
     ["光よ"].some((i) => m.cleanContent == i),
   async execute(client, message) {
-    reply(message, {files:["./images/hikariyo.jpg"]});
+    reply(message, {files:["./src/images/hikariyo.jpg"]});
     if (message.guild)
       speak(
         client,
