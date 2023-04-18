@@ -1,9 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { CommandCategory, Command } from "@src/types/command.js";
-
-const wait = async (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
+import { sleep } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Util,
@@ -19,7 +16,7 @@ export const command: Command = {
         speaker.end();
       });
       interaction.followUp(`終了します。`);
-      await wait(13000);
+      await sleep(13000);
       process.exit(0);
     }
     return interaction.followUp(`権限が足りません。(Only Gbot Administrator)`);

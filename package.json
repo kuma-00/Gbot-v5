@@ -5,17 +5,19 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "push-compile-pm2-restart":"npm run push;npm run pm2-restart",
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node build/main.js",
-    "compile": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json",
-    "compRes": "rm -rf ./build ;  tsc -p . && tsc-alias -p tsconfig.json && pm2 restart gbot-v5Ranger",
+    "compile": "rm -rf ./build ;tsc -p . && tsc-alias -p tsconfig.json",
+    "push":"npm run compile;git pull;git add .;git commit -m \"auto commit\";git push",
+    "compRes": "npm run compile && npm run pm2-restart",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts",
-    "pm2-start": "pm2 start build/main.js --name gbot-v5Ranger",
-    "pm2-restart": "pm2 restart gbot-v5Ranger",
+    "pm2-start": "pm2 start build/main.js --name gbot-v5Ranger --node-args=\"--trace-warnings\" --time",
+    "pm2-restart": "pm2 restart gbot-v5Ranger --time",
     "pm2-stop": "pm2 stop gbot-v5Ranger",
     "pm2-logs": "pm2 logs gbot-v5Ranger --lines 100",
-    "deploy": "npm run compile && flyctl deploy"
+    "pm2-delete":"pm2 delete gbot-v5Ranger"
   },
   "engines": {
     "node": "18.x"
@@ -50,6 +52,7 @@
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.0",
     "app-root-path": "^3.1.0",
+    "arraybuffer-to-buffer": "^0.0.7",
     "date-fns": "^2.29.3",
     "deta": "^1.1.0",
     "discord-api-types": "^0.37.38",

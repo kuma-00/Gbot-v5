@@ -1,13 +1,19 @@
 import {
-  joinVoiceChannel,
+  AudioPlayerStatus,
+  NoSubscriberBehavior,
   VoiceConnectionStatus,
+  createAudioPlayer,
+  createAudioResource,
   entersState,
   getVoiceConnection,
-  AudioPlayerStatus,
-  createAudioResource,
-  createAudioPlayer,
-  NoSubscriberBehavior,
+  joinVoiceChannel,
 } from "@discordjs/voice";
+import { storage } from "@src/core/storage.js";
+import { VoiceText } from "@src/core/voicetext.js";
+import { VTDefaultOption, VTOption } from "@src/types/VT.js";
+import { ExtensionClient, SpeakResource, StorageType } from "@src/types/index.js";
+import { SpeakData, sleep } from "@src/util/index.js";
+import { ReadableStream } from "node:stream/web";
 import {
   Message,
   MessageCollector,
@@ -15,13 +21,7 @@ import {
   TextBasedChannel,
   VoiceBasedChannel,
 } from "discord.js";
-import { ExtensionClient, SpeakResource, StorageType } from "@src/types/index.js";
-import { storage } from "@src/core/storage.js";
-import { VoiceText } from "@src/core/voicetext.js";
-import { SpeakData, sleep } from "@src/util/index.js";
-import { VTOption, VTDefaultOption } from "@src/types/VT.js";
 import { Readable } from "node:stream";
-import { once } from "node:events";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export type SpeakerStatusType = "END" | "SPEAKING" | "ERROR" | "WAIT";
@@ -43,6 +43,7 @@ export class SpeakerStatus {
 export class Speaker {
   // isPlaying = false;
   queue: SpeakResource[] = [];
+  leaving: boolean = false;
   private _player = createAudioPlayer();
   private _loop = false;
   private _lastUserName = "";
@@ -137,6 +138,7 @@ export class Speaker {
   }
 
   async end(auto: boolean = false) {
+    this.leaving = true;
     this._collectors.forEach((c) => c.stop());
     await Promise.all([
       this.addQueue("読み上げが終了しました。"),
@@ -150,8 +152,10 @@ export class Speaker {
     const connection = getVoiceConnection(this.voiceChannel.guild.id);
     if (connection) {
       connection.destroy();
+      this.leaving = false;
       return true;
     }
+    this.leaving = false;
     return false;
   }
 
@@ -238,13 +242,12 @@ export class Speaker {
     const { userId, vtOption } = data;
     const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
     const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
-    const buf = await voice.option(vicData).speak(data.text);
-    const stream = new Readable({
-      read() {
-        this.push(buf);
-        this.push(null);
-      },
-    });
+    const stream = await voice.option(vicData).speak(data.text);
+    // const stream = new Readable();
+    // stream.push(arrayBufferToBuffer(buf));
+    // stream.push(null);
+    if (!stream) return;
+    stream.setMaxListeners(50);
     this.queue.push(stream);
     this.playAudio();
   }
@@ -253,14 +256,11 @@ export class Speaker {
     if (this.isPlaying || this.queue.length == 0) return;
     const resource = await (async () => {
       if (this.queue[0] instanceof URL) {
-        const buf = new Uint8Array(await (await fetch(this.queue[0].toString())).arrayBuffer());
-        const stream = new Readable({
-          read() {
-            this.push(buf);
-            this.push(null);
-          },
-        });
-        return stream
+        const body = (await fetch(this.queue[0].toString())).body as ReadableStream<any>;
+        const stream = Readable.fromWeb(body);
+        // stream.push(arrayBufferToBuffer(buf));
+        // stream.push(null);
+        return stream;
       }
       return this.queue[0]
     })();

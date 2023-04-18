@@ -8,6 +8,7 @@ import {
 } from "@src/types/VT.js";
 import { URLSearchParams } from "node:url";
 import { Readable } from "node:stream";
+import { ReadableStream } from "node:stream/web";
 
 // https://github.com/pchw/node-voicetext
 
@@ -115,7 +116,7 @@ export class VoiceText {
 
   async speak(text: string) {
     if (!text) {
-      throw new Error("invalid argument. text: null");
+      console.error("invalid argument. text: null");
     }
     text = text.slice(0, 200);
     const params = this.buildParams(text);
@@ -136,7 +137,8 @@ export class VoiceText {
         )}`
       );
     }
-    const buf = (await response.arrayBuffer());
-    return buf;
+    // const buf = await response.arrayBuffer();
+    const buf = response.body as ReadableStream<any>;
+    return Readable.fromWeb(buf);
   }
 }
