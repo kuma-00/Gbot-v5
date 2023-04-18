@@ -11,7 +11,6 @@ export const event: Event = {
     const guild = oldState.guild;
     const channel = await guild.channels.cache.get((await storage(StorageType.SETTINGS).get(`${guild.id}:cacheChannelId`))?.value as string) as Exclude<TextBasedChannel, StageChannel>;
     const isSpeaking = await SpeakerStatus.get(guild.id);
-    // const speaker = this.speaker(guild.id);
     if (isSpeaking == SpeakerStatus.ERROR) {
       if (newUserChannel == null || channel == undefined) {
         channel.send("Channelが見つかりませんでした。");

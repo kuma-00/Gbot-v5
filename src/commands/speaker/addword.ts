@@ -23,18 +23,9 @@ export const command: Command = {
         .setRequired(true)
     ),
 
-  execute(client, interaction: ChatInputCommandInteraction) {
+  execute(_client, interaction: ChatInputCommandInteraction) {
     const after = interaction.options.getString("after",true);
     const before = interaction.options.getString("before",true);
-    // if (!(before && after)) {
-    //   const embed = new EmbedBuilder();
-    //   embed
-    //     .setTitle("エラー")
-    //     .setDescription("引数の数または引数の値が適切ではありません。")
-    //     .setColor([255, 0, 0]);
-    //   interaction.followUp({ embeds: [embed] });
-    //   return;
-    // }
     storage(StorageType.SETTINGS).put(
       true,
       `${interaction.guild?.id}:dicChange`

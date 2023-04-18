@@ -5,8 +5,8 @@ import { parse } from "date-fns";
 
 export const messageResponse: MessageResponse = {
   name: "timer",
-  filter: (m) =>
-    (m.guild ?? false) && /^(タイマー|timer)\s+/i.test(m.cleanContent),
+  filter: (m) =>false,
+    // (m.guild ?? false) && /^(タイマー|timer)\s+/i.test(m.cleanContent),
   async execute(client, message) {
     const second =
       parse(

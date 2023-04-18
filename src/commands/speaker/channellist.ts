@@ -11,7 +11,7 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("channellist")
     .setDescription("読み上げのチャンネルのリストを表示する。"),
-  async execute(client, interaction) {
+  async execute(_client, interaction) {
     const readChannels =
       ((
         await storage(StorageType.SETTINGS).get(

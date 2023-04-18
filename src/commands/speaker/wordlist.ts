@@ -26,7 +26,7 @@ export const command: Command = {
         .setDescription("検索するキーワード")
         .setRequired(false)
     ),
-  async execute(client, interaction: ChatInputCommandInteraction) {
+  async execute(_client, interaction: ChatInputCommandInteraction) {
     const keyword = interaction.options.getString("keyword",false);
     const dic = await getDic(interaction.guild?.id || "");
     const keys = Object.keys(dic);

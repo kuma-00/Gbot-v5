@@ -1,10 +1,11 @@
 import { getArea, getWeather } from "@src/core/weather.js";
 import { MessageResponse } from "@src/types/index.js";
-import { isNullOrWhitespace, reply, speak } from "@src/util/index.js";
+import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "weather",
-  filter: (m) => /^(天気|weather)\s+/i.test(m.cleanContent),
+  filter: (m) => false,
+    // /^(天気|weather)\s+/i.test(m.cleanContent),
   async execute(client, message) {
     const areaCode = (
       await getArea(message.cleanContent.replace(/^(天気|weather)\s+/i, ""))

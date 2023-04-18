@@ -1,5 +1,4 @@
 import {
-  Message,
   EmbedBuilder,
   SlashCommandBuilder,
   ChatInputCommandInteraction,
@@ -56,8 +55,8 @@ export const command: Command = {
     .addAttachmentOption((option) =>
       option.setName("image").setDescription("聖遺物の画像").setRequired(true)
     ),
-  async execute(client, interaction: ChatInputCommandInteraction) {
-    const text = interaction.options.getString("options");
+  async execute(_client, interaction: ChatInputCommandInteraction) {
+    // const text = interaction.options.getString("options");
     const image = interaction.options.getAttachment("image", true).url;
     const result = await ocr(new URL(image), interaction);
     if (!result)

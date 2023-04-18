@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { storage } from "@src/core/storage.js";
 import { StorageType } from "@src/types/index.js";
 import { Command, CommandCategory } from "@src/types/command.js";
-import { CommandInteraction, EmbedBuilder } from "discord.js";
+import { CommandInteraction } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

@@ -7,13 +7,12 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   MessageActionRowComponentBuilder,
-  SelectMenuBuilder,
   ButtonInteraction,
-  SelectMenuInteraction,
   GuildMember,
   MessageComponentInteraction,
   InteractionType,
   StringSelectMenuBuilder,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import { MinigameData } from "@src/types/minigame.js";
@@ -124,7 +123,7 @@ export const command: Command = {
           }
           interaction.update(createMessage(data));
         },
-        gb_game_rule_select: (interaction: SelectMenuInteraction) => {
+        gb_game_rule_select: (interaction: StringSelectMenuInteraction) => {
           const id = getId(interaction);
           const data = client.gameData.get(id);
           if (!client.gameData.has(id) || !data) {
@@ -279,7 +278,7 @@ ${game.members.length}人${
   };
 };
 
-const getId = (interaction: ButtonInteraction | SelectMenuInteraction) =>
+const getId = (interaction: ButtonInteraction | StringSelectMenuInteraction) =>
   interaction.message.embeds[0]?.author?.name ||
   interaction.message?.content?.match(/\((.+)\)/)?.[1] ||
   "";
