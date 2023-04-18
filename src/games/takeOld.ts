@@ -6,12 +6,9 @@ import {
   MinigameData,
 } from "@src/types/minigame.js";
 import {
-  GuildMember,
   Message,
   MessageReaction,
   ReactionCollector,
-  ReactionEmoji,
-  ReactionManager,
   User,
 } from "discord.js";
 

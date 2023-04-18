@@ -7,9 +7,6 @@ import {
 import { sleep } from "@src/util/index.js";
 import {
   Message,
-  MessageReaction,
-  User,
-  SelectMenuBuilder,
   ButtonBuilder,
   ButtonStyle,
   ActionRowBuilder,
@@ -18,13 +15,12 @@ import {
   ButtonInteraction,
   CacheType,
   InteractionCollector,
-  SelectMenuInteraction,
   Collection,
-  GuildManager,
   GuildMember,
-  Guild,
   MappedInteractionTypes,
   MessageComponentType,
+  StringSelectMenuBuilder,
+  StringSelectMenuInteraction,
 } from "discord.js";
 
 type takeGameLog = {
@@ -81,7 +77,7 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
   }
 
   collect(
-    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
   ) {
     // const pos = this.emojis.indexOf(reaction.emoji.name || "");
     // if (pos == this.log.length) {
@@ -148,7 +144,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
             .join(", ")}`
         : ""
     }`;
-    const selectMenu = new SelectMenuBuilder()
+    const selectMenu = new StringSelectMenuBuilder()
       .setCustomId(`gb_take_nyoki_select`)
       .setPlaceholder("何ニョッキ")
       .setMinValues(1)
@@ -169,7 +165,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
       this.data.isEnd || !changeCom
         ? undefined
         : [
-            new ActionRowBuilder<SelectMenuBuilder>().setComponents(selectMenu),
+            new ActionRowBuilder<StringSelectMenuBuilder>().setComponents(selectMenu),
             new ActionRowBuilder<ButtonBuilder>().setComponents(sendButton),
           ];
     return { components, content };

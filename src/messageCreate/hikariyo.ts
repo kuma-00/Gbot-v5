@@ -1,12 +1,18 @@
 import { MessageResponse } from "@src/types/index.js";
-import { reply } from "@src/util/index.js";
+import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
   name: "hikariyo",
   filter: (m) =>
     ["光よ"].some((i) => m.cleanContent == i),
-  async execute(_client, message) {
-    reply(message, "https://cdn.wikiwiki.jp/to/w/arona-punch/%E3%82%A2%E3%83%AA%E3%82%B9/::ref/ALIS_1stAniv_1.jpg");
-
+  async execute(client, message) {
+    reply(message, {files:["./images/hikariyo.jpg"]});
+    if (message.guild)
+      speak(
+        client,
+        message.guild,
+        "光よ!",
+        message.channelId
+      );
   },
 };

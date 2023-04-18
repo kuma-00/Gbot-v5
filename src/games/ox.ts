@@ -13,7 +13,7 @@ import {
   Message,
   MessageComponentInteraction,
   MessageComponentType,
-  SelectMenuInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import {
   MinigameData,
@@ -119,7 +119,7 @@ ${
   }
 
   collect(
-    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
   ) {
     // const pos = this.emojis.indexOf(reaction.emoji.name)
     if (this.nextPlayer?.id != interaction.user.id) {
@@ -141,7 +141,7 @@ ${
   async put(
     user: GuildMember | undefined,
     pos: number,
-    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
   ) {
     const isCPU = user == undefined;
     if (!isCPU && user.id != this.nextPlayer?.id) return false;
@@ -177,7 +177,7 @@ ${
   }
 
   cpu(
-    interaction: ButtonInteraction<CacheType> | SelectMenuInteraction<CacheType>
+    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
   ) {
     if (this.nextPlayer != undefined) return false;
     const reach =

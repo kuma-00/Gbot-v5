@@ -12,7 +12,7 @@ import {
   GuildMemberManager,
   MessageActionRowComponentBuilder,
   MessageComponentInteraction,
-  SelectMenuBuilder,
+  StringSelectMenuBuilder,
 } from "discord.js";
 
 export const minigame: MinigameConstructor = class wordwolf extends MinigameBase {
@@ -339,7 +339,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
       if (this.data.isEnd) return;
       const voteC =
         new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-          new SelectMenuBuilder()
+          new StringSelectMenuBuilder()
             .setCustomId(`gb_ww_vote_menu` + this.data.id)
             .setPlaceholder("投票する人をえらんでください")
             .setMinValues(this.wolfCount)

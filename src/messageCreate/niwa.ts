@@ -6,7 +6,7 @@ export const messageResponse: MessageResponse = {
   filter: (m) =>
     ["にわ", "ニワ", "庭","ガーデン", "niwa","がーでん","garden"].some((i) => m.cleanContent == i),
   async execute(client, message) {
-    reply(message,"https://halmek.co.jp/media/article/image/4140d21df5ca81e6ff686936f39fb477.jpg");
+    reply(message,{files:["./images/niwa.jpg"]});
     if (message.guild)
       speak(
         client,

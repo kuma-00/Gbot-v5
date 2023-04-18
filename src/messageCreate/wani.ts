@@ -1,13 +1,12 @@
 import { MessageResponse } from "@src/types/index.js";
 import { reply, speak } from "@src/util/index.js";
-import { parseEmoji } from "discord.js";
 
 export const messageResponse: MessageResponse = {
   name: "wani",
   filter: (m) =>
     ["わに", "ワニ", "鰐魚", "鰐", "wani"].some((i) => m.cleanContent == i),
   async execute(client, message) {
-    parseEmoji("<:6dorowani:842410113230962719>")
+    // parseEmoji("<:6dorowani:842410113230962719>")
     reply(
       message,
       "<:6dorowani:842410113230962719>"
