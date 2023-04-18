@@ -28,6 +28,7 @@ export const event: Event = {
       }
       channel.send("読み上げが開始しました。");
       return;
+      
     }
     if (newUserChannel) {
       const count = newUserChannel.members.filter(member => !member.user.bot)
