@@ -1,5 +1,4 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command.js";
