@@ -243,11 +243,8 @@ export class Speaker {
     const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
     const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
     const stream = await voice.option(vicData).speak(data.text);
-    // const stream = new Readable();
-    // stream.push(arrayBufferToBuffer(buf));
-    // stream.push(null);
     if (!stream) return;
-    // stream.setMaxListeners(100);
+    stream.setMaxListeners(100);
     this.queue.push(stream);
     this.playAudio();
   }
@@ -269,7 +266,6 @@ export class Speaker {
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
     });
-    // this._player.setMaxListeners(100);
     this._player.play(audioResource);
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);

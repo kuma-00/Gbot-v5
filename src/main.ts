@@ -24,6 +24,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { MinigameConstructor } from "./types/minigame.js";
+import { loadTimer } from "@src/core/timer.js";
+import { storage } from "@src/core/storage.js";
+import { Speaker } from "@src/core/speaker.js";
 console.log(generateDependencyReport());
 
 export type ExtensionBase = Base & {
@@ -193,9 +196,9 @@ const comeback = async (storage: ExtensionBase, Speaker: any) => {
     });
   });
 
-  const { storage } = await import(path.join(__dirname, "core/storage.js"));
-  const { Speaker } = await import(path.join(__dirname, "core/speaker.js"));
-  const { loadTimer } = await import(path.join(__dirname, "core/timer.js"));
+  // const { storage } = await import(path.join(__dirname, "core/storage.js"));
+  // const { Speaker } = await import(path.join(__dirname, "core/speaker.js"));
+  // const { loadTimer } = await import(path.join(__dirname, "core/timer.js"));
   loadTimer(client);
   await comeback(storage(StorageType.SETTINGS), Speaker);
 })();
