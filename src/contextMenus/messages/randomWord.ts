@@ -17,7 +17,7 @@ export const command: Command = {
   async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true);
     const channel = interaction.channel;
-    if (!(channel && "sendTyping" in channel)) return;
+    if (!channel) return;
     channel.sendTyping();
     const text = shuffle(tokenize(msg.cleanContent)).join("");
     await interaction.followUp(`\`\`\`${text}\`\`\``);

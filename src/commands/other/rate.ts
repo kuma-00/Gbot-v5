@@ -66,7 +66,7 @@ export const command: Command = {
     e.files?.push({ attachment: image, name: "Artifact.png" });
     const msg = await interaction.followUp(e);
     const channel = interaction.channel;
-    if (!(channel && "awaitMessageComponent" in channel)) return;
+    if (!channel) return;
     const i = await channel.awaitMessageComponent({
       filter: (i) => i.customId == "gb_rate_detail",
       time: 60 * 1000,

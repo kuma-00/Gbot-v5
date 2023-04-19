@@ -1,4 +1,4 @@
-import { speak } from './../../util/index.js';
+import { speak } from "./../../util/index.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import {
   ContextMenuCommandInteraction,
@@ -16,7 +16,7 @@ export const command: Command = {
   async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true);
     const channel = interaction.channel;
-    if (!(channel && "sendTyping" in channel)) return;
+    if (!channel) return;
     channel.sendTyping();
     // const text = shuffle(tokenize(msg.cleanContent)).join("")
     const text = (
@@ -32,6 +32,7 @@ export const command: Command = {
       ).json()
     ).Result as string;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if(interaction.guild)speak(client,interaction.guild,text,interaction.channelId);
+    if (interaction.guild)
+      speak(client, interaction.guild, text, interaction.channelId);
   },
 };

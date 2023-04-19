@@ -17,7 +17,7 @@ export const command: Command = {
     const filter = (m: Message) =>
       !!m.content && m.author.id != client.user?.id;
     const channel = interaction.channel;
-    if (!(channel && "createMessageCollector" in channel)) {
+    if (!channel) {
       interaction.followUp("初期化に失敗しました");
       return;
     }
@@ -25,9 +25,7 @@ export const command: Command = {
     collector?.on("collect", async (m) => {
       // if(m.author.id == this.client.user.id) return;
       const channel = m.channel;
-      if (!(channel && "createMessageCollector" in channel)) {
-        return;
-      }
+      if (!channel) return;
       if (
         [
           "end",

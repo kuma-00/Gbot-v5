@@ -4,7 +4,7 @@ import { speak } from "@src/util/index.js";
 import {
   ContextMenuCommandInteraction,
   ApplicationCommandType,
-  ContextMenuCommandBuilder
+  ContextMenuCommandBuilder,
 } from "discord.js";
 
 export const command: Command = {
@@ -17,12 +17,13 @@ export const command: Command = {
   async execute(client, interaction: ContextMenuCommandInteraction) {
     const msg = interaction.options.getMessage("message", true);
     const channel = interaction.channel;
-    if (!(channel && "sendTyping" in channel)) return;
+    if (!channel) return;
     channel.sendTyping();
     const text = (
       await translate(msg.cleanContent.replace(/[*`_~>]/, ""), null, "en")
     ).text;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
-    if(interaction.guild)speak(client,interaction.guild,text,interaction.channelId);
+    if (interaction.guild)
+      speak(client, interaction.guild, text, interaction.channelId);
   },
 };

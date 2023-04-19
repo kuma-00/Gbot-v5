@@ -30,7 +30,7 @@ export const command: Command = {
   async execute(client, interaction: ChatInputCommandInteraction) {
     const word = interaction.options.getString("word", true);
     const channel = interaction.channel;
-    if (!(channel && "sendTyping" in channel)) return;
+    if (!channel) return;
     channel.sendTyping();
     const text = (await translate(word.replace(/[*`_~>]/, ""), null, "ja"))
       .text;

@@ -32,7 +32,7 @@ export const command: Command = {
     const name = interaction.options.getString("name", false);
     const game = client.minigames.get(name || "");
     const channel = interaction.channel;
-    if (name && game && channel && channel instanceof TextChannel && "createMessageCollector" in channel) {
+    if (name && game && channel && channel instanceof TextChannel) {
       const id = randomId();
       const minigameData: MinigameData = {
         gameConstructor: game,

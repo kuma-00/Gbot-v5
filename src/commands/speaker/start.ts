@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory,Command } from "@src/types/command.js";
+import { CommandCategory, Command } from "@src/types/command.js";
 import { Speaker } from "@src/core/speaker.js";
 import { GuildMember } from "discord.js";
 
@@ -18,8 +18,8 @@ export const command: Command = {
           interaction.guild.voiceStates.cache.first()?.channel
         );
       })();
-      if (voiceChannel == null || interaction.channel === null || !("send" in interaction.channel)) {
-        interaction.followUp("VoiceChannelが見つかりませんでした")
+      if (voiceChannel == null || interaction.channel === null) {
+        interaction.followUp("VoiceChannelが見つかりませんでした");
         return;
       }
       if (client.speakers.has(interaction.guildId)) {
@@ -31,7 +31,7 @@ export const command: Command = {
         client.speakers.set(interaction.guildId, speaker);
         speaker.start(voiceChannel, interaction.channel);
       }
-      interaction.followUp("読み上げが開始しました。")
+      interaction.followUp("読み上げが開始しました。");
     }
   },
 };
