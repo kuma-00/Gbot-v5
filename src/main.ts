@@ -8,10 +8,6 @@ import {
   StorageType,
 } from "@src/types/index.js";
 import { WitAiCommand } from "@src/types/witAiCommand.js";
-import Base from "deta/dist/types/base/index.js";
-import { FetchOptions } from "deta/dist/types/types/base/request.js";
-import { FetchResponse } from "deta/dist/types/types/base/response.js";
-import { CompositeType } from "deta/dist/types/types/basic.js";
 import {
   Client,
   Collection,
@@ -24,23 +20,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { MinigameConstructor } from "./types/minigame.js";
 import { loadTimer } from "@src/core/timer.js";
-import { storage } from "@src/core/storage.js";
-import { Speaker } from "@src/core/speaker.js";
+import { ExtensionBase, storage } from "@src/core/storage.js";
+import { Speaker, SpeakerStatus } from "@src/core/speaker.js";
 console.log(generateDependencyReport());
-
-export type ExtensionBase = Base & {
-  fetchAll(
-    query?: CompositeType,
-    options?: FetchOptions
-  ): Promise<FetchResponse>;
-};
 
 console.log("起動準備開始 var:",process.env.npm_package_version);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-
 
 const client = new Client({
   intents: [
@@ -92,25 +79,25 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
   }
 };
 
-const comeback = async (storage: ExtensionBase, Speaker: any) => {
-  const { items } = await storage.fetchAll({ "key?contains": "SpeakerStatus" });
+const comeback = async () => {
+  const s = storage(StorageType.SETTINGS);
+  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" });
   const guilds = items
     .filter((item) =>
-      ["SPEAKING", "ERROR", "WAIT"].some((v) => v == item.value)
+      [SpeakerStatus.SPEAKING, SpeakerStatus.ERROR, SpeakerStatus.WAITE].some((v) => v == item.value)
     )
     .map((item) => (item.key as string)?.replace(":SpeakerStatus", ""));
   const logs = [["comeback--------------------"]];
-  // await client.guilds.fetch();
   await Promise.all(
     guilds.map(async (guildId) => {
       const guild = await client.guilds.fetch(guildId);
       if (!guild) return;
       logs.push([guild.id, ":", guild.name]);
-      const tcId = (await storage.get(`${guildId}:cacheChannelId`))
-        ?.value as string;
+      const tcId = (await s.get(`${guildId}:cacheChannelId`))?.value as string;
       if (!tcId) return console.log(`Can't get ${guildId}:cacheChannelId`);
       await guild.channels.fetch();
       const tc = await guild.channels.fetch(tcId);
+      await guild.fetch();
       const vc = guild.voiceStates.cache.first()?.channel;
       if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
       if(vc.members.size == 0) return console.log(`Can't members 0 vc`);
@@ -195,11 +182,8 @@ const comeback = async (storage: ExtensionBase, Speaker: any) => {
     });
   });
 
-  // const { storage } = await import(path.join(__dirname, "core/storage.js"));
-  // const { Speaker } = await import(path.join(__dirname, "core/speaker.js"));
-  // const { loadTimer } = await import(path.join(__dirname, "core/timer.js"));
   loadTimer(client);
-  await comeback(storage(StorageType.SETTINGS), Speaker);
+  await comeback();
 })();
 
 client.login(process.env.DISCORD_TOKEN);
@@ -217,4 +201,3 @@ client.on("debug", console.log); //debug
 //   res.end();
 // }).listen(8081);
 
-//git push origin master:master

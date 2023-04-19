@@ -60,10 +60,6 @@ export const event: Event = {
           channel.send("読み上げが終了しました。");
         }, 1000 * 60 * 1);
       }
-      // if (speaker) {
-      //   speaker.end(true);
-      //   channel.send("読み上げが終了しました。");
-      // }
     }
   },
 };
