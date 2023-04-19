@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command.js";
 import {
@@ -17,7 +20,6 @@ import {
   Partials,
   TextBasedChannel,
 } from "discord.js";
-import dotenv from "dotenv";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,7 +38,7 @@ console.log("起動準備開始 var:",process.env.npm_package_version);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+
 
 const client = new Client({
   intents: [

@@ -247,7 +247,7 @@ export class Speaker {
     // stream.push(arrayBufferToBuffer(buf));
     // stream.push(null);
     if (!stream) return;
-    stream.setMaxListeners(50);
+    // stream.setMaxListeners(100);
     this.queue.push(stream);
     this.playAudio();
   }
@@ -269,6 +269,7 @@ export class Speaker {
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
     });
+    // this._player.setMaxListeners(100);
     this._player.play(audioResource);
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);
