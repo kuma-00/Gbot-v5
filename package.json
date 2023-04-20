@@ -5,11 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "push-compile-pm2-restart":"npm run push;npm run pm2-restart",
+    "push-compile-pm2-restart": "npm run push;npm run pm2-restart",
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node build/main.js",
     "compile": "rm -rf ./build ;tsc -p . && tsc-alias -p tsconfig.json",
-    "push":"npm run compile;git pull;git add .;git commit -m \"auto commit\";git push",
+    "push": "npm run compile;git pull;git add .;git commit -m \"auto commit\";git push",
     "compRes": "npm run compile && npm run pm2-restart",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
     "update-data": "node --experimental-loader esbuild-node-loader src/createArtifactData.ts",
@@ -17,7 +17,7 @@
     "pm2-restart": "pm2 restart gbot-v5Ranger --time",
     "pm2-stop": "pm2 stop gbot-v5Ranger",
     "pm2-logs": "pm2 logs gbot-v5Ranger --lines 100",
-    "pm2-delete":"pm2 delete gbot-v5Ranger"
+    "pm2-delete": "pm2 delete gbot-v5Ranger"
   },
   "engines": {
     "node": "18.x"
@@ -53,11 +53,13 @@
     "@discordjs/voice": "^0.16.0",
     "app-root-path": "^3.1.0",
     "arraybuffer-to-buffer": "^0.0.7",
+    "bufferutil": "^4.0.7",
     "date-fns": "^2.29.3",
     "deta": "^1.1.0",
     "discord-api-types": "^0.37.38",
     "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
+    "erlpack": "github:discord/erlpack",
     "ffmpeg-static": "^5.1.0",
     "fuzzball": "^2.1.2",
     "genshin-db": "^4.3.7",
@@ -68,10 +70,12 @@
     "readable-web-to-node-stream": "^3.0.2",
     "sodium-native": "^4.0.1",
     "tweetnacl": "^1.0.3",
+    "utf-8-validate": "^5.0.10",
     "vm2": "^3.9.16",
     "wakachigaki": "^1.3.2",
     "wav": "^1.0.2",
-    "wikipedia": "^2.0.0"
+    "wikipedia": "^2.0.0",
+    "zlib-sync": "^0.1.8"
   },
   "jest": {
     "moduleFileExtensions": [

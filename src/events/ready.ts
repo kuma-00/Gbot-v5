@@ -1,7 +1,10 @@
-import { Event } from "@src/types/index.js";
-import { ActivityType } from "discord.js";
+import { Speaker, SpeakerStatus } from "@src/core/speaker.js";
+import { storage } from "@src/core/storage.js";
+import { loadTimer } from "@src/core/timer.js";
+import { Event, ExtensionClient, StorageType } from "@src/types/index.js";
+import { ActivityType, TextBasedChannel } from "discord.js";
 
-export const event:Event = {
+export const event: Event = {
   name: "ready",
   async execute(client): Promise<void> {
     const commands = Array.from(client.commands.values());
@@ -14,5 +17,39 @@ export const event:Event = {
     client.application?.commands.set(commands.map((com) => com.data.toJSON()));
     console.log(`${client.user?.username} is ready !`);
     client.user?.setActivity("開発中...", { type: ActivityType.Playing });
+    loadTimer(client);
+    await comeback(client);
   },
+};
+
+
+const comeback = async (client: ExtensionClient) => {
+  const s = storage(StorageType.SETTINGS);
+  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" });
+  const guilds = items
+    .filter((item) =>
+      [SpeakerStatus.SPEAKING, SpeakerStatus.ERROR, SpeakerStatus.WAITE].some((v) => v == item.value)
+    )
+    .map((item) => (item.key as string)?.replace(":SpeakerStatus", ""));
+  const logs = [["comeback--------------------"]];
+  await Promise.all(
+    guilds.map(async (guildId) => {
+      const guild = await client.guilds.fetch(guildId);
+      if (!guild) return;
+      logs.push([guild.id, ":", guild.name]);
+      const tcId = (await s.get(`${guildId}:cacheChannelId`))?.value as string;
+      if (!tcId) return console.log(`Can't get ${guildId}:cacheChannelId`);
+      await guild.channels.fetch();
+      const tc = await guild.channels.fetch(tcId);
+      await guild.fetch();
+      const vc = guild.voiceStates.cache.first()?.channel;
+      if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
+      if (vc.members.size == 0) return console.log(`Can't members 0 vc`);
+      const speaker = new Speaker(client, vc, tc as TextBasedChannel);
+      client.speakers.set(guildId, speaker);
+      speaker.start();
+    })
+  );
+  logs.push(["----------------------------"]);
+  logs.forEach((log) => console.log(...log));
 };
