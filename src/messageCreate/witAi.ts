@@ -10,10 +10,10 @@ export const messageResponse: MessageResponse = {
   async execute(client, message) {
     const text = message.cleanContent.replace(/^(gbot)\s+/i, "");
     const res = await witMessage(tokenize(text).join(" "));
-    if ("error" in res || message.channel instanceof StageChannel) {
+    if ("error" in res) {
       reply(
         message,
-        "error" in res ? `${res.code}\n${res.error}` : "チャンネルエラー"
+        `${res.code}\n${res.error}`
       );
     } else {
       executeCommand(client, {

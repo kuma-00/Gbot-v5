@@ -13,6 +13,6 @@ export type WitAiCommandData = {
   guild?: Guild;
   member?: GuildMember;
   user: User;
-  channel: Exclude<TextBasedChannel,StageChannel>;
+  channel: TextBasedChannel;
   res: MessageResponseJson;
 };
