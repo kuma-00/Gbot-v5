@@ -144,9 +144,8 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       }
     });
   });
+  client.login(process.env.DISCORD_TOKEN);
 })();
-
-client.login(process.env.DISCORD_TOKEN);
 
 process.on("unhandledRejection", (reason) => {
   console.log("node:", reason);
