@@ -3,7 +3,7 @@ import { TranslateResponseJson } from "@src/types/index.js";
 export const translate = async (
   text: string,
   source: string | null,
-  target: string
+  target: string,
 ) => {
   try {
     const url = process.env.google_translate_api ?? "";
@@ -21,6 +21,6 @@ export const translate = async (
     return (await res.json()) as TranslateResponseJson;
   } catch (e) {
     console.log(e);
-    return {text:"エラー"};
+    return { text: "エラー" };
   }
 };

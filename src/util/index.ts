@@ -7,13 +7,13 @@ import {
   GuildMember,
   Message,
   MessageReplyOptions,
-  User
+  User,
 } from "discord.js";
 
 export const followUpError = (
-  error: any,
+  error: Error,
   text: string,
-  interaction: CommandInteraction
+  interaction: CommandInteraction,
 ) => {
   console.log(error, error?.message);
   const embed = new EmbedBuilder();
@@ -23,7 +23,7 @@ export const followUpError = (
     .setDescription(
       `${error}
 ${error?.message}
-${text}`
+${text}`,
     )
     .setTimestamp(Date.now())
     .setColor([255, 0, 0]);
@@ -31,13 +31,13 @@ ${text}`
 };
 
 export const getUser = (
-  interaction: CommandInteraction
+  interaction: CommandInteraction,
 ): GuildMember | User => {
   return (interaction.member as GuildMember) || interaction.user;
 };
 
 export const getUsername = (
-  interaction: CommandInteraction | GuildMember | User
+  interaction: CommandInteraction | GuildMember | User,
 ) => {
   const memberOrUser =
     interaction instanceof CommandInteraction
@@ -52,9 +52,9 @@ export const getUsername = (
 
 export class SpeakData {
   text: string;
-  userName: string = "";
-  channelId: string = "";
-  userId: string = "";
+  userName = "";
+  channelId = "";
+  userId = "";
   vtOption?: VTOption;
   constructor(
     text: string,
@@ -63,7 +63,7 @@ export class SpeakData {
       userName?: string;
       userId?: string;
       vtOption?: VTOption;
-    }
+    },
   ) {
     this.text = text;
     if (option) {
@@ -93,13 +93,13 @@ export const sleep = (microSecond: number) =>
 export const replaceText = (
   text: string,
   dic: { [key: string]: string },
-  flags: string = "gi"
+  flags = "gi",
 ) => {
   const regExp = new RegExp(
     `(${Object.keys(dic)
       .map((i) => i.replace(/[.*+?^=!:${}()|[\]/\\]/g, "\\$&"))
       .join("|")})`,
-    flags
+    flags,
   );
   return text.replace(regExp, (e) => dic[e]);
 };
@@ -116,10 +116,11 @@ export const randomId = () =>
   Math.random().toString(32).substring(2).padStart(11, "0");
 
 export const speak = async (
+  //SpeakerClassのstaticに移動
   client: ExtensionClient,
   guild: Guild,
   text: string,
-  textChannelId?: string
+  textChannelId?: string,
 ) => {
   await sleep(500);
   const speaker = client.speakers.get(guild.id);
@@ -136,7 +137,7 @@ export const random = (min: number, max: number) =>
 
 export const reply = (
   message: Message,
-  options: string | MessageReplyOptions
+  options: string | MessageReplyOptions,
 ) => {
   if (!(options instanceof Object)) options = { content: options };
   return message.reply({ ...options, allowedMentions: { repliedUser: false } });

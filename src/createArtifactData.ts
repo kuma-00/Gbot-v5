@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
-console.log(dotenv.config())
+console.log(dotenv.config());
 
-import { APIEmbed, EmbedBuilder } from "discord.js";
 import { Artifact } from "./core/artifact.js";
 import { StorageType } from "./types/index.js";
 import { OCRResponse } from "./types/OCR.js";
@@ -104,6 +103,9 @@ const data: OCRResponse = {
 const arti = new Artifact(data);
 const e = arti.toEmbedBuilder();
 const f = arti.toDetail();
-// console.log((e.embeds?.[0] as any).data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0] as any))
-const words = await storage(StorageType.WORDS, "685883724231213234").fetch({"key?pfx": "o"});
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+console.log((e.embeds?.[0])?.data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0]))
+const words = await storage(StorageType.WORDS, "685883724231213234").fetch({
+  "key?pfx": "o",
+});
 console.log(words);

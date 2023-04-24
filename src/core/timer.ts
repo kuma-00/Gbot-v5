@@ -12,7 +12,7 @@ export const setTimer = async (
   textChannelId: string,
   userId: string,
   second: number,
-  duration?: number
+  duration?: number,
 ) => {
   const id = randomId();
   const timerData = {
@@ -51,7 +51,7 @@ export const loadTimer = async (client: ExtensionClient) => {
           timer.textChannelId,
           timer.userId,
           second,
-          timer.duration
+          timer.duration,
         );
       client.timers.set(timer.id, timer);
     });
@@ -79,7 +79,7 @@ export const timer = async (client: ExtensionClient, timer: Timer) => {
     });
     // embed.setTitle("タイマー");
     embed.setDescription(
-      `${secondToString(timer.duration)}タイマーが完了しました。`
+      `${secondToString(timer.duration)}タイマーが完了しました。`,
     );
     embed.addFields({ name: "Requested by", value: user.username });
     channel.send({ embeds: [embed] });
@@ -88,7 +88,7 @@ export const timer = async (client: ExtensionClient, timer: Timer) => {
         client,
         channel.guild,
         `${secondToString(timer.duration)}タイマーが完了しました。`,
-        timer.textChannelId
+        timer.textChannelId,
       );
     }
   }

@@ -74,15 +74,6 @@ export const command: Command = {
     const speed = interaction.options.getInteger("speed",true);
     const _emotion = interaction.options.getString("emotion",true);
     const _emotionlevel = interaction.options.getInteger("emotionlevel",true);
-    // if ([speaker, pitch, speed, _emotion, _emotionlevel].includes(null)) {
-    //   const embed = new EmbedBuilder();
-    //   embed
-    //     .setTitle("エラー")
-    //     .setDescription("引数の数または引数の値が適切ではありません。")
-    //     .setColor([255, 0, 0]);
-    //   interaction.followUp({ embeds: [embed] });
-    //   return;
-    // }
     const emotion = (
       _emotion == "none" || _emotion == null ? undefined : _emotion
     ) as VTEmotion;

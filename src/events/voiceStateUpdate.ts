@@ -1,7 +1,7 @@
-import { Event, StorageType } from "@src/types/index.js";
-import { StageChannel, TextBasedChannel, VoiceState } from "discord.js";
 import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
 import { storage } from "@src/core/storage.js";
+import { Event, StorageType } from "@src/types/index.js";
+import { StageChannel, TextBasedChannel, VoiceState } from "discord.js";
 
 export const event: Event = {
   name: "voiceStateUpdate",

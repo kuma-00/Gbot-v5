@@ -16,10 +16,12 @@ export const CommandCategory = {
 } as const;
 // eslint-disable-next-line no-redeclare
 export type CommandCategory =
-  typeof CommandCategory[keyof typeof CommandCategory];
+  (typeof CommandCategory)[keyof typeof CommandCategory];
 
 export interface Command {
-  collector?: InteractionCollector<MappedInteractionTypes[MessageComponentType]>;
+  collector?: InteractionCollector<
+    MappedInteractionTypes[MessageComponentType]
+  >;
   category: CommandCategory;
   guildOnly: boolean;
   enabled: boolean;
@@ -30,10 +32,10 @@ export interface Command {
   description?: string;
   execute(
     client: ExtensionClient,
-    interaction: CommandInteraction | ContextMenuCommandInteraction
-  ): any;
+    interaction: CommandInteraction | ContextMenuCommandInteraction,
+  ): unknown;
   autocomplete?(
     client: ExtensionClient,
-    interaction: AutocompleteInteraction
-  ): any;
+    interaction: AutocompleteInteraction,
+  ): unknown;
 }

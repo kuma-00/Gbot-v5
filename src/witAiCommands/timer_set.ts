@@ -10,12 +10,7 @@ export const command: WitAiCommand = {
     const second =
       data.res.entities["wit$duration:duration"]?.[0].normalized?.value ?? 0;
     if (second == 0) return data.channel.send(`時間の取得に失敗しました。`);
-    setTimer(
-      client,
-      data.channel.id,
-      data.user.id,
-      second
-    );
+    setTimer(client, data.channel.id, data.user.id, second);
     console.log(data.res.entities["wit$duration:duration"]?.[0], second);
     data.channel.send(`${secondToString(second)}タイマーが設定されました。`);
     if (data.guild)
@@ -23,7 +18,7 @@ export const command: WitAiCommand = {
         client,
         data.guild,
         `${secondToString(second)}タイマーが設定されました。`,
-        data.channel.id
+        data.channel.id,
       );
   },
 };

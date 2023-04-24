@@ -20,7 +20,7 @@ const artifactList = artifacts("5", {
 });
 const artifactData = (() => {
   if (!Array.isArray(artifactList)) return;
-  let artifactData: Record<string, genshinDBArtifact> = {};
+  const artifactData: Record<string, genshinDBArtifact> = {};
   artifactList.forEach((s) => {
     const a = artifacts(s, {
       queryLanguages: [Language.Japanese],
@@ -33,7 +33,7 @@ const artifactData = (() => {
 
 const artifactNameData = (() => {
   if (!artifactData) return;
-  let artifactNameData: Record<string, { name: string; type: string }> = {};
+  const artifactNameData: Record<string, { name: string; type: string }> = {};
   Object.values(artifactData).forEach((a) => {
     artifactNameData[a.flower?.name || ""] = {
       name: a.name,
@@ -115,7 +115,7 @@ export class Artifact {
         index: number;
         valueItems: number[] | undefined;
         indexItems: number[] | undefined;
-        value: any;
+        value: number;
       }[]
     | undefined
   )[] = [];
@@ -324,7 +324,7 @@ export class Artifact {
   ) {
     if (val) val = hasPercent ? val : val.replace(/[.,]/, "");
     if (this.endMain) return false;
-    let t: boolean = false;
+    let t = false;
     if (res[1] > 80 && !this.main.name) {
       // const pos = Object.values(this.mainStatusNames).indexOf(res[0]);
       const type = Object.keys(this.mainStatusNames)[res[2]];
@@ -527,7 +527,7 @@ export class Artifact {
         index: number;
         valueItems: number[] | undefined;
         indexItems: number[] | undefined;
-        value: any;
+        value: number;
       }[] = [];
       check(data, value).forEach((i) => {
         if (

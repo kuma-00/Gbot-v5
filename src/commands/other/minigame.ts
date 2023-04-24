@@ -12,7 +12,7 @@ import {
   MessageComponentInteraction,
   InteractionType,
   StringSelectMenuBuilder,
-  StringSelectMenuInteraction,
+  StringSelectMenuInteraction
 } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import { MinigameData } from "@src/types/minigame.js";
@@ -44,6 +44,7 @@ export const command: Command = {
         isEnd: false,
         isStart: false,
       };
+      // eslint-disable-next-line @typescript-eslint/ban-types
       const fn: Record<string, Function> = {
         gb_game_start: (interaction: ButtonInteraction) => {
           const id = getId(interaction);
@@ -161,7 +162,7 @@ export const command: Command = {
         const id = interaction.customId.split(":")[0];
         fn[id](interaction);
       });
-      this.collector.on("end", () => {});
+      // this.collector.on("end", () => {});
     } else {
       const list = [...client.minigames.values()]
         .map(

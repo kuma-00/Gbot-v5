@@ -11,25 +11,25 @@ export const command: WitAiCommand = {
     if (isNullOrWhitespace(location))
       return data.channel.send(`場所の取得に失敗しました。`);
     // console.log(data.res.entities["wit$location:location"]?.[0], location);
-    const area = (await getArea(location));
+    const area = await getArea(location);
     if (!area) return data.channel.send(`場所の取得に失敗しました。`);
     const weather = await getWeather(area.getCode);
     data.channel.send(
       `**${area.name}**
 
 ${weather[0]
-        .map(
-          (w) => `> \`${w.name}\`
-> ${w.weather}`
-        )
-        .join("\n\n")}`
+  .map(
+    (w) => `> \`${w.name}\`
+> ${w.weather}`,
+  )
+  .join("\n\n")}`,
     );
     if (data.guild)
       speak(
         client,
         data.guild,
         weather[0].map((w) => `${w.name} ${w.weather}`).join("。"),
-        data.channel.id
+        data.channel.id,
       );
   },
 };

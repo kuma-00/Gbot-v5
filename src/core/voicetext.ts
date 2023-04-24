@@ -106,7 +106,9 @@ export class VoiceText {
       speed: this._speed,
       pitch: this._pitch,
       emotion_level:
-        this._emotion === VTEmotion.NONE ? VTEmotionLevel.NONE : this._emotionLevel,
+        this._emotion === VTEmotion.NONE
+          ? VTEmotionLevel.NONE
+          : this._emotionLevel,
       emotion: this._emotion,
       speaker: this._speaker,
       format: this._format,
@@ -124,7 +126,7 @@ export class VoiceText {
       method: "POST",
       headers: {
         Authorization: `Basic ${Buffer.from(`${this.apiKey}:`).toString(
-          "base64"
+          "base64",
         )}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
@@ -133,11 +135,12 @@ export class VoiceText {
     if (!response.ok) {
       throw new Error(
         `status:${response.status}\nmessage:${JSON.stringify(
-          (await response.json()) as any
-        )}`
+          await response.json(),
+        )}`,
       );
     }
     // const buf = await response.arrayBuffer();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const buf = response.body as ReadableStream<any>;
     return Readable.fromWeb(buf);
   }

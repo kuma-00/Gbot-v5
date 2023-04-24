@@ -11,13 +11,17 @@ import {
 import { storage } from "@src/core/storage.js";
 import { VoiceText } from "@src/core/voicetext.js";
 import { VTDefaultOption, VTOption } from "@src/types/VT.js";
-import { ExtensionClient, SpeakResource, StorageType } from "@src/types/index.js";
+import {
+  ExtensionClient,
+  SpeakResource,
+  StorageType,
+} from "@src/types/index.js";
 import { SpeakData, sleep } from "@src/util/index.js";
 import {
   Message,
   MessageCollector,
   TextBasedChannel,
-  VoiceBasedChannel
+  VoiceBasedChannel,
 } from "discord.js";
 import { Readable } from "node:stream";
 import { ReadableStream } from "node:stream/web";
@@ -40,24 +44,26 @@ export class SpeakerStatus {
 }
 
 export class Speaker {
-  // isPlaying = false;
-  queue: SpeakResource[] = [];
-  leaving: boolean = false;
+  private queue: SpeakResource[] = [];
+  private _leaving = false;
   private _player = createAudioPlayer();
-  private _loop = false;
   private _lastUserName = "";
-  private _dicPattern: RegExp = / /;
-  private _dic: { [key: string]: string } = {};
+  private _dicPattern = / /;
+  private _dicCache: { [key: string]: string } = {};
   private _collectors: MessageCollector[] = [];
 
   get guildId() {
     return this.voiceChannel.guild.id;
   }
 
+  get leaving() {
+    return this._leaving;
+  }
+
   constructor(
     public client: ExtensionClient,
     public voiceChannel: VoiceBasedChannel,
-    public textChannel: TextBasedChannel
+    public textChannel: TextBasedChannel,
   ) {
     this.client = client;
     this.voiceChannel = voiceChannel;
@@ -69,10 +75,10 @@ export class Speaker {
     const content = (() => {
       if (m.attachments.size > 0) {
         const images = m.attachments.filter(
-          (a) => !!a.contentType?.includes("image")
+          (a) => !!a.contentType?.includes("image"),
         );
         const files = m.attachments.filter(
-          (a) => !a.contentType?.includes("image")
+          (a) => !a.contentType?.includes("image"),
         );
         const text =
           (images.size > 0 ? `。画像が${images.size}枚送信されました` : "") +
@@ -88,7 +94,7 @@ export class Speaker {
         channelId: m.channelId,
         userName,
         userId: m.author.id,
-      })
+      }),
     );
   };
 
@@ -99,7 +105,10 @@ export class Speaker {
     return isGuild && isReadingChannel && isNotMyMessage;
   };
 
-  async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
+  async start(
+    voiceChannel?: VoiceBasedChannel,
+    textChannel?: TextBasedChannel,
+  ) {
     // this.isPlaying = false;
     this.voiceChannel = voiceChannel || this.voiceChannel;
     this.queue = [];
@@ -107,7 +116,7 @@ export class Speaker {
       this.textChannel = textChannel;
       await storage(StorageType.SETTINGS).put(
         textChannel.id,
-        `${this.guildId}:cacheChannelId`
+        `${this.guildId}:cacheChannelId`,
       );
       this.addChannel(textChannel.id);
     }
@@ -136,32 +145,35 @@ export class Speaker {
     SpeakerStatus.set(this.guildId, SpeakerStatus.SPEAKING);
   }
 
-  async end(auto: boolean = false) {
-    this.leaving = true;
+  async end(auto = false) {
+    this._leaving = true;
     this._collectors.forEach((c) => c.stop());
     await Promise.all([
       this.addQueue("読み上げが終了しました。"),
-      this.addQueue("ご利用ありがとうございました。")
+      this.addQueue("ご利用ありがとうございました。"),
     ]);
     SpeakerStatus.set(
       this.guildId,
-      auto ? SpeakerStatus.WAITE : SpeakerStatus.END
+      auto ? SpeakerStatus.WAITE : SpeakerStatus.END,
     );
     await sleep(5000);
     const connection = getVoiceConnection(this.voiceChannel.guild.id);
     if (connection) {
       connection.destroy();
-      this.leaving = false;
+      this._leaving = false;
       return true;
     }
-    this.leaving = false;
+    this._leaving = false;
     return false;
   }
 
   async addQueue(data: SpeakData | string) {
-    if (typeof data === "string") data = new SpeakData(data, { channelId: this.textChannel.id });
+    if (typeof data === "string")
+      data = new SpeakData(data, { channelId: this.textChannel.id });
     if (data.text.startsWith("::")) {
-      data = new SpeakData(data.text.replace(/^\:\:/, ""), { channelId: this.textChannel.id });
+      data = new SpeakData(data.text.replace(/^::/, ""), {
+        channelId: this.textChannel.id,
+      });
     }
     if (/\S/.test(data.userName) && data.userName !== this._lastUserName) {
       data.addUserName();
@@ -176,8 +188,12 @@ export class Speaker {
         console.log({ text });
         if (text === "{" || text === "}" || text === "") continue;
         if (text.match(/s?:\/\//)) {
-          const idMatches = data.text.match(/s?:\/\/drive.google.com\/file\/d\/(.+)\/view/);
-          const url = (idMatches ? `https://drive.google.com/uc?id=${idMatches[1]}` : `http${text}`);
+          const idMatches = data.text.match(
+            /s?:\/\/drive.google.com\/file\/d\/(.+)\/view/,
+          );
+          const url = idMatches
+            ? `https://drive.google.com/uc?id=${idMatches[1]}`
+            : `http${text}`;
           this.queue.push(new URL(url));
         } else {
           await this.addSpeak(new SpeakData(text).inheritance(data));
@@ -196,14 +212,20 @@ export class Speaker {
     // DiscordSRV & LunaChat 矯正
     text = text.replace(/»(.)+\(/g, "");
     // 辞書読み込み
-    const dicChange = (await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`))?.value;
+    const dicChange = (
+      await storage(StorageType.SETTINGS).get(`${this.guildId}:dicChange`)
+    )?.value;
     if (!this._dicPattern || dicChange) {
-      if (dicChange) await storage(StorageType.SETTINGS).put(false, `${this.guildId}:dicChange`);
+      if (dicChange)
+        await storage(StorageType.SETTINGS).put(
+          false,
+          `${this.guildId}:dicChange`,
+        );
       await this.createDicPattern();
     }
 
     // 辞書による置き換え
-    text = text.replace(this._dicPattern, (e) => this._dic[e]);
+    text = text.replace(this._dicPattern, (e) => this._dicCache[e]);
     // 絵文字読み上げ調整
     text = text.replace(/<a?:(.+?):\d{18,19}>/g, (_, s) => s);
     // 辞書変換後の発声URLの一次変換
@@ -214,20 +236,22 @@ export class Speaker {
   }
 
   async createDicPattern() {
+    //TODO プラベートにする
     const dicData = await this.getDic();
     if (dicData) {
       this._dicPattern = new RegExp(
         `(${Object.keys(dicData)
           .map((i) => i.replace(/[.*+?^=!:${}()|[\]/\\]/g, "\\$&"))
           .join("|")})`,
-        "gm"
+        "gm",
       );
-      this._dic = dicData;
+      this._dicCache = dicData;
       return this._dicPattern;
     }
   }
 
   async getDic() {
+    //TODO プラベートにする
     const dic: { [key: string]: string } = {};
     const words = await storage(StorageType.WORDS, this.guildId).fetchAll();
     words.items.forEach(({ key, value }) => {
@@ -238,9 +262,15 @@ export class Speaker {
   }
 
   async addSpeak(data: SpeakData) {
+    //TODO addQueueに統合
     const { userId, vtOption } = data;
-    const storageData = await storage(StorageType.SETTINGS).get(`${this.guildId}:${userId}`);
-    const vicData: VTOption = vtOption !== undefined ? vtOption : (storageData?.value as VTOption) || VTDefaultOption;
+    const storageData = await storage(StorageType.SETTINGS).get(
+      `${this.guildId}:${userId}`,
+    );
+    const vicData: VTOption =
+      vtOption !== undefined
+        ? vtOption
+        : (storageData?.value as VTOption) || VTDefaultOption;
     const stream = await voice.option(vicData).speak(data.text);
     if (!stream) return;
     stream.setMaxListeners(100);
@@ -252,15 +282,19 @@ export class Speaker {
     if (this.isPlaying || this.queue.length == 0) return;
     const resource = await (async () => {
       if (this.queue[0] instanceof URL) {
-        const body = (await fetch(this.queue[0].toString())).body as ReadableStream<any>;
+        const body = (await fetch(this.queue[0].toString()))
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .body as ReadableStream<any>;
         const stream = Readable.fromWeb(body);
-        // stream.push(arrayBufferToBuffer(buf));
-        // stream.push(null);
         return stream;
       }
-      return this.queue[0]
+      return this.queue[0];
     })();
-    if (!resource) return this.next();
+    if (!resource) {
+      this.queue.shift();
+      this.playAudio();
+      return;
+    }
     const audioResource = createAudioResource(resource);
     this._player = createAudioPlayer({
       behaviors: { noSubscriber: NoSubscriberBehavior.Pause },
@@ -269,26 +303,21 @@ export class Speaker {
     const connection = getVoiceConnection(this.guildId);
     connection?.subscribe(this._player);
     this._player.on("error", console.error);
-    this._player.on(AudioPlayerStatus.Idle, this.next.bind(this));
-  }
-
-  next() {
-    if (this._loop) {
-      this.queue.push(this.queue[0]);
-    }
-    this.queue.shift();
-    this.playAudio();
+    this._player.on(AudioPlayerStatus.Idle, () => {
+      this.queue.shift();
+      this.playAudio();
+    });
   }
 
   get isPlaying() {
     return this._player?.state.status == AudioPlayerStatus.Playing;
   }
 
-  skip() {
+  public skip() {
     if (this.isPlaying) this._player?.stop();
   }
 
-  clear() {
+  public clear() {
     this.queue = [];
     this.skip();
   }
@@ -299,6 +328,7 @@ export class Speaker {
   }
 
   async addChannel(textChannelId: string) {
+    //TODO コマンド側もこれを使う
     const readChannels = await this.getReadChannels();
     if (!readChannels.includes(textChannelId))
       this.addCollectors(textChannelId);
@@ -306,36 +336,40 @@ export class Speaker {
       readChannels.push(textChannelId);
       await storage(StorageType.SETTINGS).put(
         readChannels.filter((x, i, a) => a.indexOf(x) === i),
-        `${this.guildId}:readChannels`
+        `${this.guildId}:readChannels`,
       );
     } else {
       await storage(StorageType.SETTINGS).put(
         [textChannelId],
-        `${this.guildId}:readChannels`
+        `${this.guildId}:readChannels`,
       );
     }
   }
 
+  //TODO コマンド側用のremoveChannelも作る
+
   removeCollectors(textChannelId: string) {
+    //TODO プラベートにする
     const collector = this._collectors.find(
-      (c) => c.channel.id == textChannelId
+      (c) => c.channel.id == textChannelId,
     );
     if (collector) {
       this._collectors = this._collectors.filter(
-        (c) => c.channel.id != textChannelId
+        (c) => c.channel.id != textChannelId,
       );
       collector.stop();
     }
   }
 
   addCollectors(textChannelId: string) {
+    //TODO プラベートにする
     const channel = this.voiceChannel.guild.channels.cache.get(textChannelId);
     this.removeCollectors(textChannelId);
     if (channel && "createMessageCollector" in channel) {
       this._collectors.push(
         channel
-          .createMessageCollector({ filter: this.filter.bind(this) })
-          .on("collect", this.messageCollect.bind(this))
+          .createMessageCollector({ filter: this.filter.bind(this) }) // TODO bindじゃなくて、アロー関数にする
+          .on("collect", this.messageCollect.bind(this)), // TODO bindじゃなくて、アロー関数にする
       );
     }
   }

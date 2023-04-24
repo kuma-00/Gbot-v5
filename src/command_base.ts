@@ -8,6 +8,7 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("")
     .setDescription(""),
-  execute(client, interaction:ChatInputCommandInteraction) {
+  execute(_client, _interaction:ChatInputCommandInteraction) {
+    return;
   },
 };

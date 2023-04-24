@@ -8,7 +8,7 @@
     "push-compile-pm2-restart": "npm run push;npm run pm2-restart",
     "ts-start": "node --experimental-loader esbuild-node-loader src/main.ts",
     "start": "node build/main.js",
-    "compile": "rm -rf ./build ;tsc -p . && tsc-alias -p tsconfig.json",
+    "compile": "tsc -p . && tsc-alias -p tsconfig.json",
     "push": "npm run compile;git pull;git add .;git commit -m \"auto commit\";git push",
     "compRes": "npm run compile && npm run pm2-restart",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
@@ -27,23 +27,15 @@
   "license": "MIT",
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",
-    "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
     "@types/readable-stream": "^2.3.15",
     "@types/wav": "^1.0.1",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
-    "@typescript-eslint/parser": "^5.58.0",
+    "@typescript-eslint/parser": "^5.59.0",
     "esbuild-node-loader": "^0.8.0",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jest": "^27.2.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
-    "ts-node": "^10.9.1",
+    "prettier": "^2.8.8",
     "tsc-alias": "^1.8.5",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.0.4"
@@ -76,27 +68,5 @@
     "wav": "^1.0.2",
     "wikipedia": "^2.0.0",
     "zlib-sync": "^0.1.8"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "tsconfig.json",
-        "useESM": true
-      }
-    },
-    "testMatch": [
-      "**/tests/**/*.test.ts"
-    ],
-    "moduleNameMapper": {
-      "^@src/(.+)": "<rootDir>/src/$1"
-    },
-    "preset": "ts-jest/presets/default-esm"
   }
 }

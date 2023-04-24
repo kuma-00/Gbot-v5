@@ -2,11 +2,7 @@ import "dotenv/config";
 
 import { generateDependencyReport } from "@discordjs/voice";
 import { Command } from "@src/types/command.js";
-import {
-  Event,
-  ExtensionClient,
-  MessageResponse,
-} from "@src/types/index.js";
+import { Event, ExtensionClient, MessageResponse } from "@src/types/index.js";
 import { WitAiCommand } from "@src/types/witAiCommand.js";
 import {
   Client,
@@ -67,6 +63,7 @@ const getJsFiles = async (dirpath: string) => {
   return files;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const loadFile = async (path: string, fn: (data: any) => void) => {
   try {
     const file = await import(path);
@@ -80,16 +77,14 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
   // Event
   (await getJsFiles(path.join(__dirname, "events"))).forEach((path) => {
     loadFile(path, (event) => {
-      const e = event.event as Event;
+      const e = (event).event as Event;
       if (e?.name) {
         if (e.once) {
-          client.once(e.name.trim(), (...args) =>e.execute(client, ...args));
+          client.once(e.name.trim(), (...args) => e.execute(client, ...args));
         } else {
-          client.on(e.name.trim(), (...args) =>e.execute(client, ...args));
+          client.on(e.name.trim(), (...args) => e.execute(client, ...args));
         }
-        console.log(
-          `Event              ${e.name.padEnd(20, " ")} loaded !`
-        );
+        console.log(`Event              ${e.name.padEnd(20, " ")} loaded !`);
       }
     });
   });
@@ -100,7 +95,7 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       if (com?.data?.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
         console.log(
-          `SlashCommand       ${com.data.name.padEnd(20, " ")} loaded !`
+          `SlashCommand       ${com.data.name.padEnd(20, " ")} loaded !`,
         );
       }
     });
@@ -112,7 +107,7 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       if (com.data.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
         console.log(
-          `ContextMenuCommand ${com.data.name.padEnd(20, " ")} loaded !`
+          `ContextMenuCommand ${com.data.name.padEnd(20, " ")} loaded !`,
         );
       }
     });
@@ -134,7 +129,7 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       if (mg) {
         client.minigames.set(mg.gameData.name, mg);
         console.log(
-          `minigames          ${mg.gameData.name.padEnd(20, " ")} loaded !`
+          `minigames          ${mg.gameData.name.padEnd(20, " ")} loaded !`,
         );
       }
     });
@@ -160,10 +155,11 @@ process.on("unhandledRejection", (reason) => {
 client.on("error", console.log); //error
 client.on("warn", console.log); //warn
 client.on("debug", console.log); //debug
-client.on(Events.ShardError, error => console.error('A websocket connection encountered an error:', error));
+client.on(Events.ShardError, (error) =>
+  console.error("A websocket connection encountered an error:", error),
+);
 
 // createServer(function (_req, res) {
 //   res.write("OK");
 //   res.end();
 // }).listen(8081);
-

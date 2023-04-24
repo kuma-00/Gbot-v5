@@ -1,8 +1,11 @@
+import { ChatInputCommandInteraction } from "discord.js";
 import {
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-} from "discord.js";
-import { VTEmotion, VTEmotionLevel, VTSpeaker,VTFormat, VTOption } from "@src/types/VT.js";
+  VTEmotion,
+  VTEmotionLevel,
+  VTSpeaker,
+  VTFormat,
+  VTOption,
+} from "@src/types/VT.js";
 import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import { createVoiceEmbed } from "./voiceset.js";
@@ -22,9 +25,9 @@ export const command: Command = {
         .addChoices(
           ...Object.values(VTSpeaker)
             .filter((s) => s != "show")
-            .map((s) => ({ name: s, value: s }))
+            .map((s) => ({ name: s, value: s })),
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -32,7 +35,7 @@ export const command: Command = {
         .setDescription("声の高さ 50~200(%)")
         .setMaxValue(200)
         .setMinValue(50)
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -40,7 +43,7 @@ export const command: Command = {
         .setDescription("喋るスピード(声の高さも変わる) 50~400(%)")
         .setMaxValue(400)
         .setMinValue(50)
-        .setRequired(true)
+        .setRequired(true),
     )
     .addStringOption((option) =>
       option
@@ -50,10 +53,10 @@ export const command: Command = {
           ...Object.values(VTEmotion).map((s) =>
             s === undefined
               ? { name: "none", value: "none" }
-              : { name: s, value: s }
-          )
+              : { name: s, value: s },
+          ),
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -62,16 +65,16 @@ export const command: Command = {
         .addChoices(
           ...Object.values(VTEmotionLevel)
             .map((n) => (n === undefined ? "0" : n))
-            .map((s) => ({ name: s, value: +s }))
+            .map((s) => ({ name: s, value: +s })),
         )
-        .setRequired(true)
+        .setRequired(true),
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const speaker = interaction.options.getString("speaker",true) as VTSpeaker;
-    const pitch = interaction.options.getInteger("pitch",true);
-    const speed = interaction.options.getInteger("speed",true);
-    const _emotion = interaction.options.getString("emotion",true);
-    const _emotionlevel = interaction.options.getInteger("emotionlevel",true);
+    const speaker = interaction.options.getString("speaker", true) as VTSpeaker;
+    const pitch = interaction.options.getInteger("pitch", true);
+    const speed = interaction.options.getInteger("speed", true);
+    const _emotion = interaction.options.getString("emotion", true);
+    const _emotionlevel = interaction.options.getInteger("emotionlevel", true);
     // if ([speaker, pitch, speed, _emotion, _emotionlevel].includes(null)) {
     //   const embed = new EmbedBuilder();
     //   embed
@@ -90,19 +93,25 @@ export const command: Command = {
         : "" + _emotionlevel
     ) as VTEmotionLevel;
 
-    const data:VTOption = {
+    const data: VTOption = {
       speaker,
       pitch,
       speed,
       emotion,
       emotionLevel,
-      volume:100,
-      format:VTFormat.WAV
+      volume: 100,
+      format: VTFormat.WAV,
     };
 
     if (interaction.guildId && interaction.guild) {
       const speaker = client.speakers.get(interaction.guildId);
-      if (speaker) speaker.addQueue(new SpeakData("読み上げのテストです。こんにちは。こんばんは。さようなら",{channelId:speaker.textChannel.id,vtOption:data}));
+      if (speaker)
+        speaker.addQueue(
+          new SpeakData(
+            "読み上げのテストです。こんにちは。こんばんは。さようなら",
+            { channelId: speaker.textChannel.id, vtOption: data },
+          ),
+        );
     } else {
       interaction.followUp("読み上げが開始されていません。");
     }

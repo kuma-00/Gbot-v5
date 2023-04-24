@@ -7,7 +7,7 @@ export const event: Event = {
   async execute(client, interaction:Interaction) {
     const isDeveloping = false;
     if (interaction.type == InteractionType.ApplicationCommand || interaction.isContextMenuCommand()) {
-      await interaction.deferReply().catch(() => {});
+      await interaction.deferReply().catch(console.error);
       const command = client.commands.get(interaction.commandName.toLowerCase());
       // console.log(!command);
       if (!command)
@@ -32,7 +32,7 @@ export const event: Event = {
       try {
         command.execute(client, interaction);
       } catch (e) {
-        followUpError(e, "", interaction);
+        followUpError(e as Error, "", interaction);
       }
     } else if (interaction.type == InteractionType.ApplicationCommandAutocomplete){
       const command = client.commands.get(interaction.commandName.toLowerCase());

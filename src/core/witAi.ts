@@ -22,7 +22,7 @@ export const message = async (message: string) => {
 
 export const executeCommand = async (
   client: ExtensionClient,
-  data: WitAiCommandData
+  data: WitAiCommandData,
 ) => {
   const name = data.res.intents?.[0].name ?? "";
   console.log(data.res);
@@ -35,20 +35,22 @@ export const executeCommand = async (
     }
     try {
       command.execute(client, data);
-    } catch (error: any) {
-      console.log(error, error?.message);
-      const embed = new EmbedBuilder();
-      embed
-        .setAuthor({ name: "Error" })
-        .setTitle("エラーが発生しました。")
-        .setDescription(`${error}\n${error?.message}`)
-        .setTimestamp(Date.now())
-        .setColor([255, 0, 0]);
-      data.channel.send({ embeds: [embed] });
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error, error?.message);
+        const embed = new EmbedBuilder();
+        embed
+          .setAuthor({ name: "Error" })
+          .setTitle("エラーが発生しました。")
+          .setDescription(`${error}\n${error?.message}`)
+          .setTimestamp(Date.now())
+          .setColor([255, 0, 0]);
+        data.channel.send({ embeds: [embed] });
+      }
     }
   } else {
     data.channel.send(
-      "コマンドが認識できませんでした。表現を変更するか、無効なコマンドの可能性があります。"
+      "コマンドが認識できませんでした。表現を変更するか、無効なコマンドの可能性があります。",
     );
   }
 };

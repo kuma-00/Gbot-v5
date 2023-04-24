@@ -12,7 +12,7 @@ import { Speaker } from "./speaker.js";
 
 function stream2buffer(stream: Stream): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const _buf: any[] = [];
+    const _buf: Uint8Array[] = [];
     stream.on("data", (chunk) => _buf.push(chunk));
     stream.on("end", () => resolve(Buffer.concat(_buf)));
     stream.on("error", (err) => reject(err));
@@ -27,7 +27,8 @@ class OpusDecodingStream extends Transform {
     this.encoder = encoder;
   }
 
-  _transform(data: Buffer, _encoding: any, callback: Function) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _transform(data: Buffer, _encoding: any, callback: ()=>void) {
     this.push(this.encoder.decode(data));
     callback();
   }

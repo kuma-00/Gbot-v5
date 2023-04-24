@@ -22,7 +22,7 @@ export const command: Command = {
       const title = searchResults.results[0].title;
       const summary = (await wiki.summary(title)).extract;
       const texts = (() => {
-        let array = [];
+        const array = [];
         let text = summary.replace(/\s+/, " ").replace(/\n+/, "\n");
         while (text.length > 1800) {
           array.push(text.slice(0, text.lastIndexOf("\n", 1800)));

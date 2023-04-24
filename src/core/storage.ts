@@ -8,7 +8,7 @@ import { FetchResponse} from 'deta/dist/types/types/base/response';
 const deta = Deta(process.env.DETA_PROJECT_KEY);
 const db = deta.Base("gbot");
 
-export const storage = (storageType: StorageType, guildId: string = ""):ExtensionBase => {
+export const storage = (storageType: StorageType, guildId = ""):ExtensionBase => {
   if (storageType == StorageType.SETTINGS) {
     return addFetchAll(db as ExtensionBase);
   } else {
