@@ -20,6 +20,7 @@ export type ExtensionClient = Client & {
 
 export interface Event {
   name: string;
+  once: boolean;
   execute(client: ExtensionClient, ...arg: any): any;
 }
 

@@ -10,7 +10,7 @@ export const command: Command = {
     .setName("shutdown")
     .setDescription("終了します(Only Gbot Administrator)"),
   async execute(client, interaction) {
-    if (process.env.MY_USER_ID == interaction.user.id) {
+    if ((await client.application?.fetch())?.owner?.id == interaction.user.id) {
       client.speakers.forEach((speaker) => {
         speaker.textChannel.send("終了されました。");
         speaker.end();

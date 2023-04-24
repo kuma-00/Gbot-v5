@@ -6,6 +6,7 @@ import { ActivityType, TextBasedChannel } from "discord.js";
 
 export const event: Event = {
   name: "ready",
+  once: true,
   async execute(client): Promise<void> {
     const commands = Array.from(client.commands.values());
     client.guilds.cache
@@ -39,9 +40,7 @@ const comeback = async (client: ExtensionClient) => {
       logs.push([guild.id, ":", guild.name]);
       const tcId = (await s.get(`${guildId}:cacheChannelId`))?.value as string;
       if (!tcId) return console.log(`Can't get ${guildId}:cacheChannelId`);
-      await guild.channels.fetch();
       const tc = await guild.channels.fetch(tcId);
-      await guild.fetch();
       const vc = guild.voiceStates.cache.first()?.channel;
       if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
       if (vc.members.size == 0) return console.log(`Can't members 0 vc`);

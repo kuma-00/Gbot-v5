@@ -5,6 +5,7 @@ import { storage } from "@src/core/storage.js";
 
 export const event: Event = {
   name: "voiceStateUpdate",
+  once: false,
   async execute(client, oldState: VoiceState, newState: VoiceState): Promise<void> {
     const newUserChannel = newState.channel;
     const oldUserChannel = oldState.channel;

@@ -2,13 +2,12 @@ import { ExtensionClient } from "@src/types/index.js";
 import { VTOption } from "@src/types/VT.js";
 import {
   CommandInteraction,
-  GuildMember,
   EmbedBuilder,
-  Snowflake,
-  User,
   Guild,
+  GuildMember,
   Message,
   MessageReplyOptions,
+  User
 } from "discord.js";
 
 export const followUpError = (
@@ -54,15 +53,15 @@ export const getUsername = (
 export class SpeakData {
   text: string;
   userName: string = "";
-  channelId: Snowflake = "";
-  userId: Snowflake = "";
+  channelId: string = "";
+  userId: string = "";
   vtOption?: VTOption;
   constructor(
     text: string,
     option?: {
-      channelId?: Snowflake;
+      channelId?: string;
       userName?: string;
-      userId?: Snowflake;
+      userId?: string;
       vtOption?: VTOption;
     }
   ) {

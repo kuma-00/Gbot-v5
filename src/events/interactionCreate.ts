@@ -3,6 +3,7 @@ import { Event } from "@src/types/index.js";
 import { Interaction, InteractionType } from "discord.js";
 export const event: Event = {
   name: "interactionCreate",
+  once: false,
   async execute(client, interaction:Interaction) {
     const isDeveloping = false;
     if (interaction.type == InteractionType.ApplicationCommand || interaction.isContextMenuCommand()) {

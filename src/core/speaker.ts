@@ -13,15 +13,14 @@ import { VoiceText } from "@src/core/voicetext.js";
 import { VTDefaultOption, VTOption } from "@src/types/VT.js";
 import { ExtensionClient, SpeakResource, StorageType } from "@src/types/index.js";
 import { SpeakData, sleep } from "@src/util/index.js";
-import { ReadableStream } from "node:stream/web";
 import {
   Message,
   MessageCollector,
-  Snowflake,
   TextBasedChannel,
-  VoiceBasedChannel,
+  VoiceBasedChannel
 } from "discord.js";
 import { Readable } from "node:stream";
+import { ReadableStream } from "node:stream/web";
 const voice = new VoiceText(process.env.VTKey || "");
 
 export type SpeakerStatusType = "END" | "SPEAKING" | "ERROR" | "WAIT";
@@ -31,10 +30,10 @@ export class SpeakerStatus {
   static readonly SPEAKING = "SPEAKING";
   static readonly ERROR = "ERROR";
   static readonly WAITE = "WAIT";
-  static async set(guildId: Snowflake, status: SpeakerStatusType) {
+  static async set(guildId: string, status: SpeakerStatusType) {
     await storage(StorageType.SETTINGS).put(status, `${guildId}:SpeakerStatus`);
   }
-  static async get(guildId: Snowflake) {
+  static async get(guildId: string) {
     return (await storage(StorageType.SETTINGS).get(`${guildId}:SpeakerStatus`))
       ?.value as SpeakerStatusType | undefined;
   }
@@ -294,12 +293,12 @@ export class Speaker {
     this.skip();
   }
 
-  async isReadingChannel(textChannelId: Snowflake) {
+  async isReadingChannel(textChannelId: string) {
     const readChannels = await this.getReadChannels();
     return Array.isArray(readChannels) && readChannels.includes(textChannelId);
   }
 
-  async addChannel(textChannelId: Snowflake) {
+  async addChannel(textChannelId: string) {
     const readChannels = await this.getReadChannels();
     if (!readChannels.includes(textChannelId))
       this.addCollectors(textChannelId);
@@ -317,7 +316,7 @@ export class Speaker {
     }
   }
 
-  removeCollectors(textChannelId: Snowflake) {
+  removeCollectors(textChannelId: string) {
     const collector = this._collectors.find(
       (c) => c.channel.id == textChannelId
     );
@@ -329,7 +328,7 @@ export class Speaker {
     }
   }
 
-  addCollectors(textChannelId: Snowflake) {
+  addCollectors(textChannelId: string) {
     const channel = this.voiceChannel.guild.channels.cache.get(textChannelId);
     this.removeCollectors(textChannelId);
     if (channel && "createMessageCollector" in channel) {
@@ -348,3 +347,26 @@ export class Speaker {
     );
   }
 }
+
+/**
+ * get guildId() {
+ * messageCollect = (m: Message<boolean>) => {
+ * filter = async (m: Message<boolean>) => {
+ * async start(voiceChannel?: VoiceBasedChannel, textChannel?: TextBasedChannel) {
+ * async end(auto: boolean = false) {
+ * async addQueue(data: SpeakData | string) {
+ * async textReplace(text: string) {
+ * async createDicPattern() {
+ * async getDic() {
+ * async addSpeak(data: SpeakData) {
+ * async playAudio() {
+ * next() {
+ * get isPlaying() {
+ * skip() {
+ * clear() {
+ * async isReadingChannel(textChannelId: string) {
+ * async addChannel(textChannelId: string) {
+ * removeCollectors(textChannelId: string) {
+ * addCollectors(textChannelId: string) {
+ * async getReadChannels() {
+ */

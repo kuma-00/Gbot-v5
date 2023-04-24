@@ -2,7 +2,6 @@ import { MessageResponse } from "@src/types/index.js";
 import { executeCommand, message as witMessage } from "@src/core/witAi.js";
 import { tokenize } from "wakachigaki";
 import { reply } from "@src/util/index.js";
-import { StageChannel } from "discord.js";
 
 export const messageResponse: MessageResponse = {
   name: "witAi",
