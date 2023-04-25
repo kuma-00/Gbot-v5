@@ -1,4 +1,4 @@
-import { ButtonBuilder } from "@discordjs/builders";
+import { ButtonBuilder } from "discord.js";
 import { ExtensionClient } from "@src/types/index.js";
 import { random, shuffle } from "@src/util/index.js";
 import {

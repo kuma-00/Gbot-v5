@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import { extract } from "fuzzball";
 import genshin_db, { Artifact as genshinDBArtifact } from "genshin-db";
-import { ActionRowBuilder, ButtonBuilder } from "@discordjs/builders";
+import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 // const { artifacts, Language } = genshin;
 const { artifacts, Language } = genshin_db;
 

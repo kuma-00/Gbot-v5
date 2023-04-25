@@ -144,6 +144,7 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       }
     });
   });
+  console.log("Command Loading Complete!");
   client.login(process.env.DISCORD_TOKEN);
 })();
 

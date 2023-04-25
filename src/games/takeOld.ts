@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "@discordjs/builders";
+import { EmbedBuilder } from "discord.js";
 import { ExtensionClient } from "@src/types/index.js";
 import {
   MinigameBase,
