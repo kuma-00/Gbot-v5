@@ -1,4 +1,4 @@
-import { Guild, GuildMember, StageChannel, TextBasedChannel, User } from "discord.js";
+import { Guild, GuildMember, TextBasedChannel, User } from "discord.js";
 import { ExtensionClient } from ".";
 import { MessageResponseJson } from "./witAi.js";
 
@@ -6,7 +6,7 @@ export interface WitAiCommand {
   guildOnly: boolean;
   enabled: boolean;
   name: string;
-  execute(client: ExtensionClient, data: WitAiCommandData): any;
+  execute(client: ExtensionClient, data: WitAiCommandData): unknown;
 }
 
 export type WitAiCommandData = {
