@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "push-compile-pm2-restart": "npm run push;npm run pm2-restart",
+    "push-compile-pm2-restart": "npm run push && npm run pm2-restart",
     "compile": "etsc && tsc-alias -p tsconfig.json",
-    "push": "npm run compile;git pull;git add .;git commit -m \"auto commit\";git push",
+    "push": "npm run compile && git pull && git add . && git commit -m \"auto commit\" && git push",
     "compRes": "npm run compile && npm run pm2-restart",
     "pm2-start": "pm2 start build/main.js --name gbot-v5Ranger --node-args=\"--trace-warnings\" --time",
     "pm2-restart": "pm2 restart gbot-v5Ranger --time",
