@@ -51,6 +51,7 @@
     "music-metadata": "^8.1.4",
     "ocr-space-api-wrapper": "^2.2.0",
     "pm2": "^5.3.0",
+    "python-format-js": "^1.4.1",
     "readable-stream": "^4.3.0",
     "sodium-native": "^4.0.1",
     "tweetnacl": "^1.0.3",

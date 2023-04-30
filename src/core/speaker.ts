@@ -257,7 +257,6 @@ export class Speaker {
     words.items.forEach(({ key, value }) => {
       dic[String(key)] = String(value);
     });
-
     return dic;
   }
 
