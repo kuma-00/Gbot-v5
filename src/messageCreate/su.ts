@@ -5,7 +5,7 @@ export const messageResponse: MessageResponse = {
   name: "su",
   filter: (m) =>
     ["いま"].some((i) => m.cleanContent == i) &&
-    !m.author.bot,
+    m.author.bot,
   async execute(client, message) {
     reply(message, "す。");
     if (message.guild)
