@@ -2,7 +2,7 @@ import { MessageResponse } from "@src/types/index.js";
 import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
-  name: "PI",
+  name: "su",
   filter: (m) =>
     ["いま"].some((i) => m.cleanContent == i) &&
     !m.author.bot,
