@@ -16,6 +16,7 @@ export const command: Command = {
         speaker.end();
       });
       interaction.followUp(`終了します。`);
+      client.destroy();
       await sleep(13000);
       process.exit(0);
     }
