@@ -44,7 +44,7 @@ export const event: Event = {
           client.speakers.set(guild.id, speaker);
           speaker.start();
         }
-        channel.send("読み上げが開始しました。");
+        // channel.send("読み上げが開始しました。");
         return;
       }
     }
