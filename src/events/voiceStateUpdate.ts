@@ -1,6 +1,7 @@
 import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
 import { storage } from "@src/core/storage.js";
 import { Event, StorageType } from "@src/types/index.js";
+import { sleep } from '@src/util/index.js';
 import { StageChannel, TextBasedChannel, VoiceState } from "discord.js";
 
 export const event: Event = {
@@ -44,7 +45,8 @@ export const event: Event = {
           client.speakers.set(guild.id, speaker);
           speaker.start();
         }
-        // channel.send("読み上げが開始しました。");
+        await sleep(1000);
+        channel.send("読み上げが開始しました。");
         return;
       }
     }
