@@ -1,5 +1,5 @@
 import { randomId } from "./../util/index.js";
-import { OCRResponse } from "@src/types/OCR.js";
+import { Artifact, OCRResponse } from "@src/types/OCR.js";
 import {
   BufferResolvable,
   ButtonStyle,
@@ -8,28 +8,30 @@ import {
   MessageActionRowComponentBuilder,
 } from "discord.js";
 import { extract } from "fuzzball";
-import genshin_db, { Artifact as genshinDBArtifact } from "genshin-db";
+// import { Artifact,artifacts,Language } from "genshin-db";
 import { ActionRowBuilder, ButtonBuilder } from "discord.js";
+import artifactsData from "@src/output.json";
+const artifactData = artifactsData as unknown as Record<string, Artifact>;
 // const { artifacts, Language } = genshin;
-const { artifacts, Language } = genshin_db;
+// const { artifacts, Language } = genshin_db;
 
-const artifactList = artifacts("5", {
-  queryLanguages: [Language.Japanese],
-  resultLanguage: Language.Japanese,
-  matchCategories: true,
-});
-const artifactData = (() => {
-  if (!Array.isArray(artifactList)) return;
-  const artifactData: Record<string, genshinDBArtifact> = {};
-  artifactList.forEach((s) => {
-    const a = artifacts(s, {
-      queryLanguages: [Language.Japanese],
-      resultLanguage: Language.Japanese,
-    });
-    if (a) artifactData[s] = a;
-  });
-  return artifactData;
-})();
+// const artifactList = artifacts("5", {
+//   queryLanguages: [Language.Japanese],
+//   resultLanguage: Language.Japanese,
+//   matchCategories: true,
+// });
+// const artifactData = (() => {
+//   if (!Array.isArray(artifactList)) return;
+//   const artifactData: Record<string, Artifact> = {};
+//   artifactList.forEach((s) => {
+//     const a = artifacts(s, {
+//       queryLanguages: [Language.Japanese],
+//       resultLanguage: Language.Japanese,
+//     });
+//     if (a) artifactData[s] = a;
+//   });
+//   return artifactData;
+// })();
 
 const artifactNameData = (() => {
   if (!artifactData) return;
@@ -85,7 +87,7 @@ export type StatusType = typeof StatusType[keyof typeof StatusType];
 const type = ["flower", "plume", "sands", "goblet", "circlet"] as const;
 export type ArtifactType = typeof type[number];
 
-export class Artifact {
+export class Artifacts {
   ocrLines: string[];
   ocrText: string;
   error = false;

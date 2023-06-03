@@ -7,7 +7,7 @@ import {
   Collection,
   Events,
   GatewayIntentBits,
-  Partials
+  Partials,
 } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -19,30 +19,30 @@ console.log("起動準備開始 var:", process.env.npm_package_version);
 
 // const __filename = Bun.fileURLToPath(import.meta.url);
 // const __dirname = path.dirname(__filename);
-console.log(import("src/events/ready"))
-console.log(import("src/commands/speaker/voiceset"))
-console.log(import("src/commands/speaker/addchannel"))
-console.log(import("src/commands/speaker/addword"))
-console.log(import("src/commands/speaker/channellist"))
-console.log(import("src/commands/speaker/clear"))
-console.log(import("src/commands/speaker/voiceget"))
-console.log(import("src/commands/speaker/end"))
-console.log(import("src/commands/speaker/removechannel"))
-console.log(import("src/commands/speaker/removeword"))
-console.log(import("src/commands/speaker/skip"))
-console.log(import("src/commands/speaker/start"))
-console.log(import("src/commands/speaker/voiceget"))
-console.log(import("src/commands/speaker/voiceget"))
-console.log(import("src/commands/speaker/voicetest"))
-console.log(import("src/commands/speaker/wordlist"))
-console.log(import("src/commands/util/help"))
-console.log(import("src/commands/util/ping"))
-console.log(import("src/commands/util/shutdown"))
-console.log(import("src/commands/other/calculation"))
-console.log(import("src/commands/other/conversation"))
-console.log(import("src/commands/other/google_search"))
-console.log(import("src/commands/other/minigame"))
-console.log(await import("src/commands/other/rate"))
+// console.log(import("src/events/ready"))
+// console.log(import("src/commands/speaker/voiceset"))
+// console.log(import("src/commands/speaker/addchannel"))
+// console.log(import("src/commands/speaker/addword"))
+// console.log(import("src/commands/speaker/channellist"))
+// console.log(import("src/commands/speaker/clear"))
+// console.log(import("src/commands/speaker/voiceget"))
+// console.log(import("src/commands/speaker/end"))
+// console.log(import("src/commands/speaker/removechannel"))
+// console.log(import("src/commands/speaker/removeword"))
+// console.log(import("src/commands/speaker/skip"))
+// console.log(import("src/commands/speaker/start"))
+// console.log(import("src/commands/speaker/voiceget"))
+// console.log(import("src/commands/speaker/voiceget"))
+// console.log(import("src/commands/speaker/voicetest"))
+// console.log(import("src/commands/speaker/wordlist"))
+// console.log(import("src/commands/util/help"))
+// console.log(import("src/commands/util/ping"))
+// console.log(import("src/commands/util/shutdown"))
+// console.log(import("src/commands/other/calculation"))
+// console.log(import("src/commands/other/conversation"))
+// console.log(import("src/commands/other/google_search"))
+// console.log(import("src/commands/other/minigame"))
+// console.log(await import("src/commands/other/rate"))
 // console.log(import("src/commands/other/translate"))
 // console.log(import("src/commands/other/wiki"))
 
@@ -99,22 +99,30 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
 
 (async () => {
   // Event
-  (await getJsFiles(path.join(import.meta.dir, "events"))).forEach(async (path) => {
-    await loadFile(path, (event) => {
-      const e = (event).event as Event;
-      if (e?.name) {
-        if (e.once) {
-          client.once(e.name.trim(), (...args) => e.execute(client, ...args));
-        } else {
-          client.on(e.name.trim(), (...args) => e.execute(client, ...args));
-        }
-        console.log(`Event              ${e.name.padEnd(20, " ")} loaded !`);
-      }
-    });
-  });
+  await Promise.all(
+    (await getJsFiles(path.join(import.meta.dir, "events"))).map(
+      async (path) => {
+        return loadFile(path, (event) => {
+          const e = event.event as Event;
+          if (e?.name) {
+            if (e.once) {
+              client.once(e.name.trim(), (...args) =>
+                e.execute(client, ...args),
+              );
+            } else {
+              client.on(e.name.trim(), (...args) => e.execute(client, ...args));
+            }
+            console.log(
+              `Event              ${e.name.padEnd(20, " ")} loaded !`,
+            );
+          }
+        });
+      },
+    ),
+  );
   // SlashCommand
-  (await getJsFiles(path.join(import.meta.dir, "commands"))).forEach((path) => {
-    loadFile(path, (command) => {
+  await Promise.all((await getJsFiles(path.join(import.meta.dir, "commands"))).map((path) => {
+    return loadFile(path, (command) => {
       const com: Command = command.command;
       if (com?.data?.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
@@ -123,32 +131,36 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         );
       }
     });
-  });
+  }));
   // ContextMenu
-  (await getJsFiles(path.join(import.meta.dir, "contextMenus"))).forEach((path) => {
-    loadFile(path, (contextMenu) => {
-      const com: Command = contextMenu.command;
-      if (com.data.name) {
-        client.commands.set(com.data.name.trim().toLowerCase(), com);
-        console.log(
-          `ContextMenuCommand ${com.data.name.padEnd(20, " ")} loaded !`,
-        );
-      }
-    });
-  });
+  await Promise.all((await getJsFiles(path.join(import.meta.dir, "contextMenus"))).map(
+    (path) => {
+      return loadFile(path, (contextMenu) => {
+        const com: Command = contextMenu.command;
+        if (com.data.name) {
+          client.commands.set(com.data.name.trim().toLowerCase(), com);
+          console.log(
+            `ContextMenuCommand ${com.data.name.padEnd(20, " ")} loaded !`,
+          );
+        }
+      });
+    },
+  ));
   //messageCreate
-  (await getJsFiles(path.join(import.meta.dir, "messageCreate"))).forEach((path) => {
-    loadFile(path, (messageResponse) => {
-      const mr: MessageResponse = messageResponse.messageResponse;
-      if (mr.name) {
-        client.messageResponses.push(mr);
-        console.log(`MessageResponse    ${mr.name.padEnd(20, " ")} loaded !`);
-      }
-    });
-  });
+  await Promise.all((await getJsFiles(path.join(import.meta.dir, "messageCreate"))).map(
+    (path) => {
+      return loadFile(path, (messageResponse) => {
+        const mr: MessageResponse = messageResponse.messageResponse;
+        if (mr.name) {
+          client.messageResponses.push(mr);
+          console.log(`MessageResponse    ${mr.name.padEnd(20, " ")} loaded !`);
+        }
+      });
+    },
+  ));
   //MiniGame
-  (await getJsFiles(path.join(import.meta.dir, "games"))).forEach((path) => {
-    loadFile(path, (minigame) => {
+  await Promise.all((await getJsFiles(path.join(import.meta.dir, "games"))).map((path) => {
+    return loadFile(path, (minigame) => {
       const mg: MinigameConstructor = minigame.minigame;
       if (mg) {
         client.minigames.set(mg.gameData.name, mg);
@@ -157,19 +169,27 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         );
       }
     });
-  });
+  }));
   //witAiCommands
-  (await getJsFiles(path.join(import.meta.dir, "witAiCommands"))).forEach((path) => {
-    loadFile(path, (witAiCommand) => {
-      const wac: WitAiCommand = witAiCommand.command;
-      if (wac) {
-        client.witAiCommands.set(wac.name, wac);
-        console.log(`witAiCommands      ${wac.name.padEnd(20, " ")} loaded !`);
-      }
-    });
-  });
+  await Promise.all((await getJsFiles(path.join(import.meta.dir, "witAiCommands"))).map(
+    (path) => {
+      return loadFile(path, (witAiCommand) => {
+        const wac: WitAiCommand = witAiCommand.command;
+        if (wac) {
+          client.witAiCommands.set(wac.name, wac);
+          console.log(
+            `witAiCommands      ${wac.name.padEnd(20, " ")} loaded !`,
+          );
+        }
+      });
+    },
+  ));
   console.log("Command Loading Complete!");
-  client.login(process.env.DISCORD_TOKEN);
+  console.log(client.commands.size)
+  console.log(client.minigames.size)
+  console.log(client.witAiCommands.size)
+  console.log(client.messageResponses.length)
+  client.login();
 })();
 
 process.on("unhandledRejection", (reason) => {

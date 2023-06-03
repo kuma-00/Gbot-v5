@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import { ocrSpace } from "ocr-space-api-wrapper";
-import { Artifact } from "@src/core/artifact.js";
+import { Artifacts } from "@src/core/artifact.js";
 
 const createError = (text: string) => {
   const embed = new EmbedBuilder();
@@ -61,7 +61,7 @@ export const command: Command = {
     const result = await ocr(new URL(image), interaction);
     if (!result)
       return interaction.followUp(createError(`画像の解析に失敗しました。`));
-    const arti = new Artifact(result);
+    const arti = new Artifacts(result);
     const e = arti.toEmbedBuilder();
     e.files?.push({ attachment: image, name: "Artifact.png" });
     const msg = await interaction.followUp(e);

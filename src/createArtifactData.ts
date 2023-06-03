@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
-console.log(dotenv.config());
 
-import { Artifact } from "./core/artifact.js";
+// import { Artifacts } from "./core/artifact.js";
 // import { StorageType } from "./types/index.js";
-import { OCRResponse } from "./types/OCR.js";
+// import { OCRResponse } from "./types/OCR.js";
 // import { storage } from "./core/storage.js";
 // import {
 //   Artifact as hoyoArtifact,
@@ -12,6 +10,8 @@ import { OCRResponse } from "./types/OCR.js";
 //   setLanguage,
 // } from "@gonetone/hoyowiki-api";
 // import { writeFile } from "fs/promises";
+
+import { Artifact, artifacts, Language } from "genshin-db";
 
 // console.log("起動準備開始");
 
@@ -74,38 +74,60 @@ import { OCRResponse } from "./types/OCR.js";
 //   console.log(artifactType);
 // })();
 
-const data: OCRResponse = {
-  ParsedResults: [
-    {
-      TextOverlay: { Lines: [], HasOverlay: false, Message: "" },
-      TextOrientation: "0",
-      FileParseExitCode: 1,
-      ParsedText:
-        "ー渡りの悟\r\n" +
-        "空の杯\r\n" +
-        "水元素ダメージ\r\n" +
-        "46.6%\r\n" +
-        "+20\r\n" +
-        "・元素チャージ効率+11.0%\r\n" +
-        "・会心率+10.5%\r\n" +
-        "・攻撃力+19\r\n" +
-        "会心ダメージ+22.5%\r\n",
-      ErrorMessage: "",
-      ErrorDetails: "",
-    },
-  ],
-  OCRExitCode: 1,
-  IsErroredOnProcessing: false,
-  ProcessingTimeInMilliseconds: "34015",
-  SearchablePDFURL: "Searchable PDF not generated as it was not requested.",
-};
+// const data: OCRResponse = {
+//   ParsedResults: [
+//     {
+//       TextOverlay: { Lines: [], HasOverlay: false, Message: "" },
+//       TextOrientation: "0",
+//       FileParseExitCode: 1,
+//       ParsedText:
+//         "ー渡りの悟\r\n" +
+//         "空の杯\r\n" +
+//         "水元素ダメージ\r\n" +
+//         "46.6%\r\n" +
+//         "+20\r\n" +
+//         "・元素チャージ効率+11.0%\r\n" +
+//         "・会心率+10.5%\r\n" +
+//         "・攻撃力+19\r\n" +
+//         "会心ダメージ+22.5%\r\n",
+//       ErrorMessage: "",
+//       ErrorDetails: "",
+//     },
+//   ],
+//   OCRExitCode: 1,
+//   IsErroredOnProcessing: false,
+//   ProcessingTimeInMilliseconds: "34015",
+//   SearchablePDFURL: "Searchable PDF not generated as it was not requested.",
+// };
 
-const arti = new Artifact(data);
-const e = arti.toEmbedBuilder();
-const f = arti.toDetail();
+// const arti = new Artifacts(data);
+// const e = arti.toEmbedBuilder();
+// const f = arti.toDetail();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-console.log((e.embeds?.[0])?.data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0]))
+// console.log((e.embeds?.[0])?.data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0]))
 // const words = await storage(StorageType.WORDS, "685883724231213234").fetch({
 //   "key?pfx": "o",
 // });
 // console.log(words);
+
+const artifactList = artifacts("5", {
+  queryLanguages: [Language.Japanese],
+  resultLanguage: Language.Japanese,
+  matchCategories: true,
+});
+const artifactData = (() => {
+  if (!Array.isArray(artifactList)) return;
+  const artifactData: Record<string, Artifact> = {};
+  artifactList.forEach((s) => {
+    const a = artifacts(s, {
+      queryLanguages: [Language.Japanese],
+      resultLanguage: Language.Japanese,
+    });
+    if (a) artifactData[s] = a;
+  });
+  return artifactData;
+})();
+
+console.log(artifactData);
+
+await Bun.write("src/output.json", JSON.stringify(artifactData));
