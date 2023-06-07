@@ -94,6 +94,6 @@ export type TranslateResponseJson = {
 
 export type MessageResponse = {
   name: string;
-  filter(message: Message): Boolean;
+  filter(message: Message): boolean;
   execute(client: ExtensionClient, message: Message): any;
 };
