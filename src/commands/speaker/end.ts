@@ -1,5 +1,5 @@
+import { Command, CommandCategory } from "@src/types/command.ts";
 import { SlashCommandBuilder } from "discord.js";
-import { Command,CommandCategory } from "@src/types/command.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

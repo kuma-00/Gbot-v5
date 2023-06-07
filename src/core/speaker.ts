@@ -8,15 +8,15 @@ import {
   getVoiceConnection,
   joinVoiceChannel,
 } from "@discordjs/voice";
-import { storage } from "@src/core/storage.js";
-import { VoiceText } from "@src/core/voicetext.js";
-import { VTDefaultOption, VTOption } from "@src/types/VT.js";
+import { FetchResponse, storage } from "@src/core/storage.ts";
+import { VoiceText } from "@src/core/voicetext.ts";
+import { VTDefaultOption, VTOption } from "@src/types/VT.ts";
 import {
   ExtensionClient,
   SpeakResource,
   StorageType,
-} from "@src/types/index.js";
-import { SpeakData, sleep } from "@src/util/index.js";
+} from "@src/types/index.ts";
+import { SpeakData, sleep } from "@src/util/index.ts";
 import {
   Message,
   MessageCollector,
@@ -25,7 +25,7 @@ import {
 } from "discord.js";
 import { Readable } from "node:stream";
 import { ReadableStream } from "node:stream/web";
-const voice = new VoiceText(process.env.VTKey || "");
+const voice = new VoiceText(Deno.env.get("VTKey") || "");
 
 export type SpeakerStatusType = "END" | "SPEAKING" | "ERROR" | "WAIT";
 
@@ -132,7 +132,7 @@ export class Speaker {
           entersState(connection, VoiceConnectionStatus.Signalling, 5000),
           entersState(connection, VoiceConnectionStatus.Connecting, 5000),
         ]);
-      } catch (error) {
+      } catch (_error) {
         console.log("強制切断されました");
         SpeakerStatus.set(this.guildId, SpeakerStatus.ERROR);
       }
@@ -253,7 +253,7 @@ export class Speaker {
   async getDic() {
     //TODO プラベートにする
     const dic: { [key: string]: string } = {};
-    const words = await storage(StorageType.WORDS, this.guildId).fetchAll();
+    const words = await (storage(StorageType.WORDS, this.guildId).fetchAll() as Promise<FetchResponse>);
     words.items.forEach(({ key, value }) => {
       dic[String(key)] = String(value);
     });
@@ -282,8 +282,7 @@ export class Speaker {
     const resource = await (async () => {
       if (this.queue[0] instanceof URL) {
         const body = (await fetch(this.queue[0].toString()))
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .body as ReadableStream<any>;
+          .body as ReadableStream;
         const stream = Readable.fromWeb(body);
         return stream;
       }

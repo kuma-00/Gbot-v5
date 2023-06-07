@@ -1,5 +1,5 @@
-import { speak } from "./../../util/index.js";
-import { Command, CommandCategory } from "@src/types/command.js";
+import { speak } from "@src/util/index.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
 import {
   ContextMenuCommandInteraction,
   ContextMenuCommandBuilder,

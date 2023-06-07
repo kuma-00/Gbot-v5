@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { sleep } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { sleep } from "@src/util/index.ts";
 import {
   Message,
   ButtonBuilder,

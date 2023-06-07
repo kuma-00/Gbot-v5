@@ -1,6 +1,5 @@
-import { ButtonBuilder } from "discord.js";
-import { ExtensionClient } from "@src/types/index.js";
-import { random, shuffle } from "@src/util/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
+import { random, shuffle } from "@src/util/index.ts";
 import {
   ActionRowBuilder,
   ButtonInteraction,
@@ -14,12 +13,13 @@ import {
   MessageComponentInteraction,
   MessageComponentType,
   StringSelectMenuInteraction,
+  ButtonBuilder,
 } from "discord.js";
 import {
   MinigameData,
   MinigameConstructor,
   MinigameBase,
-} from "@src/types/minigame.js";
+} from "@src/types/minigame.ts";
 
 type oxGameLog = {
   pos: number;
@@ -83,7 +83,7 @@ export const minigame: MinigameConstructor = class ox extends MinigameBase {
         .setCustomId(`gb_ox_button:${i}`)
         .setEmoji({ name: b || this.emojis[i] })
         .setDisabled(b != null || this.data.isEnd)
-        .setStyle(ButtonStyle.Secondary)
+        .setStyle(ButtonStyle.Secondary),
     );
     return {
       content: `${this.log.map((log) => this.logToText(log)).join("\n")}
@@ -119,7 +119,9 @@ ${
   }
 
   collect(
-    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
+    interaction:
+      | ButtonInteraction<CacheType>
+      | StringSelectMenuInteraction<CacheType>,
   ) {
     // const pos = this.emojis.indexOf(reaction.emoji.name)
     if (this.nextPlayer?.id != interaction.user.id) {
@@ -141,7 +143,9 @@ ${
   async put(
     user: GuildMember | undefined,
     pos: number,
-    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
+    interaction:
+      | ButtonInteraction<CacheType>
+      | StringSelectMenuInteraction<CacheType>,
   ) {
     const isCPU = user == undefined;
     if (!isCPU && user.id != this.nextPlayer?.id) return false;
@@ -177,7 +181,9 @@ ${
   }
 
   cpu(
-    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
+    interaction:
+      | ButtonInteraction<CacheType>
+      | StringSelectMenuInteraction<CacheType>,
   ) {
     if (this.nextPlayer != undefined) return false;
     const reach =
@@ -233,7 +239,7 @@ ${
     if (!array) array = this.board;
     return array
       .map((b, i) => (b ? b : this.emojis[i]))
-      .filter((b, i) => this.putPossible(i));
+      .filter((_b, i) => this.putPossible(i));
   }
   checkWin(id: number) {
     const bd = [

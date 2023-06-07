@@ -1,6 +1,6 @@
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { sleep } from "@src/util/index.ts";
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory, Command } from "@src/types/command.js";
-import { sleep } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Util,
@@ -18,7 +18,7 @@ export const command: Command = {
       interaction.followUp(`終了します。`);
       client.destroy();
       await sleep(13000);
-      process.exit(0);
+      Deno.exit();
     }
     return interaction.followUp(`権限が足りません。(Only Gbot Administrator)`);
   },

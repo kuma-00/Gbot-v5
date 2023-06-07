@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { random } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { random } from "@src/util/index.ts";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -317,7 +317,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     const mIds = this.data.members.map((n) => n.id);
     this.wolfUser = Array(this.wolfCount)
       .fill(0)
-      .map((n) => arr.splice(random(0, arr.length - 1), 1)[0]);
+      .map((_n) => arr.splice(random(0, arr.length - 1), 1)[0]);
     this.CitizenUser = arr;
     this.selfTheme = this.theme[random(0, this.theme.length - 1)];
     this.wolfThemePos = random(0, 1);

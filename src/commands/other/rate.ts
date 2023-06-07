@@ -1,11 +1,11 @@
+import { Artifact } from "@src/core/artifact.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
 import {
+  ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
-  ChatInputCommandInteraction,
 } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command.js";
 import { ocrSpace } from "ocr-space-api-wrapper";
-import { Artifact } from "@src/core/artifact.js";
 
 const createError = (text: string) => {
   const embed = new EmbedBuilder();
@@ -17,13 +17,13 @@ const ocr = async (url: URL, interaction: ChatInputCommandInteraction) => {
   const sendError = (s: string) => {
     interaction.followUp(
       createError(`OCRでエラーが発生しました。しばらく経っても同じエラーが出る場合は今月の回数上限に達した可能性があります。
-    詳細 : ${s}`)
+    詳細 : ${s}`),
     );
   };
   const res = await (() => {
     try {
       return ocrSpace(url.toString(), {
-        apiKey: process.env.OCR_KEY,
+        apiKey: Deno.env.get("OCR_KEY"),
         language: "jpn",
       });
       //process.env.OCR_KEY
@@ -50,10 +50,10 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("rate")
     .setDescription(
-      "与えられた画像から聖遺物のデータを解析し、スコアを計算します。[オプションで各ステータスのウェイト(重み)を設定できます。(未実装)]"
+      "与えられた画像から聖遺物のデータを解析し、スコアを計算します。[オプションで各ステータスのウェイト(重み)を設定できます。(未実装)]",
     )
     .addAttachmentOption((option) =>
-      option.setName("image").setDescription("聖遺物の画像").setRequired(true)
+      option.setName("image").setDescription("聖遺物の画像").setRequired(true),
     ),
   async execute(_client, interaction: ChatInputCommandInteraction) {
     // const text = interaction.options.getString("options");

@@ -1,11 +1,11 @@
-import { Command, CommandCategory } from "@src/types/command.js";
-import { shuffle, speak } from "@src/util/index.js";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { shuffle, speak } from "@src/util/index.ts";
 import {
   ContextMenuCommandInteraction,
   ApplicationCommandType,
   ContextMenuCommandBuilder,
 } from "discord.js";
-import { tokenize } from "wakachigaki";
+import { tokenize } from 'https://cdn.skypack.dev/wakachigaki@1.3.2?dts';
 
 export const command: Command = {
   category: CommandCategory.Util,

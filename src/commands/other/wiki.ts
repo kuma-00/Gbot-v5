@@ -1,6 +1,10 @@
-import { Command,CommandCategory } from "@src/types/command.js";
-import { ChatInputCommandInteraction, EmbedBuilder ,SlashCommandBuilder} from "discord.js";
-import wiki from "wikipedia";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
+import wiki from "https://esm.sh/v125/*wikipedia@2.1.0";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -10,14 +14,17 @@ export const command: Command = {
     .setName("wikipedia")
     .setDescription("wikipediaで検索した結果を返します。")
     .addStringOption((option) =>
-      option.setName("queue").setDescription("検索したい単語").setRequired(true)
+      option
+        .setName("queue")
+        .setDescription("検索したい単語")
+        .setRequired(true),
     ),
-  async execute(client, interaction:ChatInputCommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     try {
       await wiki.setLang("ja");
       const searchResults = await wiki.search(
-        interaction.options.getString("queue",true),
-        { suggestion: true, limit: 1 }
+        interaction.options.getString("queue", true),
+        { suggestion: true, limit: 1 },
       );
       const title = searchResults.results[0].title;
       const summary = (await wiki.summary(title)).extract;
@@ -35,7 +42,7 @@ export const command: Command = {
         new EmbedBuilder()
           .setTitle("検索結果")
           .setURL(`https://ja.wikipedia.org/wiki/${encodeURI(title)}`)
-          .setDescription(text)
+          .setDescription(text),
       );
       interaction.followUp({ embeds: embeds });
       if (interaction.guildId && interaction.guild) {

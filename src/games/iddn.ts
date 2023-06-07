@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { random, speak } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { random, speak } from "@src/util/index.ts";
 import { EmbedBuilder, escapeMarkdown, GuildMember, Message } from "discord.js";
 
 export const minigame: MinigameConstructor = class iddn extends MinigameBase {
@@ -45,7 +45,7 @@ export const minigame: MinigameConstructor = class iddn extends MinigameBase {
     let whos = result.map((r) => r?.who);
     let wheres = result.map((r) => r?.where);
     let whats = result.map((r) => r?.what);
-    const articles = result.map((r) => {
+    const articles = result.map((_r) => {
       const when = whens[random(0, whens.length - 1)];
       const who = whos[random(0, whos.length - 1)];
       const where = wheres[random(0, wheres.length - 1)];

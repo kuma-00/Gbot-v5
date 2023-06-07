@@ -5,10 +5,11 @@ import {
   VTFormat,
   VTOption,
   VTDefaultOption,
-} from "@src/types/VT.js";
+} from "@src/types/VT.ts";
 import { URLSearchParams } from "node:url";
 import { Readable } from "node:stream";
 import { ReadableStream } from "node:stream/web";
+import { encode } from 'std/encoding/base64.ts'
 
 // https://github.com/pchw/node-voicetext
 
@@ -125,9 +126,7 @@ export class VoiceText {
     const response = await fetch(VoiceText.API_URL, {
       method: "POST",
       headers: {
-        Authorization: `Basic ${Buffer.from(`${this.apiKey}:`).toString(
-          "base64",
-        )}`,
+        Authorization: `Basic ${encode(`${this.apiKey}:`)}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: params,
@@ -141,7 +140,7 @@ export class VoiceText {
     }
     // const buf = await response.arrayBuffer();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const buf = response.body as ReadableStream<any>;
+    const buf = response.body as ReadableStream;
     return Readable.fromWeb(buf);
   }
 }

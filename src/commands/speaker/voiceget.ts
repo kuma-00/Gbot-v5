@@ -1,9 +1,9 @@
+import { storage } from "@src/core/storage.ts";
+import { VTOption } from "@src/types/VT.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
 import { SlashCommandBuilder } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { VTOption } from "@src/types/VT.js";
-import { createVoiceEmbed } from "./voiceset.js";
+import { createVoiceEmbed } from "./voiceset.ts";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -18,10 +18,10 @@ export const command: Command = {
         createVoiceEmbed(
           (
             await storage(StorageType.SETTINGS).get(
-              `${interaction.guildId}:${interaction.user.id}`
+              `${interaction.guildId}:${interaction.user.id}`,
             )
           )?.value as VTOption,
-          interaction
+          interaction,
         ),
       ],
     });

@@ -1,8 +1,7 @@
-import { SlashCommandBuilder } from "discord.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { CommandInteraction } from "discord.js";
+import { storage } from "@src/core/storage.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
+import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -11,7 +10,7 @@ export const command: Command = {
   data: new SlashCommandBuilder()
     .setName("addchannel")
     .setDescription(
-      "読み上げにチャンネルを追加する。読み上げが終了しても保存されます。"
+      "読み上げにチャンネルを追加する。読み上げが終了しても保存されます。",
     ),
   async execute(client, interaction: CommandInteraction) {
     if (interaction.guildId && interaction.guild) {
@@ -21,19 +20,19 @@ export const command: Command = {
       const readChannels =
         (
           await storage(StorageType.SETTINGS).get(
-            `${interaction.guildId}:readChannels`
+            `${interaction.guildId}:readChannels`,
           )
         )?.value || [];
       if (Array.isArray(readChannels)) {
         readChannels.push(interaction.channelId);
         await storage(StorageType.SETTINGS).put(
           readChannels.filter((x, i, a) => a.indexOf(x) === i),
-          `${interaction.guildId}:readChannels`
+          `${interaction.guildId}:readChannels`,
         );
       } else {
         await storage(StorageType.SETTINGS).put(
           [interaction.channelId],
-          `${interaction.guildId}:readChannels`
+          `${interaction.guildId}:readChannels`,
         );
       }
       interaction.followUp("チャンネルを登録しました");

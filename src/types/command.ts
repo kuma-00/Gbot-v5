@@ -7,7 +7,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { CommandInteraction, ContextMenuCommandInteraction } from "discord.js";
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 
 export const CommandCategory = {
   Util: "util",

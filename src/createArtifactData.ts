@@ -1,9 +1,8 @@
-import dotenv from "dotenv";
-console.log(dotenv.config());
+import "std/dotenv/load.ts";
 
-import { Artifact } from "./core/artifact.js";
+import { Artifact } from "./core/artifact.ts";
 // import { StorageType } from "./types/index.js";
-import { OCRResponse } from "./types/OCR.js";
+import { OCRResponse } from "./types/OCR.ts";
 // import { storage } from "./core/storage.js";
 // import {
 //   Artifact as hoyoArtifact,
@@ -104,6 +103,7 @@ const arti = new Artifact(data);
 const e = arti.toEmbedBuilder();
 const f = arti.toDetail();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// deno-lint-ignore no-explicit-any
 console.log((e.embeds?.[0])?.data.description,(f.embeds?.[0] as any).data.description,(e.files?.[0]))
 // const words = await storage(StorageType.WORDS, "685883724231213234").fetch({
 //   "key?pfx": "o",

@@ -1,7 +1,7 @@
+import { Command, CommandCategory } from "@src/types/command.ts";
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory,Command } from "@src/types/command.js";
 
-export const command:Command = {
+export const command: Command = {
   category: CommandCategory.Util,
   guildOnly: false,
   enabled: true,

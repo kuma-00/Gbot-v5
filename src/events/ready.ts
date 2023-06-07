@@ -1,7 +1,7 @@
-import { Speaker, SpeakerStatus } from "@src/core/speaker.js";
-import { storage } from "@src/core/storage.js";
-import { loadTimer } from "@src/core/timer.js";
-import { Event, ExtensionClient, StorageType } from "@src/types/index.js";
+import { Speaker, SpeakerStatus } from "@src/core/speaker.ts";
+import { FetchResponse, storage } from "@src/core/storage.ts";
+import { loadTimer } from "@src/core/timer.ts";
+import { Event, ExtensionClient, StorageType } from "@src/types/index.ts";
 import { ActivityType, TextBasedChannel } from "discord.js";
 
 export const event: Event = {
@@ -10,7 +10,7 @@ export const event: Event = {
   async execute(client): Promise<void> {
     const commands = Array.from(client.commands.values());
     client.guilds.cache
-      .get(process.env.MY_GUILD_ID || "")
+      .get(Deno.env.get("MY_GUILD_ID") || "")
       ?.commands.set([]);
     // client.guilds.cache
     //   .get(process.env.TEST_GUILD_ID || "")
@@ -26,7 +26,7 @@ export const event: Event = {
 
 const comeback = async (client: ExtensionClient) => {
   const s = storage(StorageType.SETTINGS);
-  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" });
+  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" }) as FetchResponse;
   const guilds = items
     .filter((item) =>
       [SpeakerStatus.SPEAKING, SpeakerStatus.ERROR, SpeakerStatus.WAITE].some((v) => v == item.value)

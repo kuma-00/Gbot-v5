@@ -1,11 +1,11 @@
-import { reply, speak } from "@src/util/index.js";
-import { MessageResponse } from "@src/types/index.js";
+import { reply, speak } from "@src/util/index.ts";
+import { MessageResponse } from "@src/types/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "dice",
   filter: (m) =>
     /^([1-9][0-9]{0,1}|100)[dD]([1-9][0-9]{0,4})$/.test(m.cleanContent),
-  async execute(client, message) {
+  execute(client, message) {
     const res = message.cleanContent.match(
       /^([1-9][0-9]{0,1}|100)[dD]([1-9][0-9]{0,4})$/
     );

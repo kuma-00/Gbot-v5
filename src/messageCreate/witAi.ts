@@ -1,7 +1,7 @@
-import { MessageResponse } from "@src/types/index.js";
-import { executeCommand, message as witMessage } from "@src/core/witAi.js";
-import { tokenize } from "wakachigaki";
-import { reply } from "@src/util/index.js";
+import { MessageResponse } from "@src/types/index.ts";
+import { executeCommand, message as witMessage } from "@src/core/witAi.ts";
+import { tokenize } from 'https://cdn.skypack.dev/wakachigaki@1.3.2?dts';
+import { reply } from "@src/util/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "witAi",

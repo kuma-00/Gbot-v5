@@ -1,5 +1,5 @@
-import { followUpError } from "@src/util/index.js";
-import { Event } from "@src/types/index.js";
+import { followUpError } from "@src/util/index.ts";
+import { Event } from "@src/types/index.ts";
 import { Interaction, InteractionType } from "discord.js";
 export const event: Event = {
   name: "interactionCreate",

@@ -1,23 +1,23 @@
-import "dotenv/config";
+import "std/dotenv/load.ts";
 
-import { generateDependencyReport } from "@discordjs/voice";
-import { Command } from "@src/types/command.js";
-import { Event, ExtensionClient, MessageResponse } from "@src/types/index.js";
-import { WitAiCommand } from "@src/types/witAiCommand.js";
+import { generateDependencyReport } from "npm:@discordjs/voice";
+import { Command } from "@src/types/command.ts";
+import { Event, ExtensionClient, MessageResponse } from "@src/types/index.ts";
+import { WitAiCommand } from "@src/types/witAiCommand.ts";
 import {
   Client,
   Collection,
   Events,
   GatewayIntentBits,
   Partials,
-} from "discord.js";
+} from "npm:discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { MinigameConstructor } from "./types/minigame.js";
+import { MinigameConstructor } from "@src/types/minigame.ts";
 console.log(generateDependencyReport());
 
-console.log("起動準備開始 var:", process.env.npm_package_version);
+console.log("起動準備開始 var:", Deno.env.get("npm_package_version"));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,7 +37,7 @@ const client = new Client({
 
 client.commands = new Collection();
 client.speakers = new Collection();
-client.recorder = new Collection();
+// client.recorder = new Collection();
 client.minigames = new Collection();
 client.gameData = new Collection();
 client.timers = new Collection();
@@ -64,7 +64,7 @@ const getJsFiles = async (dirpath: string) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const loadFile = async (path: string, fn: (data: any) => void) => {
+const loadFile = async <T>(path: string, fn: (data: T) => void) => {
   try {
     const file = await import(path);
     fn(file);
@@ -74,9 +74,10 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
 };
 
 (async () => {
+  const imports:Promise<void>[] = [];
   // Event
-  (await getJsFiles(path.join(__dirname, "events"))).forEach((path) => {
-    loadFile(path, (event) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "events"))).map((path) => {
+    return loadFile<{event:Event}>(path, (event) => {
       const e = (event).event as Event;
       if (e?.name) {
         if (e.once) {
@@ -87,10 +88,10 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         console.log(`Event              ${e.name.padEnd(20, " ")} loaded !`);
       }
     });
-  });
+  }));
   // SlashCommand
-  (await getJsFiles(path.join(__dirname, "commands"))).forEach((path) => {
-    loadFile(path, (command) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "commands"))).map((path) => {
+    return loadFile<{command:Command}>(path, (command) => {
       const com: Command = command.command;
       if (com?.data?.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
@@ -99,10 +100,10 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         );
       }
     });
-  });
+  }));
   // ContextMenu
-  (await getJsFiles(path.join(__dirname, "contextMenus"))).forEach((path) => {
-    loadFile(path, (contextMenu) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "contextMenus"))).map((path) => {
+    return loadFile<{command:Command}>(path, (contextMenu) => {
       const com: Command = contextMenu.command;
       if (com.data.name) {
         client.commands.set(com.data.name.trim().toLowerCase(), com);
@@ -111,20 +112,20 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         );
       }
     });
-  });
+  }));
   //messageCreate
-  (await getJsFiles(path.join(__dirname, "messageCreate"))).forEach((path) => {
-    loadFile(path, (messageResponse) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "messageCreate"))).map((path) => {
+    return loadFile<{messageResponse:MessageResponse}>(path, (messageResponse) => {
       const mr: MessageResponse = messageResponse.messageResponse;
       if (mr.name) {
         client.messageResponses.push(mr);
         console.log(`MessageResponse    ${mr.name.padEnd(20, " ")} loaded !`);
       }
     });
-  });
+  }));
   //MiniGame
-  (await getJsFiles(path.join(__dirname, "games"))).forEach((path) => {
-    loadFile(path, (minigame) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "games"))).map((path) => {
+    return loadFile<{minigame:MinigameConstructor}>(path, (minigame) => {
       const mg: MinigameConstructor = minigame.minigame;
       if (mg) {
         client.minigames.set(mg.gameData.name, mg);
@@ -133,24 +134,25 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
         );
       }
     });
-  });
+  }));
   //witAiCommands
-  (await getJsFiles(path.join(__dirname, "witAiCommands"))).forEach((path) => {
-    loadFile(path, (witAiCommand) => {
+  imports.push(...(await getJsFiles(path.join(__dirname, "witAiCommands"))).map((path) => {
+    return loadFile<{command:WitAiCommand}>(path, (witAiCommand) => {
       const wac: WitAiCommand = witAiCommand.command;
       if (wac) {
         client.witAiCommands.set(wac.name, wac);
         console.log(`witAiCommands      ${wac.name.padEnd(20, " ")} loaded !`);
       }
     });
-  });
+  }));
+  await Promise.all(imports);
   console.log("Command Loading Complete!");
-  client.login(process.env.DISCORD_TOKEN);
+  client.login(Deno.env.get("DISCORD_TOKEN"));
 })();
 
-process.on("unhandledRejection", (reason) => {
-  console.log("node:", reason);
-});
+// process.on("unhandledRejection", (reason) => {
+//   console.log("node:", reason);
+// });
 
 client.on("error", console.log); //error
 client.on("warn", console.log); //warn

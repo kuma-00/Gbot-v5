@@ -1,5 +1,5 @@
 import { GuildMember, Message, TextChannel } from "discord.js";
-import { ExtensionClient } from ".";
+import { ExtensionClient } from "./index.ts";
 
 export type MinigameData = {
   gameConstructor: MinigameConstructor;
@@ -44,7 +44,7 @@ export class MinigameBase implements Minigame{
     this.data = data;
   }
   start(): void {
-
+    null;
   }
   end(): void {
     this.data.isEnd = true;

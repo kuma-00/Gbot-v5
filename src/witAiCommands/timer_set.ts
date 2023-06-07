@@ -1,6 +1,6 @@
-import { secondToString, setTimer } from "@src/core/timer.js";
-import { WitAiCommand } from "@src/types/witAiCommand.js";
-import { speak } from "@src/util/index.js";
+import { secondToString, setTimer } from "@src/core/timer.ts";
+import { WitAiCommand } from "@src/types/witAiCommand.ts";
+import { speak } from "@src/util/index.ts";
 
 export const command: WitAiCommand = {
   guildOnly: false,

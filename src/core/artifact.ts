@@ -1,15 +1,14 @@
-import { randomId } from "./../util/index.js";
-import { OCRResponse } from "@src/types/OCR.js";
+import { randomId } from "./../util/index.ts";
+import { OCRResponse } from "@src/types/OCR.ts";
 import {
   BufferResolvable,
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
-  MessageActionRowComponentBuilder,
+  MessageActionRowComponentBuilder,ActionRowBuilder, ButtonBuilder
 } from "discord.js";
 import { extract } from "fuzzball";
 import genshin_db, { Artifact as genshinDBArtifact } from "genshin-db";
-import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 // const { artifacts, Language } = genshin;
 const { artifacts, Language } = genshin_db;
 
@@ -418,7 +417,7 @@ export class Artifact {
     return str.match(/\d+(?:[.,]\d+)?/)?.[0] ?? "";
   }
 
-  check_subStatusVal(type: StatusType, hasPercent: boolean, val: string) {
+  check_subStatusVal(type: StatusType, _hasPercent: boolean, val: string) {
     const max = this.subStatusData[type][3];
     const min = this.subStatusData[type][0];
     if (!max || !min) return false;

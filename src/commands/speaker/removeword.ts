@@ -1,8 +1,11 @@
-import { SlashCommandBuilder } from "discord.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { CommandCategory, Command } from "@src/types/command.js";
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
+import { storage } from "@src/core/storage.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -16,7 +19,7 @@ export const command: Command = {
         .setName("word")
         .setDescription("辞書に登録されている置き換えられる文字列")
         .setRequired(true)
-        .setAutocomplete(true)
+        .setAutocomplete(true),
     ),
 
   async execute(client, interaction: ChatInputCommandInteraction) {
@@ -35,7 +38,7 @@ export const command: Command = {
     }
     storage(StorageType.SETTINGS).put(
       true,
-      `${interaction.guild?.id}:dicChange`
+      `${interaction.guild?.id}:dicChange`,
     );
     await storage(StorageType.WORDS, interaction.guild?.id).delete(word);
     const embed = new EmbedBuilder();
@@ -47,15 +50,15 @@ export const command: Command = {
   async autocomplete(client, interaction) {
     const focusedOption = interaction.options.getFocused(true);
     const words = await storage(StorageType.WORDS, interaction.guild?.id).fetch(
-      focusedOption.value?{ "key?pfx": focusedOption.value }:undefined,
-      { limit: 10 }
+      focusedOption.value ? { "key?pfx": focusedOption.value } : undefined,
+      { limit: 10 },
     );
     const dic: string[] = [];
     words.items.forEach(({ key }, i) => {
       dic[i] = String(key);
     });
     await interaction.respond(
-      dic.map((choice) => ({ name: choice, value: choice }))
+      dic.map((choice) => ({ name: choice, value: choice })),
     );
   },
 };

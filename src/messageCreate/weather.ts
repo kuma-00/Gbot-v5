@@ -1,10 +1,10 @@
-import { getArea, getWeather } from "@src/core/weather.js";
-import { MessageResponse } from "@src/types/index.js";
-import { reply, speak } from "@src/util/index.js";
+import { getArea, getWeather } from "@src/core/weather.ts";
+import { MessageResponse } from "@src/types/index.ts";
+import { reply, speak } from "@src/util/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "weather",
-  filter: (m) => false,
+  filter: (_m) => false,
     // /^(天気|weather)\s+/i.test(m.cleanContent),
   async execute(client, message) {
     const areaCode = (

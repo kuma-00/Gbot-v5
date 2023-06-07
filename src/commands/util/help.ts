@@ -1,5 +1,5 @@
 import { EmbedBuilder,SlashCommandBuilder,ContextMenuCommandBuilder } from "discord.js";
-import { CommandCategory, Command } from "@src/types/command.js";
+import { CommandCategory, Command } from "@src/types/command.ts";
 
 export const command: Command = {
   category: CommandCategory.Util,

@@ -1,8 +1,7 @@
-import { SlashCommandBuilder } from "discord.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { EmbedBuilder } from "discord.js";
+import { storage } from "@src/core/storage.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
+import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -15,7 +14,7 @@ export const command: Command = {
     const readChannels =
       ((
         await storage(StorageType.SETTINGS).get(
-          `${interaction.guildId}:readChannels`
+          `${interaction.guildId}:readChannels`,
         )
       )?.value as string[]) || [];
     if (readChannels.length == 0) {
@@ -23,7 +22,7 @@ export const command: Command = {
       return;
     }
     const channels = readChannels.map((i) =>
-      interaction.guild?.channels.cache.get(i)
+      interaction.guild?.channels.cache.get(i),
     );
     const embed = new EmbedBuilder();
     embed

@@ -1,10 +1,10 @@
-import { ExtensionClient, StorageType } from "@src/types/index.js";
-import { Timer } from "@src/types/timer.js";
-import { randomId, speak } from "@src/util/index.js";
+import { ExtensionClient, StorageType } from "@src/types/index.ts";
+import { Timer } from "@src/types/timer.ts";
+import { randomId, speak } from "@src/util/index.ts";
 import { formatDistance } from "date-fns";
 import ja from "date-fns/locale/ja/index.js";
 import { BaseGuildTextChannel, EmbedBuilder } from "discord.js";
-import { storage } from "./storage.js";
+import { storage } from "@src/core/storage.ts";
 import { setTimeout, setInterval } from "node:timers/promises";
 
 export const setTimer = async (

@@ -8,7 +8,7 @@ const config = {
     format: 'esm',
   },
   // Prebuild hook
-  prebuild: async () => {
+  prebuild: () => {
     console.log("prebuild");
     sync("./dist"); // clean up dist folder
   },

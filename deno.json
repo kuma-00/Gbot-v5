@@ -1,0 +1,22 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.190.0/",
+    "@src/": "./src/",
+    "deno/": "https://deno.land/x/",
+    "deta": "https://esm.sh/v125/*deta@1.1.0"
+  },
+  "scopes": {
+    "https://esm.sh/v125/": {
+      "axios": "https://esm.sh/v125/axios@1.4.0",
+      "infobox-parser": "https://esm.sh/v125/infobox-parser@3.6.2",
+      "node-fetch": "https://esm.sh/v125/node-fetch@2.6.11"
+    }
+  },
+  "tasks": {
+    "start": "deno run -A src/main.ts",
+    "esm:add": "deno run -A https://esm.sh/v125 add",
+    "esm:update": "deno run -A https://esm.sh/v125 update",
+    "esm:remove": "deno run -A https://esm.sh/v125 remove"
+  },
+  "importMap": "import_map.json"
+}

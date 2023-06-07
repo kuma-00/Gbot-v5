@@ -1,10 +1,10 @@
 import { EmbedBuilder } from "discord.js";
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
+} from "@src/types/minigame.ts";
 import {
   Message,
   MessageReaction,

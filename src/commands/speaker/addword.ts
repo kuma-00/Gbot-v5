@@ -1,7 +1,11 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder ,EmbedBuilder} from "discord.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
+import { storage } from "@src/core/storage.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+} from "discord.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -14,28 +18,28 @@ export const command: Command = {
       option
         .setName("before")
         .setDescription("置き換えられる文字列")
-        .setRequired(true)
+        .setRequired(true),
     )
     .addStringOption((option) =>
       option
         .setName("after")
         .setDescription("置き換えた文字列")
-        .setRequired(true)
+        .setRequired(true),
     ),
 
   execute(_client, interaction: ChatInputCommandInteraction) {
-    const after = interaction.options.getString("after",true);
-    const before = interaction.options.getString("before",true);
+    const after = interaction.options.getString("after", true);
+    const before = interaction.options.getString("before", true);
     storage(StorageType.SETTINGS).put(
       true,
-      `${interaction.guild?.id}:dicChange`
+      `${interaction.guild?.id}:dicChange`,
     );
     storage(StorageType.WORDS, interaction.guild?.id).put(after, before);
     const embed = new EmbedBuilder();
     embed
       .setTitle("単語登録")
       .setDescription(
-        `以下の単語が登録されました。\n\`${before}\` → \`${after}\``
+        `以下の単語が登録されました。\n\`${before}\` → \`${after}\``,
       );
     interaction.followUp({ embeds: [embed] });
   },

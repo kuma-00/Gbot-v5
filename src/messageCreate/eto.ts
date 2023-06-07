@@ -1,5 +1,5 @@
-import { MessageResponse } from "@src/types/index.js";
-import { reply, speak } from "@src/util/index.js";
+import { MessageResponse } from "@src/types/index.ts";
+import { reply, speak } from "@src/util/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "eto",
@@ -7,7 +7,7 @@ export const messageResponse: MessageResponse = {
     ["干支", "十干", "十干十二支", /(\b|^)えと(\b|$)/, /(\b|^)eto(\b|$)/].some((i) =>
       m.cleanContent.match(i)
     ),
-  async execute(client, message) {
+  execute(client, message) {
     const date = new Date(
       Date.now() + (new Date().getTimezoneOffset() + 9 * 60) * 60 * 1000
     );

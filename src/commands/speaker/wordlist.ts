@@ -1,8 +1,12 @@
-import { SlashCommandBuilder } from "discord.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { CommandCategory, Command } from "@src/types/command.js";
-import { ChatInputCommandInteraction, EmbedBuilder ,escapeMarkdown} from "discord.js";
+import { storage } from "@src/core/storage.ts";
+import { Command, CommandCategory } from "@src/types/command.ts";
+import { StorageType } from "@src/types/index.ts";
+import {
+  ChatInputCommandInteraction,
+  EmbedBuilder,
+  SlashCommandBuilder,
+  escapeMarkdown,
+} from "discord.js";
 
 const getDic = async (guildId: string) => {
   const dic: { [key: string]: string } = {};
@@ -24,10 +28,10 @@ export const command: Command = {
       option
         .setName("keyword")
         .setDescription("検索するキーワード")
-        .setRequired(false)
+        .setRequired(false),
     ),
   async execute(_client, interaction: ChatInputCommandInteraction) {
-    const keyword = interaction.options.getString("keyword",false);
+    const keyword = interaction.options.getString("keyword", false);
     const dic = await getDic(interaction.guild?.id || "");
     const keys = Object.keys(dic);
     const sendDic = (dicA: string[]) => {
@@ -40,7 +44,9 @@ export const command: Command = {
       const send = () => {
         const embed = new EmbedBuilder();
         embed
-          .setTitle(`${keyword?`検索 ${keyword} `:""}登録済み単語一覧: ${index++}`)
+          .setTitle(
+            `${keyword ? `検索 ${keyword} ` : ""}登録済み単語一覧: ${index++}`,
+          )
           .setDescription(sendText.join("\n"));
         interaction.followUp({ embeds: [embed] });
         sendText = [];
@@ -59,19 +65,15 @@ export const command: Command = {
       sendDic(
         keys
           .map(
-            (i) =>
-              `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(
-                dic[i]
-              )}\``
+            (i) => `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(dic[i])}\``,
           )
-          .filter((i) => i.match(keyword.split(/\s/).join("|")))
+          .filter((i) => i.match(keyword.split(/\s/).join("|"))),
       );
     } else {
       sendDic(
         keys.map(
-          (i) =>
-            `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(dic[i])}\``
-        )
+          (i) => `\`${escapeMarkdown(i)}\` → \`${escapeMarkdown(dic[i])}\``,
+        ),
       );
     }
   },
