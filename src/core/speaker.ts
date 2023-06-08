@@ -9,6 +9,7 @@ import {
   joinVoiceChannel,
 } from "@discordjs/voice";
 import { storage } from "@src/core/storage.js";
+import { urlReplace } from "@src/core/urlMetadata.js";
 import { VoiceText } from "@src/core/voicetext.js";
 import { VTDefaultOption, VTOption } from "@src/types/VT.js";
 import {
@@ -208,7 +209,8 @@ export class Speaker {
     // 発声URLの一時変換
     text = text.replace(/{\s*http/, "{");
     // URL省略
-    text = text.replace(/https?:\/\/[\w!?/+\-_~=;.,*&@#$%()'[\]]+/g, "URL省略");
+    // text = text.replace(/https?:\/\/[\w!?/+\-_~=;.,*&@#$%()'[\]]+/g, "URL省略");
+    text = await urlReplace(text);
     // DiscordSRV & LunaChat 矯正
     text = text.replace(/»(.)+\(/g, "");
     // 辞書読み込み
