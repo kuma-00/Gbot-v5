@@ -156,7 +156,7 @@ export const command: Command = {
       if (this.collector) this.collector.stop();
       this.collector = channel.createMessageComponentCollector({
         filter,
-        idle: 100 * 60 * 1000,
+        idle: 5 * 60 * 60 * 1000,
       });
       this.collector.on("collect", (interaction) => {
         const id = interaction.customId.split(":")[0];

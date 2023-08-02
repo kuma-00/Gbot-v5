@@ -43,7 +43,8 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     name: "r2i3",
     description: "しりとり",
     details:
-      "なんでもありのしりとりです。文字が繋がっていれば許されます。",
+      `なんでもありのしりとりです。文字が繋がっていれば許されます。
+終了したい場合は以下の終了ボタンを押すか、プレイヤーが｢しりとり終了｣と入力してください。`,
     maxMember: 20,
     minMember: 2,
     joinInMidway: false,
@@ -63,7 +64,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   get nowMember(): GuildMember {
     return this.data.members[this.index];
   }
-  async start(): Promise<void> {
+  start(): void {
     super.start();
     const filter = (m: Message) => {return m.author.bot == false};
     this.collector = this.data.channel.createMessageCollector({ filter });
@@ -80,7 +81,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     console.log(`${hiragana.join("")}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
     if (isChain && isNotRepeat && isAuthor) {
       this.history.push(hiragana.join(""));
-      m.react("☑");
+      m.react("✅");
       this.next();
       const text = `\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
       ${this.nowMember.nickname}さんの番です。`;
@@ -96,7 +97,9 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       m.react("❌");
       speak(this.client, this.data.channel.guild, "文字が繋がっていないまたは以前使用されています。",this.data.channel.id);
     }
-    return;
+    if (text == "しりとり終了" && this.data.members.some((member) => member.id == m.author.id)) {
+      this.end();
+    }
   }
   end(): void {
     super.end();
