@@ -7,7 +7,6 @@ import {
 import { shuffle } from "@src/util/index.js";
 import { GuildMember, Message, MessageCollector } from "discord.js";
 import { default as Kuroshiro} from "kuroshiro/lib/index.js";
-// const Kuroshiro = require("kuroshiro").default;
 const kuroshiro = new Kuroshiro.default();
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 await kuroshiro.init(new KuromojiAnalyzer());
@@ -24,7 +23,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   };
   data: MinigameData;
   client: ExtensionClient;
-  history: string[] = [];
+  history: string[] = ["しりとり"];
   index = 0;
   collector!: MessageCollector;
   constructor(client: ExtensionClient, data: MinigameData) {
@@ -42,7 +41,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     const filter = (m: Message) => {return m.author.bot == false};
     this.collector = this.data.channel.createMessageCollector({ filter });
     this.collector.on("collect", this.collect.bind(this));
-    this.data.channel.send("〇〇さんから「り」で始めてください。");
+    this.data.channel.send(`${this.nowMember.nickname}さんから「り」で始めてください。`);
   }
   async collect(m: Message): Promise<void> {
     const text = m.cleanContent;
@@ -55,6 +54,8 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       this.history.push(hiragana);
       m.react("☑");
       this.next();
+      this.data.channel.send(`${hiragana}の｢${hiragana.at(-1)}｣
+${this.nowMember.nickname}さんの番です。`);
     } else if ((!isChain || !isNotRepeat) && isAuthor) {
       m.react("❌");
     }
