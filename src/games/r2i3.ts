@@ -32,7 +32,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   };
   data: MinigameData;
   client: ExtensionClient;
-  history: string[] = [["し","り","と","り"]];
+  history: string[] = ["しりとり"];
   index = 0;
   collector!: MessageCollector;
   constructor(client: ExtensionClient, data: MinigameData) {
