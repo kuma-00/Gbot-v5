@@ -34,7 +34,7 @@ declare class Kuroshiro {
 }
 
 declare module "kuroshiro" {
-  export = Kuroshiro;
+  export = { default : Kuroshiro};
 }
 
 // to avoid mistakenly treating d.ts as js by ESLint.
@@ -50,6 +50,6 @@ declare module "kuroshiro-analyzer-kuromoji" {
 }
 
 declare module 'kuroshiro/lib/index.js' {
-  export = Kuroshiro;
+  export = { default : Kuroshiro};
 }
 
