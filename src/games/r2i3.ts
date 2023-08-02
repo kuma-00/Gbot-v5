@@ -55,16 +55,16 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   async collect(m: Message): Promise<void> {
     const text = m.cleanContent;
     const hiragana = split(await kuroshiro.convert(kanaToHira(text), { to: "hiragana" }));
-    const last = this.history[this.history.length - 1];
+    const last = split(this.history[this.history.length - 1]);
     const isChain = last.at(-1) == hiragana.at(0);
     const isNotRepeat = !this.history.includes(hiragana.join(""));
     const isAuthor = m.author.id == this.nowMember.id;
+    console.log(`${hiragana}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
     if (isChain && isNotRepeat && isAuthor) {
       this.history.push(hiragana.join(""));
       m.react("☑");
       this.next();
-      console.log(`${hiragana}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
-      this.data.channel.send(`${hiragana}の｢${hiragana.at(-1)}｣
+      this.data.channel.send(`${hiragana.join("")}の｢${hiragana.at(-1)}｣
 ${this.nowMember.nickname}さんの番です。`);
     } else if ((!isChain || !isNotRepeat) && isAuthor) {
       m.react("❌");
