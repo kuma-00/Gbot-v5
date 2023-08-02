@@ -11,6 +11,14 @@ const kuroshiro = new Kuroshiro.default();
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 await kuroshiro.init(new KuromojiAnalyzer());
 
+function kanaToHira(str :string) {
+  return str.replace(/[\u30a1-\u30f6]/g, function(match) {
+      const chr = match.charCodeAt(0) - 0x60;
+      return String.fromCharCode(chr);
+  });
+}
+
+
 export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   static gameData = {
     name: "r2i3",
@@ -45,7 +53,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   }
   async collect(m: Message): Promise<void> {
     const text = m.cleanContent;
-    const hiragana = await kuroshiro.convert(text, { to: "hiragana" });
+    const hiragana = await kuroshiro.convert(kanaToHira(text), { to: "hiragana" });
     const last = this.history[this.history.length - 1];
     const isChain = last.at(-1) == hiragana.at(0);
     const isNotRepeat = !this.history.includes(hiragana);
@@ -54,6 +62,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       this.history.push(hiragana);
       m.react("☑");
       this.next();
+      console.log(`${hiragana}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
       this.data.channel.send(`${hiragana}の｢${hiragana.at(-1)}｣
 ${this.nowMember.nickname}さんの番です。`);
     } else if ((!isChain || !isNotRepeat) && isAuthor) {
