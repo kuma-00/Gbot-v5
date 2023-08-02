@@ -317,7 +317,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     const mIds = this.data.members.map((n) => n.id);
     this.wolfUser = Array(this.wolfCount)
       .fill(0)
-      .map((n) => arr.splice(random(0, arr.length - 1), 1)[0]);
+      .map((_n) => arr.splice(random(0, arr.length - 1), 1)[0]);
     this.CitizenUser = arr;
     this.selfTheme = this.theme[random(0, this.theme.length - 1)];
     this.wolfThemePos = random(0, 1);

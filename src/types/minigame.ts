@@ -44,7 +44,7 @@ export class MinigameBase implements Minigame{
     this.data = data;
   }
   start(): void {
-
+    return;
   }
   end(): void {
     this.data.isEnd = true;

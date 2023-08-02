@@ -45,7 +45,7 @@ export const minigame: MinigameConstructor = class iddn extends MinigameBase {
     let whos = result.map((r) => r?.who);
     let wheres = result.map((r) => r?.where);
     let whats = result.map((r) => r?.what);
-    const articles = result.map((r) => {
+    const articles = result.map((_r) => {
       const when = whens[random(0, whens.length - 1)];
       const who = whos[random(0, whos.length - 1)];
       const where = wheres[random(0, wheres.length - 1)];
