@@ -5,7 +5,7 @@ import {
   MinigameData,
 } from "@src/types/minigame.js";
 import { shuffle } from "@src/util/index.js";
-import { GuildMember, Message } from "discord.js";
+import { GuildMember, Message, MessageCollector } from "discord.js";
 import Kuroshiro from "kuroshiro";
 const kuroshiro = new Kuroshiro();
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
@@ -25,6 +25,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   client: ExtensionClient;
   history: string[] = [];
   index = 0;
+  collector!: MessageCollector;
   constructor(client: ExtensionClient, data: MinigameData) {
     super(client, data);
     this.data = data;
@@ -38,8 +39,8 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   async start(): Promise<void> {
     super.start();
     const filter = (m: Message) => {return m.author.bot == false};
-    const collector = this.data.channel.createMessageCollector({ filter });
-    collector.on("collect", this.collect.bind(this));
+    this.collector = this.data.channel.createMessageCollector({ filter });
+    this.collector.on("collect", this.collect.bind(this));
     this.data.channel.send("〇〇さんから「り」で始めてください。");
   }
   async collect(m: Message): Promise<void> {
@@ -57,6 +58,10 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       m.react("❌");
     }
     return;
+  }
+  end(): void {
+    super.end();
+    this.collector.stop();
   }
   next(): void {
     this.index++;
