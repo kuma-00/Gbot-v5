@@ -48,3 +48,8 @@ declare class KuromojiAnalyzer {
 declare module "kuroshiro-analyzer-kuromoji" {
   export = KuromojiAnalyzer;
 }
+
+declare module 'kuroshiro/src/core.js' {
+  export = Kuroshiro;
+}
+
