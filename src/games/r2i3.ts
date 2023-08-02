@@ -6,7 +6,7 @@ import {
 } from "@src/types/minigame.js";
 import { shuffle } from "@src/util/index.js";
 import { GuildMember, Message, MessageCollector } from "discord.js";
-import Kuroshiro from "kuroshiro/src/core.js";
+import Kuroshiro from "kuroshiro/src/index.js";
 // const Kuroshiro = require("kuroshiro").default;
 console.log(Kuroshiro);
 const kuroshiro = new Kuroshiro();
