@@ -49,7 +49,7 @@ declare module "kuroshiro-analyzer-kuromoji" {
   export = KuromojiAnalyzer;
 }
 
-declare module 'kuroshiro/src/index.js' {
+declare module 'kuroshiro/lib/index.js' {
   export = Kuroshiro;
 }
 
