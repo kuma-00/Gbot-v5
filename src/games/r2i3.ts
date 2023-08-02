@@ -4,7 +4,7 @@ import {
   MinigameConstructor,
   MinigameData,
 } from "@src/types/minigame.js";
-import { shuffle } from "@src/util/index.js";
+import { shuffle, speak } from "@src/util/index.js";
 import { GuildMember, Message, MessageCollector } from "discord.js";
 import { default as Kuroshiro} from "kuroshiro/lib/index.js";
 const kuroshiro = new Kuroshiro.default();
@@ -17,6 +17,24 @@ function kanaToHira(str :string) {
       const chr = match.charCodeAt(0) - 0x60;
       return String.fromCharCode(chr);
   });
+}
+
+function komoziToOhmozi(str :string){
+  const komozi :Record<string,string> = {
+    "ぁ": "あ",
+    "ぃ": "い",
+    "ぅ": "う",
+    "ぇ": "え",
+    "ぉ": "お",
+    "ゕ": "か",
+    "ゖ": "け",
+    "っ": "つ",
+    "ゃ": "や",
+    "ゅ": "ゆ",
+    "ょ": "よ",
+    "ゎ": "わ"
+  };
+  return str.replace(/[ぁぃぅぇぉゕゖっゃゅょゎ]/g,(str)=>komozi[str])
 }
 
 
@@ -56,18 +74,27 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     const text = m.cleanContent;
     const hiragana = split(await kuroshiro.convert(kanaToHira(text), { to: "hiragana" }));
     const last = split(this.history[this.history.length - 1]);
-    const isChain = last.at(-1) == hiragana.at(0);
+    const isChain = last.map(komoziToOhmozi).at(-1) == hiragana.map(komoziToOhmozi).at(0);
     const isNotRepeat = !this.history.includes(hiragana.join(""));
     const isAuthor = m.author.id == this.nowMember.id;
-    console.log(`${hiragana}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
+    console.log(`${hiragana.join("")}の｢${hiragana.at(-1)}(${hiragana.at(-1)?.charCodeAt(0).toString(16)})｣`);
     if (isChain && isNotRepeat && isAuthor) {
       this.history.push(hiragana.join(""));
       m.react("☑");
       this.next();
-      this.data.channel.send(`\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
-${this.nowMember.nickname}さんの番です。`);
-    } else if ((!isChain || !isNotRepeat) && isAuthor) {
+      const text = `\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
+      ${this.nowMember.nickname}さんの番です。`;
+      this.data.channel.send(text);
+      speak(this.client, this.data.channel.guild, text,this.data.channel.id);
+    } else if (!isChain && isNotRepeat && isAuthor) {
       m.react("❌");
+      speak(this.client, this.data.channel.guild, "文字が繋がっていません。",this.data.channel.id);
+    } else if (isChain && !isNotRepeat && isAuthor) {
+      m.react("🔄");
+      speak(this.client, this.data.channel.guild, "以前使用されています。",this.data.channel.id);
+    } else if (!isChain && !isNotRepeat && isAuthor) {
+      m.react("❌");
+      speak(this.client, this.data.channel.guild, "文字が繋がっていないまたは以前使用されています。",this.data.channel.id);
     }
     return;
   }
