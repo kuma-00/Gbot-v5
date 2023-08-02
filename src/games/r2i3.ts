@@ -6,8 +6,9 @@ import {
 } from "@src/types/minigame.js";
 import { shuffle } from "@src/util/index.js";
 import { GuildMember, Message, MessageCollector } from "discord.js";
-import { default as Kuroshiro } from "kuroshiro";
-// const Kuroshiro = require("kuroshiro").default;
+// import { default as Kuroshiro } from "kuroshiro";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Kuroshiro = require("kuroshiro").default;
 console.log(Kuroshiro);
 const kuroshiro = new Kuroshiro();
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
