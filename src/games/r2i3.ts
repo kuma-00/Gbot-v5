@@ -64,7 +64,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       this.history.push(hiragana.join(""));
       m.react("☑");
       this.next();
-      this.data.channel.send(`${hiragana.join("")}の｢${hiragana.at(-1)}｣
+      this.data.channel.send(`\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
 ${this.nowMember.nickname}さんの番です。`);
     } else if ((!isChain || !isNotRepeat) && isAuthor) {
       m.react("❌");
