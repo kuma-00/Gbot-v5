@@ -43,7 +43,7 @@ const comeback = async (client: ExtensionClient) => {
       const tc = await guild.channels.fetch(tcId);
       const vc = guild.voiceStates.cache.first()?.channel;
       if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
-      if (vc.members.size == 0) return console.log(`Can't members 0 vc`);
+      if (vc.members.filter(m=>!m.user.bot).size == 0) return console.log(`Can't members 0 vc`);
       const speaker = new Speaker(client, vc, tc as TextBasedChannel);
       client.speakers.set(guildId, speaker);
       speaker.start();
