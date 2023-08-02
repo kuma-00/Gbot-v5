@@ -7,6 +7,7 @@ import {
 import { shuffle } from "@src/util/index.js";
 import { GuildMember, Message, MessageCollector } from "discord.js";
 import Kuroshiro from "kuroshiro";
+console.log(Kuroshiro);
 const kuroshiro = new Kuroshiro();
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 await kuroshiro.init(new KuromojiAnalyzer());
