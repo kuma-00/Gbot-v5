@@ -69,11 +69,15 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     const filter = (m: Message) => {return m.author.bot == false};
     this.collector = this.data.channel.createMessageCollector({ filter });
     this.collector.on("collect", this.collect.bind(this));
-    this.data.channel.send(`${this.nowMember.nickname}さんから「り」で始めてください。`);
+    this.data.channel.send(`\`${this.nowMember.nickname}\`さんから「り」で始めてください。`);
   }
   async collect(m: Message): Promise<void> {
     const text = m.cleanContent;
-    const hiragana = split(await kuroshiro.convert(kanaToHira(text), { to: "hiragana" }));
+    if (text == "しりとり終了" && this.data.members.some((member) => member.id == m.author.id)) {
+      this.end();
+      return;
+    }
+    const hiragana = split((await kuroshiro.convert(kanaToHira(text), { to: "hiragana" })).replace(/ー+$/,""));
     const last = split(this.history[this.history.length - 1]);
     const isChain = last.map(komoziToOhmozi).at(-1) == hiragana.map(komoziToOhmozi).at(0);
     const isNotRepeat = !this.history.includes(hiragana.join(""));
@@ -83,10 +87,9 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       this.history.push(hiragana.join(""));
       m.react("✅");
       this.next();
-      const text = `\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
-      ${this.nowMember.nickname}さんの番です。`;
-      this.data.channel.send(text);
-      speak(this.client, this.data.channel.guild, text,this.data.channel.id);
+      this.data.channel.send(`\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
+\`${this.nowMember.nickname}\`さんの番です。`);
+      speak(this.client, this.data.channel.guild, `｢${hiragana.at(-1)}｣で${this.nowMember.nickname}さんの番です。`,this.data.channel.id);
     } else if (!isChain && isNotRepeat && isAuthor) {
       m.react("❌");
       speak(this.client, this.data.channel.guild, "文字が繋がっていません。",this.data.channel.id);
@@ -96,9 +99,6 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     } else if (!isChain && !isNotRepeat && isAuthor) {
       m.react("❌");
       speak(this.client, this.data.channel.guild, "文字が繋がっていないまたは以前使用されています。",this.data.channel.id);
-    }
-    if (text == "しりとり終了" && this.data.members.some((member) => member.id == m.author.id)) {
-      this.end();
     }
   }
   end(): void {
