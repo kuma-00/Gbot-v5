@@ -25,6 +25,14 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     maxMember: 20,
     minMember: 2,
     joinInMidway: false,
+    ruleData: [{ id: "wolfCount", options: [
+      { label: "一人", value: "1" },
+      { label: "二人", value: "2" },
+      { label: "三人", value: "3" },
+      { label: "四人", value: "4" },
+      { label: "五人", value: "5" }
+    ] }],
+    defaultRule: { wolfCount: ["1"] }
   };
   voteData: Record<string, string[]> = {};
   selfTheme: string[] = [];

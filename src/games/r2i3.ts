@@ -42,30 +42,24 @@ function komoziToOhmozi(str: string) {
   return str.replace(/[ぁぃぅぇぉゕゖっゃゅょゎ]/g, (str) => komozi[str]);
 }
 
-function maxCharacter(str : string) {
-  const charMap : Record<string,number> = {};
+function maxCharacter(str: string) {
+  const charMap: Record<string, number> = {};
   let maxNum = 0;
   let maxChar = "";
 
-  split(str).forEach(function(char) {
+  split(str).forEach(function (char) {
     if (charMap[char]) {
       charMap[char]++;
     } else {
       charMap[char] = 1;
     }
-    if(charMap[char] > maxNum) {
+    if (charMap[char] > maxNum) {
       maxNum = charMap[char];
       maxChar = char;
     }
   });
-  // for (const char in charMap) {
-  //   if (charMap[char] > maxNum) {
-  //     maxNum = charMap[char];
-  //     maxChar = char;
-  //   }
-  // }
   return maxChar;
- }
+}
 
 export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   static gameData = {
@@ -102,6 +96,12 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     this.data.channel.send(
       `\`${this.nowMember.nickname}\`さんから「り」で始めてください。`,
     );
+    speak(
+      this.client,
+      this.data.channel.guild,
+      `\`${this.nowMember.nickname}\`さんから「り」で始めてください。`,
+      this.data.channel.id,
+    );
   }
   async collect(m: Message): Promise<void> {
     const text = m.cleanContent;
@@ -109,13 +109,6 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
       text == "しりとり終了" &&
       this.data.members.some((member) => member.id == m.author.id)
     ) {
-      const embed = new EmbedBuilder()
-        .setTitle("しりとり終了")
-        .setDescription(`続いた数 : ${this.history.length - 1}回
-最も長いもの : ${this.history.reduce((a, b) => (a.length > b.length ? a : b))}
-最も短いもの : ${this.history.reduce((a, b) => (a.length < b.length ? a : b))}
-頻出文字 : ${maxCharacter(this.history.join(""))}`);
-      this.data.channel.send({ embeds: [embed] });
       this.end();
       return;
     }
@@ -138,7 +131,7 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
     );
     if (isChain && isNotRepeat && isAuthor) {
       this.history.push(hiragana.join(""));
-      m.react("✅");
+      // m.react("✅");
       this.next();
       this.data.channel.send(`\`${hiragana.join("")}\`の｢${hiragana.at(-1)}｣
 \`${this.nowMember.nickname}\`さんの番です。`);
@@ -176,6 +169,12 @@ export const minigame: MinigameConstructor = class r2i3 extends MinigameBase {
   }
   end(): void {
     super.end();
+    const embed = new EmbedBuilder().setTitle("しりとり終了")
+      .setDescription(`続いた数 : ${this.history.length - 1}回
+最も長いもの : ${this.history.reduce((a, b) => (a.length > b.length ? a : b))}
+最も短いもの : ${this.history.reduce((a, b) => (a.length < b.length ? a : b))}
+頻出文字 : ${maxCharacter(this.history.join(""))}`);
+    this.data.channel.send({ embeds: [embed] });
     this.collector.stop();
   }
   next(): void {
