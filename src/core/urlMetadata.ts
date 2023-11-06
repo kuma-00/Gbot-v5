@@ -27,6 +27,7 @@ export const urlReplace = async (text: string) => {
 
 export const twitterEmbed = async (url: URL) => {
   const ogp = await unfurl(url.href);
+  console.log(ogp);
   const embed1 = new EmbedBuilder()
     .setTitle(ogp.title ?? "")
     .setURL(url.href)
