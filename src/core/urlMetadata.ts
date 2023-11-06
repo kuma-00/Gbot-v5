@@ -29,11 +29,9 @@ export const twitterEmbed = async (url: URL) => {
   const ogp = await unfurl(url.href);
   console.log(ogp.canonical_url);
   const embed1 = new EmbedBuilder()
-    .setTitle(ogp.title ?? "")
     .setURL(ogp.canonical_url??url.href)
     .setAuthor({
       name: ogp.open_graph.title ?? "",
-      iconURL: ogp.favicon,
       url: ogp.open_graph.url,
     })
     .setDescription(ogp.open_graph.description ?? "")
