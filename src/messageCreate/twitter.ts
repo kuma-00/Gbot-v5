@@ -8,8 +8,9 @@ export const messageResponse: MessageResponse = {
     message.react("❤");
     message.react("🔁");
     const url = message.cleanContent.match(/https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/)?.[0] ?? "";
+    console.log(url);
     const embeds = await twitterEmbed(new URL(url));
-    console.log(url,embeds);
+    console.log(embeds);
     message.channel.send({embeds});
   },
 };
