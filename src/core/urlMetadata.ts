@@ -27,9 +27,9 @@ export const urlReplace = async (text: string) => {
 
 export const twitterEmbed = async (url: URL) => {
   const ogp = await unfurl(url.href);
-  console.log(ogp.canonical_url);
+  console.log(ogp,ogp.open_graph.images?.length);
   const embed1 = new EmbedBuilder()
-    .setURL(ogp.canonical_url??url.href)
+    .setURL(ogp?.canonical_url??url.href)
     .setAuthor({
       name: ogp.open_graph.title ?? "",
       url: ogp.open_graph.url,
@@ -42,13 +42,13 @@ export const twitterEmbed = async (url: URL) => {
     })
     .setTimestamp();
   const embed2 = new EmbedBuilder()
-    .setURL(ogp.canonical_url??url.href)
+    .setURL(ogp?.canonical_url??url.href)
     .setImage(ogp.open_graph.images?.[1]?.url ?? null);
   const embed3 = new EmbedBuilder()
-    .setURL(ogp.canonical_url??url.href)
+    .setURL(ogp?.canonical_url??url.href)
     .setImage(ogp.open_graph.images?.[2]?.url ?? null);
   const embed4 = new EmbedBuilder()
-    .setURL(ogp.canonical_url??url.href)
+    .setURL(ogp?.canonical_url??url.href)
     .setImage(ogp.open_graph.images?.[3]?.url ?? null);
 
   const result = [embed1];
