@@ -1,5 +1,5 @@
-import { GuildMember, Message, TextChannel } from "discord.js";
-import { ExtensionClient } from ".";
+import { GuildMember, Message, TextChannel } from "npm:discord.js";
+import { ExtensionClient } from "./index.ts";
 
 export type MinigameData = {
   gameConstructor: MinigameConstructor;

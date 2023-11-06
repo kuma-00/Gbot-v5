@@ -1,6 +1,6 @@
-import { Guild, GuildMember, TextBasedChannel, User } from "discord.js";
-import { ExtensionClient } from ".";
-import { MessageResponseJson } from "./witAi.js";
+import { Guild, GuildMember, TextBasedChannel, User } from "npm:discord.js";
+import { ExtensionClient } from "./index.ts";
+import { MessageResponseJson } from "./witAi.ts";
 
 export interface WitAiCommand {
   guildOnly: boolean;

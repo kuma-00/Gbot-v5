@@ -1,6 +1,6 @@
+import { Command, CommandCategory } from "@src/types/command.js";
+import { sleep } from "@src/util/index.ts";
 import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory, Command } from "@src/types/command.js";
-import { sleep } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Util,

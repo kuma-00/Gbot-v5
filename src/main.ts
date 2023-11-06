@@ -1,23 +1,23 @@
-import "dotenv/config";
+import "std/dotenv/load.ts";
 
-import { generateDependencyReport } from "@discordjs/voice";
-import { Command } from "@src/types/command.js";
-import { Event, ExtensionClient, MessageResponse } from "@src/types/index.js";
-import { WitAiCommand } from "@src/types/witAiCommand.js";
+import { generateDependencyReport } from "npm:@discordjs/voice";
+import { Command } from "@src/types/command.ts";
+import { Event, ExtensionClient, MessageResponse } from "@src/types/index.ts";
+import { WitAiCommand } from "@src/types/witAiCommand.ts";
 import {
   Client,
   Collection,
   Events,
   GatewayIntentBits,
   Partials,
-} from "discord.js";
+} from "npm:discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { MinigameConstructor } from "./types/minigame.js";
+import { MinigameConstructor } from "@src/types/minigame.ts";
 console.log(generateDependencyReport());
 
-console.log("起動準備開始 var:", process.env.npm_package_version);
+console.log("起動準備開始 var:", Deno.env.get("npm_package_version"));
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,9 +80,9 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
       const e = (event).event as Event;
       if (e?.name) {
         if (e.once) {
-          client.once(e.name.trim(), (...args) => e.execute(client, ...args));
+          client.once(e.name.trim(), (...args:any) => e.execute(client, ...args));
         } else {
-          client.on(e.name.trim(), (...args) => e.execute(client, ...args));
+          client.on(e.name.trim(), (...args:any) => e.execute(client, ...args));
         }
         console.log(`Event              ${e.name.padEnd(20, " ")} loaded !`);
       }
@@ -145,17 +145,17 @@ const loadFile = async (path: string, fn: (data: any) => void) => {
     });
   });
   console.log("Command Loading Complete!");
-  client.login(process.env.DISCORD_TOKEN);
+  client.login(Deno.env.get("DISCORD_TOKEN"));
 })();
 
-process.on("unhandledRejection", (reason) => {
-  console.log("node:", reason);
-});
+// process.on("unhandledRejection", (reason) => {
+//   console.log("node:", reason);
+// });
 
 client.on("error", console.log); //error
 client.on("warn", console.log); //warn
 client.on("debug", console.log); //debug
-client.on(Events.ShardError, (error) =>
+client.on(Events.ShardError, (error:any) =>
   console.error("A websocket connection encountered an error:", error),
 );
 

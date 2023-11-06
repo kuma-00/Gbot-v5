@@ -1,17 +1,25 @@
-import { Speaker, SpeakerStatus } from '@src/core/speaker.js';
+import { Speaker, SpeakerStatus } from "@src/core/speaker.js";
 import { storage } from "@src/core/storage.js";
-import { Event, StorageType } from "@src/types/index.js";
-import { sleep } from '@src/util/index.js';
+import { Event, StorageType } from "@src/types/index.ts";
+import { sleep } from "@src/util/index.ts";
 import { StageChannel, TextBasedChannel, VoiceState } from "discord.js";
 
 export const event: Event = {
   name: "voiceStateUpdate",
   once: false,
-  async execute(client, oldState: VoiceState, newState: VoiceState): Promise<void> {
+  async execute(
+    client,
+    oldState: VoiceState,
+    newState: VoiceState,
+  ): Promise<void> {
     const newUserChannel = newState.channel;
     const oldUserChannel = oldState.channel;
     const guild = oldState.guild;
-    const channel = await guild.channels.cache.get((await storage(StorageType.SETTINGS).get(`${guild.id}:cacheChannelId`))?.value as string) as Exclude<TextBasedChannel, StageChannel>;
+    const channel = (await guild.channels.cache.get(
+      (
+        await storage(StorageType.SETTINGS).get(`${guild.id}:cacheChannelId`)
+      )?.value as string,
+    )) as Exclude<TextBasedChannel, StageChannel>;
     const isSpeaking = await SpeakerStatus.get(guild.id);
     if (isSpeaking == SpeakerStatus.ERROR) {
       if (newUserChannel == null || channel == undefined) {
@@ -19,9 +27,7 @@ export const event: Event = {
         return;
       }
       if (client.speakers.has(guild.id)) {
-        client.speakers
-          .get(guild.id)
-          ?.start(newUserChannel, channel);
+        client.speakers.get(guild.id)?.start(newUserChannel, channel);
       } else {
         const speaker = new Speaker(client, newUserChannel, channel);
         client.speakers.set(guild.id, speaker);
@@ -31,15 +37,14 @@ export const event: Event = {
       return;
     }
     if (newUserChannel) {
-      const count = newUserChannel.members.filter(member => !member.user.bot)
-        .size;
+      const count = newUserChannel.members.filter(
+        (member) => !member.user.bot,
+      ).size;
       console.log("in", count);
       //in
       if (!(isSpeaking != SpeakerStatus.WAITE || count != 1)) {
         if (client.speakers.has(guild.id)) {
-          client.speakers
-            .get(guild.id)
-            ?.start(newUserChannel, channel);
+          client.speakers.get(guild.id)?.start(newUserChannel, channel);
         } else {
           const speaker = new Speaker(client, newUserChannel, channel);
           client.speakers.set(guild.id, speaker);
@@ -51,14 +56,25 @@ export const event: Event = {
       }
     }
     if (oldUserChannel) {
-      const count = oldUserChannel.members.filter(member => !member.user.bot).size;
+      const count = oldUserChannel.members.filter(
+        (member) => !member.user.bot,
+      ).size;
       console.log("out", count);
       //out
       if (!(isSpeaking == SpeakerStatus.SPEAKING) || count != 0) return;
       const speaker = client.speakers.get(guild.id);
-      if (speaker && speaker.voiceChannel.id == oldUserChannel.id && !speaker.leaving) {
+      if (
+        speaker &&
+        speaker.voiceChannel.id == oldUserChannel.id &&
+        !speaker.leaving
+      ) {
         setTimeout(() => {
-          if (speaker.voiceChannel.members.filter((member) => !member.user.bot).size > 0 || speaker.leaving) return;
+          if (
+            speaker.voiceChannel.members.filter((member) => !member.user.bot)
+              .size > 0 ||
+            speaker.leaving
+          )
+            return;
           speaker.end(true);
           channel.send("読み上げが終了しました。");
         }, 1000 * 60 * 1);

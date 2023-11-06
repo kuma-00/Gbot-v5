@@ -1,7 +1,7 @@
-import { MessageResponse } from "@src/types/index.js";
-import { executeCommand, message as witMessage } from "@src/core/witAi.js";
-import { tokenize } from "wakachigaki";
-import { reply } from "@src/util/index.js";
+import { executeCommand, message as witMessage } from "@src/core/witAi.ts";
+import { MessageResponse } from "@src/types/index.ts";
+import { reply } from "@src/util/index.ts";
+import { tokenize } from "https://cdn.skypack.dev/wakachigaki@1.3.2?dts";
 
 export const messageResponse: MessageResponse = {
   name: "witAi",
@@ -10,10 +10,7 @@ export const messageResponse: MessageResponse = {
     const text = message.cleanContent.replace(/^(gbot)\s+/i, "");
     const res = await witMessage(tokenize(text).join(" "));
     if ("error" in res) {
-      reply(
-        message,
-        `${res.code}\n${res.error}`
-      );
+      reply(message, `${res.code}\n${res.error}`);
     } else {
       executeCommand(client, {
         user: message.author,

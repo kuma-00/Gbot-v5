@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "discord.js";
-import { CommandCategory,Command } from "@src/types/command.js";
-import { replaceText } from "@src/util/index.js";
-import { ChatInputCommandInteraction } from "discord.js";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { replaceText } from "@src/util/index.ts";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { VM } from "vm2";
 
 export const command: Command = {
@@ -15,9 +14,9 @@ export const command: Command = {
       option
         .setName("formula")
         .setDescription("式(JavaScript方式)")
-        .setRequired(true)
+        .setRequired(true),
     ),
-  async execute(client, interaction:ChatInputCommandInteraction) {
+  async execute(client, interaction: ChatInputCommandInteraction) {
     const vm = new VM({
       timeout: 1000,
       allowAsync: false,
@@ -39,7 +38,7 @@ export const command: Command = {
     };
     const formula = replaceText(
       interaction.options.getString("formula", true),
-      dic
+      dic,
     );
     const formulaVm = async (val: string): Promise<string> => {
       try {
@@ -49,7 +48,7 @@ export const command: Command = {
       }
     };
     interaction.followUp(
-      `\`式\` : ${formula}\n\`計算結果\` : ${await formulaVm(formula)}`
+      `\`式\` : ${formula}\n\`計算結果\` : ${await formulaVm(formula)}`,
     );
   },
 };

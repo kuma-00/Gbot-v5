@@ -1,17 +1,15 @@
-import { Speaker, SpeakerStatus } from "@src/core/speaker.js";
-import { storage } from "@src/core/storage.js";
-import { loadTimer } from "@src/core/timer.js";
-import { Event, ExtensionClient, StorageType } from "@src/types/index.js";
-import { ActivityType, TextBasedChannel } from "discord.js";
+import { Speaker, SpeakerStatus } from "@src/core/speaker.ts";
+import { storage , FetchResponse } from "@src/core/storage.ts";
+import { loadTimer } from "@src/core/timer.ts";
+import { Event, ExtensionClient, StorageType } from "@src/types/index.ts";
+import { ActivityType, TextBasedChannel } from "npm:discord.js";
 
 export const event: Event = {
   name: "ready",
   once: true,
   async execute(client): Promise<void> {
     const commands = Array.from(client.commands.values());
-    client.guilds.cache
-      .get(process.env.MY_GUILD_ID || "")
-      ?.commands.set([]);
+    client.guilds.cache.get(Deno.env.get("MY_GUILD_ID") || "")?.commands.set([]);
     // client.guilds.cache
     //   .get(process.env.TEST_GUILD_ID || "")
     //   ?.commands.set([]);
@@ -23,13 +21,14 @@ export const event: Event = {
   },
 };
 
-
 const comeback = async (client: ExtensionClient) => {
   const s = storage(StorageType.SETTINGS);
-  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" });
+  const { items } = await s.fetchAll({ "key?contains": "SpeakerStatus" }) as FetchResponse;
   const guilds = items
     .filter((item) =>
-      [SpeakerStatus.SPEAKING, SpeakerStatus.ERROR, SpeakerStatus.WAITE].some((v) => v == item.value)
+      [SpeakerStatus.SPEAKING, SpeakerStatus.ERROR, SpeakerStatus.WAITE].some(
+        (v) => v == item.value,
+      ),
     )
     .map((item) => (item.key as string)?.replace(":SpeakerStatus", ""));
   const logs = [["comeback--------------------"]];
@@ -43,11 +42,12 @@ const comeback = async (client: ExtensionClient) => {
       const tc = await guild.channels.fetch(tcId);
       const vc = guild.voiceStates.cache.first()?.channel;
       if (!vc || !tc) return console.log(`Can't get ${vc} or ${tc}`);
-      if (vc.members.filter(m=>!m.user.bot).size == 0) return console.log(`Can't members 0 vc`);
+      if (vc.members.filter((m) => !m.user.bot).size == 0)
+        return console.log(`Can't members 0 vc`);
       const speaker = new Speaker(client, vc, tc as TextBasedChannel);
       client.speakers.set(guildId, speaker);
       speaker.start();
-    })
+    }),
   );
   logs.push(["----------------------------"]);
   logs.forEach((log) => console.log(...log));

@@ -1,22 +1,22 @@
+import { Command, CommandCategory } from "@src/types/command.js";
+import { MinigameData } from "@src/types/minigame.js";
+import { randomId } from "@src/util/index.ts";
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonInteraction,
   ButtonStyle,
   ChatInputCommandInteraction,
   EmbedBuilder,
-  SlashCommandBuilder,
-  TextChannel,
-  ActionRowBuilder,
-  ButtonBuilder,
-  MessageActionRowComponentBuilder,
-  ButtonInteraction,
   GuildMember,
-  MessageComponentInteraction,
   InteractionType,
+  MessageActionRowComponentBuilder,
+  MessageComponentInteraction,
+  SlashCommandBuilder,
   StringSelectMenuBuilder,
-  StringSelectMenuInteraction
+  StringSelectMenuInteraction,
+  TextChannel,
 } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { MinigameData } from "@src/types/minigame.js";
-import { randomId } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Other,
@@ -26,7 +26,7 @@ export const command: Command = {
     .setName("minigame")
     .setDescription("ミニゲーム!!")
     .addStringOption((option) =>
-      option.setName("name").setDescription("ゲーム名").setAutocomplete(true)
+      option.setName("name").setDescription("ゲーム名").setAutocomplete(true),
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
     const name = interaction.options.getString("name", false);
@@ -143,7 +143,7 @@ export const command: Command = {
       };
 
       minigameData.message = await interaction.followUp(
-        createMessage(minigameData)
+        createMessage(minigameData),
       );
       client.gameData.set(id, minigameData);
       const filter = (interaction: MessageComponentInteraction) => {
@@ -171,7 +171,7 @@ export const command: Command = {
               game.gameData.disabled
                 ? `~~${game.gameData.name}~~`
                 : game.gameData.name
-            } : ${game.gameData.description}`
+            } : ${game.gameData.description}`,
         )
         .join("\n");
       const embed = new EmbedBuilder();
@@ -186,10 +186,10 @@ ${list}`);
     const focusedOption = interaction.options.getFocused(true);
     const choices = Array.from(client.minigames.keys());
     const filtered = choices.filter((choice) =>
-      choice.startsWith(focusedOption.value)
+      choice.startsWith(focusedOption.value),
     );
     await interaction.respond(
-      filtered.map((choice) => ({ name: choice, value: choice }))
+      filtered.map((choice) => ({ name: choice, value: choice })),
     );
   },
 };
@@ -240,8 +240,8 @@ ${game.members.length}人${
             if (game.rules?.[rule.id]?.includes(cop.value)) cop.default = true;
             cop.value = `${rule.id}:${cop.value}`;
             return cop;
-          })
-        )
+          }),
+        ),
     );
   });
   const add = new ButtonBuilder()
@@ -253,7 +253,7 @@ ${game.members.length}人${
     .setCustomId("gb_game_start")
     .setStyle(ButtonStyle.Success)
     .setDisabled(
-      game.isEnd || game.isStart || game.members.length < gameData.minMember
+      game.isEnd || game.isStart || game.members.length < gameData.minMember,
     )
     .setLabel("開始");
   const close = new ButtonBuilder()
@@ -268,12 +268,12 @@ ${game.members.length}人${
       ? [
           ...(selects?.slice(0, 4) || []),
           new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
-            [add, start, close]
+            [add, start, close],
           ),
         ]
       : [
           new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
-            [add, start, close]
+            [add, start, close],
           ),
         ],
   };

@@ -1,5 +1,5 @@
-import { Event } from "@src/types/index.js";
-import { Message } from "discord.js";
+import { Event } from "@src/types/index.ts";
+import { Message } from "npm:discord.js";
 
 export const event: Event = {
   name: "messageCreate",

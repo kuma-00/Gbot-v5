@@ -1,10 +1,10 @@
-import { Recorder } from "@src/core/recorder.js";
-import { Speaker } from "@src/core/speaker.js";
-import { Command } from "@src/types/command.js";
-import { MinigameConstructor, MinigameData } from "@src/types/minigame.js";
-import { WitAiCommand } from "@src/types/witAiCommand.js";
-import { Client, Collection, Message } from "discord.js";
-import { Timer } from "./timer";
+import { Recorder } from "@src/core/recorder.ts";
+import { Speaker } from "@src/core/speaker.ts";
+import { Command } from "@src/types/command.ts";
+import { MinigameConstructor, MinigameData } from "@src/types/minigame.ts";
+import { WitAiCommand } from "@src/types/witAiCommand.ts";
+import { Client, Collection, Message } from "npm:discord.js";
+import { Timer } from "./timer.ts";
 import { Readable } from "node:stream";
 
 export type ExtensionClient = Client & {

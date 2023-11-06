@@ -1,11 +1,11 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { random, speak } from "@src/util/index.js";
-import { EmbedBuilder, escapeMarkdown, GuildMember, Message } from "discord.js";
+} from "@src/types/minigame.ts";
+import { random, speak } from "@src/util/index.ts";
+import { EmbedBuilder, GuildMember, Message, escapeMarkdown } from "npm:discord.js";
 
 export const minigame: MinigameConstructor = class iddn extends MinigameBase {
   static gameData = {
@@ -38,7 +38,7 @@ export const minigame: MinigameConstructor = class iddn extends MinigameBase {
         `);
         member.send({ embeds: [embed] });
         return this.add(member);
-      })
+      }),
     );
     if (this.data.isEnd) return;
     let whens = result.map((r) => r?.when);
@@ -73,7 +73,7 @@ ${articles.map((a) => `${a.user}\n${a.text}`).join("\n\n")}`);
       this.client,
       this.data.channel.guild,
       `完成した文章:${articles.map((a) => a.text).join("\n")}`,
-      this.data.channel.id
+      this.data.channel.id,
     );
     // const read = await this.data.channel.send(`::${articles.map(a=>a.text).join("\n")}`);
     // read.delete();
@@ -108,9 +108,9 @@ ${articles.map((a) => `${a.user}\n${a.text}`).join("\n\n")}`);
     } else {
       this.progressMsg.edit({
         content: `入力状況:${"✅".repeat(
-          this.completionMember.length
+          this.completionMember.length,
         )}${"🟥".repeat(
-          this.data.members.length - this.completionMember.length
+          this.data.members.length - this.completionMember.length,
         )}`,
       });
     }

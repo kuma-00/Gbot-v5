@@ -1,16 +1,16 @@
-import { EmbedBuilder } from "discord.js";
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
+} from "@src/types/minigame.ts";
 import {
+  EmbedBuilder,
   Message,
   MessageReaction,
   ReactionCollector,
   User,
-} from "discord.js";
+} from "npm:discord.js";
 
 type takeGameLog = {
   type: "log" | "end";
@@ -30,7 +30,7 @@ export const minigame: MinigameConstructor = class takeOld extends MinigameBase 
     maxMember: 10,
     minMember: 2,
     joinInMidway: false,
-    disabled:true
+    disabled: true,
   };
   msg!: Message;
   emojis: string[];
@@ -118,7 +118,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
                 .map((l) => l.username)
                 .join(", ")}`
             : ""
-        }`
+        }`,
       )
       .setFooter({ text: this.data.isEnd ? "終了しました。" : "" });
     return embed;

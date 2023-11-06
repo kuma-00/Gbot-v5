@@ -1,10 +1,10 @@
-import { speak } from "./../../util/index.js";
 import { Command, CommandCategory } from "@src/types/command.js";
 import {
-  ContextMenuCommandInteraction,
-  ContextMenuCommandBuilder,
   ApplicationCommandType,
+  ContextMenuCommandBuilder,
+  ContextMenuCommandInteraction,
 } from "discord.js";
+import { speak } from "./../../util/index.ts";
 
 export const command: Command = {
   category: CommandCategory.Util,

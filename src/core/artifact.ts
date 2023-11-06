@@ -1,7 +1,8 @@
-import { randomId } from "./../util/index.js";
 import { OCRResponse } from "@src/types/OCR.js";
 import {
+  ActionRowBuilder,
   BufferResolvable,
+  ButtonBuilder,
   ButtonStyle,
   EmbedBuilder,
   InteractionReplyOptions,
@@ -9,7 +10,7 @@ import {
 } from "discord.js";
 import { extract } from "fuzzball";
 import genshin_db, { Artifact as genshinDBArtifact } from "genshin-db";
-import { ActionRowBuilder, ButtonBuilder } from "discord.js";
+import { randomId } from "./../util/index.ts";
 // const { artifacts, Language } = genshin;
 const { artifacts, Language } = genshin_db;
 
@@ -81,9 +82,9 @@ export const StatusType = {
   healP: "healP",
 } as const;
 // eslint-disable-next-line no-redeclare
-export type StatusType = typeof StatusType[keyof typeof StatusType];
+export type StatusType = (typeof StatusType)[keyof typeof StatusType];
 const type = ["flower", "plume", "sands", "goblet", "circlet"] as const;
-export type ArtifactType = typeof type[number];
+export type ArtifactType = (typeof type)[number];
 
 export class Artifact {
   ocrLines: string[];
@@ -231,7 +232,7 @@ export class Artifact {
   constructor(ocrData: OCRResponse) {
     // console.log("data:",ocrData,":data")
     this.ocrLines = ocrData.ParsedResults[0].ParsedText.split("\n").map(
-      (line) => line.replace(/\s/g, "")
+      (line) => line.replace(/\s/g, ""),
     );
     this.ocrText = ocrData.ParsedResults[0].ParsedText;
 
@@ -243,13 +244,13 @@ export class Artifact {
     this.score = this.score_calculation(this.level, this.main, this.subs);
     console.log(JSON.stringify(this));
     this.subDetailData = this.subs.map((sub) =>
-      this.sub_Detail(sub.val, sub.type)
+      this.sub_Detail(sub.val, sub.type),
     );
     this.score.subMax =
       this.subDetailData
         .map(
           (s, i) =>
-            (s?.[0]?.valueItems?.length || 0) * this.weights[this.subs[i].type]
+            (s?.[0]?.valueItems?.length || 0) * this.weights[this.subs[i].type],
         )
         .reduce((sum, element) => sum + element, 0) * 100;
     // console.log(this.subDetailData);
@@ -320,7 +321,7 @@ export class Artifact {
   main_analysis(
     res: [string, number, number],
     val: string,
-    hasPercent: boolean
+    hasPercent: boolean,
   ) {
     if (val) val = hasPercent ? val : val.replace(/[.,]/, "");
     if (this.endMain) return false;
@@ -330,7 +331,7 @@ export class Artifact {
       const type = Object.keys(this.mainStatusNames)[res[2]];
       this.main.name = res[0];
       this.main.type = (((this.mainElement as readonly string[]).includes(
-        res[0]
+        res[0],
       )
         ? "elem"
         : type) + (hasPercent ? "P" : "")) as StatusType;
@@ -340,7 +341,7 @@ export class Artifact {
             this.main.type,
             this.main.hasPercent,
             this.level,
-            this.main.val
+            this.main.val,
           )
         ) {
           console.log("main name");
@@ -365,7 +366,7 @@ export class Artifact {
             this.main.type,
             this.main.hasPercent,
             this.level,
-            this.main.val
+            this.main.val,
           )
         ) {
           console.log("main val");
@@ -385,7 +386,7 @@ export class Artifact {
   sub_analysis(
     res: [string, number, number],
     val: string,
-    hasPercent: boolean
+    hasPercent: boolean,
   ) {
     // console.log(res);
     if (val) val = hasPercent ? val : val.replace(/[.,]/, "");
@@ -429,7 +430,7 @@ export class Artifact {
     type: StatusType,
     hasPercent: boolean,
     level: number,
-    val: number
+    val: number,
   ) {
     const max = this.mainStatusData.max[type];
     const min = this.mainStatusData.min[type];
@@ -444,7 +445,7 @@ export class Artifact {
   score_calculation(
     level: number,
     main: ArtifactStatus,
-    subs: ArtifactStatus[]
+    subs: ArtifactStatus[],
   ) {
     const result = { overall: 0, main: 0, sub: 0, mainP: 0 };
     result.sub = subs.reduce((accumulator, currentValue) => {
@@ -463,7 +464,7 @@ export class Artifact {
     const max_main = this.mainStatusData.max[main.type];
     const weight = this.weights[main.type];
     result.main = Math.round(
-      (main.val / max_main) * 100 * (3 + level / 4) * weight
+      (main.val / max_main) * 100 * (3 + level / 4) * weight,
     );
     result.mainP = (main.val / max_main) * 100;
     result.overall = result.main + result.sub;
@@ -486,7 +487,7 @@ export class Artifact {
         valueItems: number[];
         indexItems: number[];
         value: number;
-      } = { index: 0, valueItems: [], indexItems: [], value: 0 }
+      } = { index: 0, valueItems: [], indexItems: [], value: 0 },
     ) => {
       if (
         base.index > 6 ||
@@ -532,7 +533,7 @@ export class Artifact {
       check(data, value).forEach((i) => {
         if (
           results.some((j) =>
-            equalsPattern(j.indexItems || [0], i.indexItems || [0])
+            equalsPattern(j.indexItems || [0], i.indexItems || [0]),
           )
         )
           return;
@@ -585,7 +586,7 @@ ${
   this.error
     ? "\n**エラーが発生しました。一部読み取れてない、または読み取った値が間違っています。画像を変えるなどを試して見てください。**\n"
     : ""
-}`
+}`,
       )
       .setThumbnail(`attachment://${id}-${this.type}.jpg`)
       .setImage("attachment://Artifact.png");
@@ -611,7 +612,7 @@ ${
       embeds: [embed],
       components: [
         new ActionRowBuilder<MessageActionRowComponentBuilder>().setComponents(
-          button
+          button,
         ),
       ],
     };
@@ -649,7 +650,7 @@ ${this.subs
 ${this.subDetailData[i]
   ?.map((d) => d.indexItems?.map((v) => this.detailRect[v]).join(""))
   .join("\n")}
-`
+`,
   )
   .join("\n")}
 伸び方:低🟦  中🟩  高🟨  最高🟥
@@ -663,7 +664,7 @@ ${this.subDetailData[i]
       ).toFixed(2)}%
 メイン:${this.score.mainP?.toFixed(2)}%
 サブ:${(((this.score?.sub ?? 0) / (this.score?.subMax ?? 0)) * 100).toFixed(2)}%
-`
+`,
     );
     return { embeds: [embed] };
   }

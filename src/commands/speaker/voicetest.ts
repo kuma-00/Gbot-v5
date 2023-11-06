@@ -1,15 +1,14 @@
-import { ChatInputCommandInteraction } from "discord.js";
 import {
   VTEmotion,
   VTEmotionLevel,
-  VTSpeaker,
   VTFormat,
   VTOption,
+  VTSpeaker,
 } from "@src/types/VT.js";
-import { SlashCommandBuilder } from "discord.js";
 import { Command, CommandCategory } from "@src/types/command.js";
+import { SpeakData } from "@src/util/index.ts";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { createVoiceEmbed } from "./voiceset.js";
-import { SpeakData } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,

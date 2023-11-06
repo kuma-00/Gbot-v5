@@ -1,8 +1,8 @@
-import { ExtensionClient } from "@src/types";
-import { MessageError, MessageResponseJson } from "@src/types/witAi.js";
-import { WitAiCommandData } from "@src/types/witAiCommand";
-import { isNullOrWhitespace } from "@src/util/index.js";
-import { EmbedBuilder } from "discord.js";
+import { ExtensionClient } from "@src/types/index.ts";
+import { MessageError, MessageResponseJson } from "@src/types/witAi.ts";
+import { WitAiCommandData } from "@src/types/witAiCommand.ts";
+import { isNullOrWhitespace } from "@src/util/index.ts";
+import { EmbedBuilder } from "npm:discord.js";
 
 const baseUrl = "https://api.wit.ai";
 const apiVersion = "20221114";
@@ -15,7 +15,7 @@ export const message = async (message: string) => {
   return (await fetch(url.toString(), {
     method: "GET",
     headers: {
-      Authorization: "Bearer " + process.env.WIT_AI_TOKEN,
+      Authorization: "Bearer " + Deno.env.get("WIT_AI_TOKEN"),
     },
   }).then((r) => r.json())) as MessageResponseJson | MessageError;
 };

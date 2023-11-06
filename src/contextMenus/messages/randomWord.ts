@@ -1,9 +1,9 @@
 import { Command, CommandCategory } from "@src/types/command.js";
-import { shuffle, speak } from "@src/util/index.js";
+import { shuffle, speak } from "@src/util/index.ts";
 import {
-  ContextMenuCommandInteraction,
   ApplicationCommandType,
   ContextMenuCommandBuilder,
+  ContextMenuCommandInteraction,
 } from "discord.js";
 import { tokenize } from "wakachigaki";
 

@@ -16,8 +16,8 @@ import {
   ExtensionClient,
   SpeakResource,
   StorageType,
-} from "@src/types/index.js";
-import { SpeakData, sleep } from "@src/util/index.js";
+} from "@src/types/index.ts";
+import { SpeakData, sleep } from "@src/util/index.ts";
 import {
   Message,
   MessageCollector,
@@ -283,9 +283,9 @@ export class Speaker {
     if (this.isPlaying || this.queue.length == 0) return;
     const resource = await (async () => {
       if (this.queue[0] instanceof URL) {
-        const body = (await fetch(this.queue[0].toString()))
+        const body =
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .body as ReadableStream<any>;
+          (await fetch(this.queue[0].toString())).body as ReadableStream<any>;
         const stream = Readable.fromWeb(body);
         return stream;
       }

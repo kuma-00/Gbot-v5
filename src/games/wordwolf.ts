@@ -1,10 +1,10 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { random } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { random } from "@src/util/index.ts";
 import {
   ActionRowBuilder,
   EmbedBuilder,
@@ -13,7 +13,7 @@ import {
   MessageActionRowComponentBuilder,
   MessageComponentInteraction,
   StringSelectMenuBuilder,
-} from "discord.js";
+} from "npm:discord.js";
 
 export const minigame: MinigameConstructor = class wordwolf extends MinigameBase {
   static gameData = {
@@ -25,14 +25,19 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     maxMember: 20,
     minMember: 2,
     joinInMidway: false,
-    ruleData: [{ id: "wolfCount", options: [
-      { label: "一人", value: "1" },
-      { label: "二人", value: "2" },
-      { label: "三人", value: "3" },
-      { label: "四人", value: "4" },
-      { label: "五人", value: "5" }
-    ] }],
-    defaultRule: { wolfCount: ["1"] }
+    ruleData: [
+      {
+        id: "wolfCount",
+        options: [
+          { label: "一人", value: "1" },
+          { label: "二人", value: "2" },
+          { label: "三人", value: "3" },
+          { label: "四人", value: "4" },
+          { label: "五人", value: "5" },
+        ],
+      },
+    ],
+    defaultRule: { wolfCount: ["1"] },
   };
   voteData: Record<string, string[]> = {};
   selfTheme: string[] = [];
@@ -356,8 +361,8 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
               this.data.members.map((user, index) => ({
                 value: "" + index,
                 label: user.displayName || user.user.username,
-              }))
-            )
+              })),
+            ),
         );
       const filter = (interaction: MessageComponentInteraction) =>
         interaction.customId == "gb_ww_vote_menu" + this.data.id &&
@@ -406,7 +411,7 @@ export const minigame: MinigameConstructor = class wordwolf extends MinigameBase
     if (this.data.isEnd) return;
     const voteD: Record<string, number> = {};
     Object.values(this.voteData).forEach((ds) =>
-      ds.forEach((d) => (voteD[d] = voteD[d] ? voteD[d] + 1 : 1))
+      ds.forEach((d) => (voteD[d] = voteD[d] ? voteD[d] + 1 : 1)),
     );
     const embed = new EmbedBuilder().setTitle("WW  GAME")
       .setDescription(`**ワードウルフ!!**
@@ -421,14 +426,14 @@ ${this.wolfUser
     (user) =>
       `★${user.displayName || user.user.username} : \`${
         this.selfTheme[this.wolfThemePos]
-      }\``
+      }\``,
   )
   .join("\n")}
 ${this.CitizenUser.map(
   (user) =>
     `${user.displayName || user.user.username} : \`${
       this.selfTheme[1 - this.wolfThemePos]
-    }\``
+    }\``,
 ).join("\n")}
 `);
     this.data.channel.send({ embeds: [embed] });

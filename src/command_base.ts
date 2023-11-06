@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { Command,CommandCategory } from "@src/types/command.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "npm:discord.js";
+import { Command,CommandCategory } from "@src/types/command.ts";
 
 export const command: Command = {
   category: CommandCategory.Util,

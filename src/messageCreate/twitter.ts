@@ -1,4 +1,4 @@
-import { MessageResponse } from "@src/types/index.js";
+import { MessageResponse } from "@src/types/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "sm",

@@ -1,6 +1,6 @@
-import { getArea, getWeather } from "@src/core/weather.js";
-import { WitAiCommand } from "@src/types/witAiCommand.js";
-import { isNullOrWhitespace, speak } from "@src/util/index.js";
+import { getArea, getWeather } from "@src/core/weather.ts";
+import { WitAiCommand } from "@src/types/witAiCommand.ts";
+import { isNullOrWhitespace, speak } from "@src/util/index.ts";
 
 export const command: WitAiCommand = {
   guildOnly: true,

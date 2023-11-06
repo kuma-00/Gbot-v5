@@ -1,27 +1,27 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { sleep } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { sleep } from "@src/util/index.ts";
 import {
-  Message,
-  ButtonBuilder,
-  ButtonStyle,
   ActionRowBuilder,
-  escapeMarkdown,
-  MessageComponentInteraction,
+  ButtonBuilder,
   ButtonInteraction,
+  ButtonStyle,
   CacheType,
-  InteractionCollector,
   Collection,
   GuildMember,
+  InteractionCollector,
   MappedInteractionTypes,
+  Message,
+  MessageComponentInteraction,
   MessageComponentType,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
-} from "discord.js";
+  escapeMarkdown,
+} from "npm:discord.js";
 
 type takeGameLog = {
   type: "log" | "end";
@@ -47,7 +47,7 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
   isCountDownEnd = false;
   UIMsg!: Message;
   collector!: InteractionCollector<
-  MappedInteractionTypes[MessageComponentType]
+    MappedInteractionTypes[MessageComponentType]
   >;
   nyokiData = new Collection<string, string>();
   constructor(client: ExtensionClient, data: MinigameData) {
@@ -63,7 +63,7 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
     this.UIMsg = await this.data.channel.send(this.draw());
     const filter = (interaction: MessageComponentInteraction) =>
       ["gb_take_nyoki_select", "gb_take_send_button"].includes(
-        interaction.customId
+        interaction.customId,
       );
     this.collector = this.UIMsg.createMessageComponentCollector({ filter });
     this.collector.on("collect", this.collect.bind(this));
@@ -77,7 +77,9 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
   }
 
   collect(
-    interaction: ButtonInteraction<CacheType> | StringSelectMenuInteraction<CacheType>
+    interaction:
+      | ButtonInteraction<CacheType>
+      | StringSelectMenuInteraction<CacheType>,
   ) {
     // const pos = this.emojis.indexOf(reaction.emoji.name || "");
     // if (pos == this.log.length) {
@@ -116,9 +118,11 @@ export const minigame: MinigameConstructor = class take extends MinigameBase {
           pos: this.nyokiData.get(interaction.user.id) || "0",
           time: Date.now(),
         });
-      } else if(this.log.at(-1)?.pos == this.nyokiData.get(interaction.user.id)) {
-        const last = this.log.at(-1)
-        if(last)last.type = "end";
+      } else if (
+        this.log.at(-1)?.pos == this.nyokiData.get(interaction.user.id)
+      ) {
+        const last = this.log.at(-1);
+        if (last) last.type = "end";
       }
     }
     if (interaction.isRepliable()) interaction.update(this.draw(false));
@@ -154,7 +158,7 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
         new Array(this.data.members.length - 1)
           .fill(0)
           .map((_, i) => i + 1)
-          .map((n) => ({ label: `${n}ニョッキ`, value: "" + (n - 1) }))
+          .map((n) => ({ label: `${n}ニョッキ`, value: "" + (n - 1) })),
       );
     const sendButton = new ButtonBuilder()
       .setCustomId("gb_take_send_button")
@@ -165,7 +169,9 @@ ${this.log.map((log) => this.logToText(log)).join("\n")}${
       this.data.isEnd || !changeCom
         ? undefined
         : [
-            new ActionRowBuilder<StringSelectMenuBuilder>().setComponents(selectMenu),
+            new ActionRowBuilder<StringSelectMenuBuilder>().setComponents(
+              selectMenu,
+            ),
             new ActionRowBuilder<ButtonBuilder>().setComponents(sendButton),
           ];
     return { components, content };

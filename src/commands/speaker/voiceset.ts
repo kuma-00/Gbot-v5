@@ -1,14 +1,14 @@
+import { storage } from "@src/core/storage.js";
+import { VTEmotion, VTEmotionLevel, VTSpeaker } from "@src/types/VT.js";
+import { Command, CommandCategory } from "@src/types/command.js";
+import { StorageType } from "@src/types/index.ts";
+import { getUsername } from "@src/util/index.ts";
 import {
   ChatInputCommandInteraction,
   CommandInteraction,
   EmbedBuilder,
+  SlashCommandBuilder,
 } from "discord.js";
-import { VTEmotion, VTEmotionLevel, VTSpeaker } from "@src/types/VT.js";
-import { SlashCommandBuilder } from "discord.js";
-import { Command, CommandCategory } from "@src/types/command.js";
-import { storage } from "@src/core/storage.js";
-import { StorageType } from "@src/types/index.js";
-import { getUsername } from "@src/util/index.js";
 
 export const command: Command = {
   category: CommandCategory.Speaker,
@@ -24,9 +24,9 @@ export const command: Command = {
         .addChoices(
           ...Object.values(VTSpeaker)
             .filter((s) => s != "show")
-            .map((s) => ({ name: s, value: s }))
+            .map((s) => ({ name: s, value: s })),
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -34,7 +34,7 @@ export const command: Command = {
         .setDescription("声の高さ 50~200(%)")
         .setMaxValue(200)
         .setMinValue(50)
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -42,7 +42,7 @@ export const command: Command = {
         .setDescription("喋るスピード(声の高さも変わる) 50~400(%)")
         .setMaxValue(400)
         .setMinValue(50)
-        .setRequired(true)
+        .setRequired(true),
     )
     .addStringOption((option) =>
       option
@@ -52,10 +52,10 @@ export const command: Command = {
           ...Object.values(VTEmotion).map((s) =>
             s === undefined
               ? { name: "none", value: "none" }
-              : { name: s, value: s }
-          )
+              : { name: s, value: s },
+          ),
         )
-        .setRequired(true)
+        .setRequired(true),
     )
     .addIntegerOption((option) =>
       option
@@ -64,16 +64,16 @@ export const command: Command = {
         .addChoices(
           ...Object.values(VTEmotionLevel)
             .map((n) => (n === undefined ? "0" : n))
-            .map((s) => ({ name: s, value: +s }))
+            .map((s) => ({ name: s, value: +s })),
         )
-        .setRequired(true)
+        .setRequired(true),
     ),
   async execute(client, interaction: ChatInputCommandInteraction) {
-    const speaker = interaction.options.getString("speaker",true) as VTSpeaker;
-    const pitch = interaction.options.getInteger("pitch",true);
-    const speed = interaction.options.getInteger("speed",true);
-    const _emotion = interaction.options.getString("emotion",true);
-    const _emotionlevel = interaction.options.getInteger("emotionlevel",true);
+    const speaker = interaction.options.getString("speaker", true) as VTSpeaker;
+    const pitch = interaction.options.getInteger("pitch", true);
+    const speed = interaction.options.getInteger("speed", true);
+    const _emotion = interaction.options.getString("emotion", true);
+    const _emotionlevel = interaction.options.getInteger("emotionlevel", true);
     const emotion = (
       _emotion == "none" || _emotion == null ? undefined : _emotion
     ) as VTEmotion;
@@ -93,7 +93,7 @@ export const command: Command = {
     // this.setData(m.guild.id, member.id, data, false);
     await storage(StorageType.SETTINGS).put(
       { value: data },
-      `${interaction.guildId}:${interaction.user.id}`
+      `${interaction.guildId}:${interaction.user.id}`,
     );
     interaction.followUp({ embeds: [createVoiceEmbed(data, interaction)] });
   },
@@ -107,23 +107,21 @@ export const createVoiceEmbed = (
     emotion: VTEmotion;
     emotionLevel: VTEmotionLevel;
   },
-  interaction: CommandInteraction
+  interaction: CommandInteraction,
 ) =>
-  new EmbedBuilder()
-    .setTitle("声の設定")
-    .addFields(
-      { name: "user", value: getUsername(interaction), inline: true },
-      { name: "speaker", value: data.speaker, inline: true },
-      { name: "pitch", value: "" + data.pitch, inline: true },
-      { name: "speed", value: "" + data.speed, inline: true },
-      {
-        name: "emotion",
-        value: "" + (data.emotion === undefined ? "none" : data.emotion),
-        inline: true,
-      },
-      {
-        name: "emotionLevel",
-        value: "" + (data.emotionLevel === undefined ? "0" : data.emotionLevel),
-        inline: true,
-      }
-    );
+  new EmbedBuilder().setTitle("声の設定").addFields(
+    { name: "user", value: getUsername(interaction), inline: true },
+    { name: "speaker", value: data.speaker, inline: true },
+    { name: "pitch", value: "" + data.pitch, inline: true },
+    { name: "speed", value: "" + data.speed, inline: true },
+    {
+      name: "emotion",
+      value: "" + (data.emotion === undefined ? "none" : data.emotion),
+      inline: true,
+    },
+    {
+      name: "emotionLevel",
+      value: "" + (data.emotionLevel === undefined ? "0" : data.emotionLevel),
+      inline: true,
+    },
+  );

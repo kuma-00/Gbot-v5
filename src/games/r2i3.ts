@@ -1,21 +1,21 @@
-import { ExtensionClient } from "@src/types/index.js";
+import { ExtensionClient } from "@src/types/index.ts";
 import {
   MinigameBase,
   MinigameConstructor,
   MinigameData,
-} from "@src/types/minigame.js";
-import { shuffle, speak } from "@src/util/index.js";
+} from "@src/types/minigame.ts";
+import { shuffle, speak } from "@src/util/index.ts";
 import {
   EmbedBuilder,
   GuildMember,
   Message,
   MessageCollector,
-} from "discord.js";
-import { default as Kuroshiro } from "kuroshiro/lib/index.js";
+} from "npm:discord.js";
+import split from "npm:graphemesplit";
+import KuromojiAnalyzer from "npm:kuroshiro-analyzer-kuromoji";
+import { default as Kuroshiro } from "npm:kuroshiro/lib/index.ts";
 const kuroshiro = new Kuroshiro.default();
-import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji";
 await kuroshiro.init(new KuromojiAnalyzer());
-import split from "graphemesplit";
 
 function kanaToHira(str: string) {
   return str.replace(/[\u30a1-\u30f6]/g, function (match) {

@@ -1,5 +1,5 @@
-import { unfurl } from "unfurl.js";
-import replaceAsync from "string-replace-async";
+import { unfurl } from "npm:unfurl.js";
+import replaceAsync from "npm:string-replace-async";
 
 export const urlReplace = async (text: string) => {
   // /https?:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/g

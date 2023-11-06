@@ -1,5 +1,5 @@
-import { MessageResponse } from "@src/types/index.js";
-import { reply, speak } from "@src/util/index.js";
+import { MessageResponse } from "@src/types/index.ts";
+import { reply, speak } from "@src/util/index.ts";
 
 export const messageResponse: MessageResponse = {
   name: "sm",
@@ -9,7 +9,7 @@ export const messageResponse: MessageResponse = {
       message,
       `https://www.nicovideo.jp/watch/${
         message.cleanContent.match(/sm\d+/)?.[0]
-      }`
+      }`,
     );
     if (message.guild)
       speak(client, message.guild, "URL省略", message.channelId);

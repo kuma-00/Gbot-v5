@@ -11,7 +11,7 @@ declare class Kuroshiro {
       romajiSystem?: string;
       delimiter_start?: string;
       delimiter_end?: string;
-    }
+    },
   ): Promise<string>;
   Util: {
     isHiragana: (ch: string) => boolean;
@@ -28,13 +28,13 @@ declare class Kuroshiro {
     kanaToKatakana: (str: string) => string;
     kanaToRomaji: (
       str: string,
-      system: "nippon" | "passport" | "hepburn"
+      system: "nippon" | "passport" | "hepburn",
     ) => string;
   };
 }
 
 declare module "kuroshiro" {
-  export = { default : Kuroshiro};
+  export = { default: Kuroshiro };
 }
 
 // to avoid mistakenly treating d.ts as js by ESLint.
@@ -49,7 +49,6 @@ declare module "kuroshiro-analyzer-kuromoji" {
   export = KuromojiAnalyzer;
 }
 
-declare module 'kuroshiro/lib/index.js' {
-  export = { default : Kuroshiro};
+declare module "kuroshiro/lib/index.ts" {
+  export = { default: Kuroshiro };
 }
-

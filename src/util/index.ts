@@ -1,5 +1,5 @@
-import { ExtensionClient } from "@src/types/index.js";
-import { VTOption } from "@src/types/VT.js";
+import { ExtensionClient } from "@src/types/index.ts";
+import { VTOption } from "@src/types/VT.ts";
 import {
   CommandInteraction,
   EmbedBuilder,
@@ -8,7 +8,7 @@ import {
   Message,
   MessageReplyOptions,
   User,
-} from "discord.js";
+} from "npm:discord.js";
 
 export const followUpError = (
   error: Error,
