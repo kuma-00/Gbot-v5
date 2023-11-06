@@ -1,7 +1,7 @@
 import { MessageResponse } from "@src/types/index.js";
 
 export const messageResponse: MessageResponse = {
-  name: "sm",
+  name: "twitter",
   filter: (m) => m.channel.id == "1124762255741956177",
   async execute(client, message) {
     message.react("❤");

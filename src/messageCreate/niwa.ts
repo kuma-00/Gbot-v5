@@ -2,7 +2,7 @@ import { MessageResponse } from "@src/types/index.js";
 import { reply, speak } from "@src/util/index.js";
 
 export const messageResponse: MessageResponse = {
-  name: "wani",
+  name: "niwa",
   filter: (m) =>
     ["にわ", "ニワ", "庭","ガーデン", "niwa","がーでん","garden"].some((i) => m.cleanContent == i),
   async execute(client, message) {
