@@ -33,8 +33,8 @@ export const twitterEmbed = async (url: URL) => {
     .setURL(url.href)
     .setAuthor({
       name: ogp.author ?? "",
-      iconURL: ogp.favicon ?? "",
-      url: ogp.open_graph.url ?? "",
+      iconURL: ogp.favicon,
+      url: ogp.open_graph.url,
     })
     .setDescription(ogp.open_graph.description ?? "")
     .setImage(ogp.open_graph.images?.[0].url ?? null)
