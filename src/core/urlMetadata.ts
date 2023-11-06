@@ -37,7 +37,7 @@ export const twitterEmbed = async (url: URL) => {
       url: ogp.open_graph.url ?? "",
     })
     .setDescription(ogp.open_graph.description ?? "")
-    .setImage(ogp.open_graph.images?.[0]?.url ?? "")
+    .setImage(ogp.open_graph.images?.[0].url ?? null)
     .setFooter({
       text: ogp.open_graph.site_name ?? "",
       iconURL: ogp.favicon ?? "",
@@ -45,13 +45,14 @@ export const twitterEmbed = async (url: URL) => {
     .setTimestamp();
   const embed2 = new EmbedBuilder()
     .setURL(url.href)
-    .setImage(ogp.open_graph.images?.[1]?.url ?? "");
+    .setImage(ogp.open_graph.images?.[1].url ?? null);
   const embed3 = new EmbedBuilder()
     .setURL(url.href)
-    .setImage(ogp.open_graph.images?.[2]?.url ?? "");
+    .setImage(ogp.open_graph.images?.[2].url ?? null);
   const embed4 = new EmbedBuilder()
     .setURL(url.href)
-    .setImage(ogp.open_graph.images?.[3]?.url ?? "");
+    .setImage(ogp.open_graph.images?.[3]?.url ?? null);
+
   const result = [embed1];
   if (ogp.open_graph.images?.[1]) result.push(embed2);
   if (ogp.open_graph.images?.[2]) result.push(embed3);
