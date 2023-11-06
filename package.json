@@ -16,7 +16,7 @@
     "pm2-delete": "pm2 delete gbot-v5Ranger"
   },
   "engines": {
-    "node": "18.x"
+    "node": "20.x"
   },
   "keywords": [],
   "author": "kuma",
