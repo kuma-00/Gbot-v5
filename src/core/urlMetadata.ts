@@ -45,10 +45,10 @@ export const twitterEmbed = async (url: URL) => {
     .setTimestamp();
   const embed2 = new EmbedBuilder()
     .setURL(ogp.canonical_url??url.href)
-    .setImage(ogp.open_graph.images?.[1].url ?? null);
+    .setImage(ogp.open_graph.images?.[1]?.url ?? null);
   const embed3 = new EmbedBuilder()
     .setURL(ogp.canonical_url??url.href)
-    .setImage(ogp.open_graph.images?.[2].url ?? null);
+    .setImage(ogp.open_graph.images?.[2]?.url ?? null);
   const embed4 = new EmbedBuilder()
     .setURL(ogp.canonical_url??url.href)
     .setImage(ogp.open_graph.images?.[3]?.url ?? null);
