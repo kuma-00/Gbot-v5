@@ -207,7 +207,7 @@ export class Speaker {
 
   async textReplace(text: string) {
     // 発声URLの一時変換
-    text = text.replaceAll(/{\s*http/, "{");
+    text = text.replace(/{\s*http/g, "{");
     // URL省略
     // text = text.replace(/https?:\/\/[\w!?/+\-_~=;.,*&@#$%()'[\]]+/g, "URL省略");
     text = await urlReplace(text);
