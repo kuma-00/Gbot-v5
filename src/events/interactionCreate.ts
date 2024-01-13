@@ -44,8 +44,6 @@ export const event: Event = {
           console.log("Autocomplete Error \n",e);
         }
       }
-    }// else if(interaction.isMessageComponent()){
-    //   if(["gb_game","gbot_ox","gb_take","gb_ww"].some(id=>id.indexOf(interaction.customId)==0))interaction.update({components:[]})
-    // }
+    }
   },
 };
