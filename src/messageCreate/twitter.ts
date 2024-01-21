@@ -6,12 +6,12 @@ export const messageResponse: MessageResponse = {
   filter: (m) => m.channel.id == "1124762255741956177",
   async execute(client, message) {
     const url = message.cleanContent.match(/https?:\/\/[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#\u3000-\u30FE\u4E00-\u9FA0\uFF01-\uFFE3]+/)?.[0] ?? "";
-    let m = message;
-    if(url.match(/twitter.com|x.com|t.co/)){
-      // const embeds = await twitterEmbed(new URL(url));
-      // m = await message.reply({embeds,allowedMentions:{parse:[]}});
-      m = await message.reply({content:url.replace(/twitter.com|x.com/,"vxtwitter.com"),allowedMentions:{parse:[]}});
-    }
+    const m = message;
+    // if(url.match(/twitter.com|x.com|t.co/)){
+    //   // const embeds = await twitterEmbed(new URL(url));
+    //   // m = await message.reply({embeds,allowedMentions:{parse:[]}});
+    //   m = await message.reply({content:url.replace(/twitter.com|x.com/,"vxtwitter.com"),allowedMentions:{parse:[]}});
+    // }
     m.react("❤");
     m.react("🔁");
   },

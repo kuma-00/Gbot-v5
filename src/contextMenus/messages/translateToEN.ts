@@ -18,7 +18,7 @@ export const command: Command = {
     const msg = interaction.options.getMessage("message", true);
     const channel = interaction.channel;
     if (!channel) return;
-    channel.sendTyping();
+    // channel.sendTyping();
     const text = (
       await translate(msg.cleanContent.replace(/[*`_~>]/, ""), null, "en")
     ).text;

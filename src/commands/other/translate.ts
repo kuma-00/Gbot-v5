@@ -33,7 +33,7 @@ export const command: Command = {
     const source = interaction.options.getString("source");
     const channel = interaction.channel;
     if (!channel) return;
-    channel.sendTyping();
+    // channel.sendTyping();
     const text = (await translate(word.replace(/[*`_~>]/, ""), source, target))
       .text;
     await interaction.followUp(`\`\`\`${text}\`\`\``);
